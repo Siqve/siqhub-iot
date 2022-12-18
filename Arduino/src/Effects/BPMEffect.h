@@ -6,7 +6,7 @@
 
 class BPMEffect {
   public:
-    BPMEffect(Adafruit_NeoPixel strip, int pixel_count, void *fpsFunction);
+    BPMEffect(Adafruit_NeoPixel* strip, int pixel_count, void fpsFunction(int));
     void loop();
     void testButtonClick();
   private:
