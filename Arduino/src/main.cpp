@@ -17,15 +17,13 @@ void loop_LED(unsigned long timeNow);
 void loop_testButton(unsigned long timeNow);
 void readTestButton();
 void testButtonClick();
-void setFPS();
+void setFPS(int fps);
 
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
 BPMEffect effect(&strip, PIXEL_COUNT, &setFPS);
 
 int ACTIVE_LED_FPS = 1;
-
-//Experiment with new STRIP now that its referenced and dereferenced through pointer. The LED Fade might work as of now, test
 
 void setup() {
     Serial.begin(115200);

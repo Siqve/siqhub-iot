@@ -1,6 +1,6 @@
- #include "Arduino.h"
+#include "Arduino.h"
 #include "BPMEffect.h"
-#include "ColorUtils.h"
+#include "Utilities/ColorUtils.h"
 
 #define BRIGHTNESS 255   /* Control the brightness of your leds */
 #define SATURATION 255   /* Control the saturation of your leds */
