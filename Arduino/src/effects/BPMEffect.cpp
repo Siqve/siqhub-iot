@@ -28,7 +28,6 @@ void BPMEffect::loop() {
 
 
 void BPMEffect::cycleFade() {
-  Serial.println("bob7");
   incrementHue(true);
   for (int i = 0; i < PIXEL_COUNT; i++) {
     uint32_t color = ColorUtils::HSVToColor(hue + i*LED_COLOR_HOP, SATURATION, BRIGHTNESS);

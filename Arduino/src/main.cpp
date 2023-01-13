@@ -2,7 +2,9 @@
 
 #include <Adafruit_NeoPixel.h>
 #include "Effects/BPMEffect.h"
-#include "Utilities/ColorUtils.h"
+#include "web/WiFiSession.h"
+#include "web/ControllerWebServer.h"
+#include "constants.h"
 
 #define TEST_BUTTON_PIN D6
 #define LED_DATA_PIN D5
@@ -11,29 +13,33 @@
 #define DEFAULT_LED_FPS 400
 #define TEST_BUTTON_FPS 20
 
-const unsigned long ULONG_MAX = 0UL - 1UL;
-
 void loop_LED(unsigned long timeNow);
 void loop_testButton(unsigned long timeNow);
 void readTestButton();
 void testButtonClick();
 void setFPS(int fps);
 
+WiFiSession wifiSession(WiFiConstants::WIFI_SSID, WiFiConstants::WIFI_PW);
+ControllerWebServer webServer = ControllerWebServer();
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
 BPMEffect effect(&strip, PIXEL_COUNT, &setFPS);
 
-int ACTIVE_LED_FPS = 1;
+int ACTIVE_LED_FPS = DEFAULT_LED_FPS;
 
 void setup() {
     Serial.begin(115200);
     strip.begin();
+    wifiSession.startSession();
+    webServer.initServer();
 
     pinMode(TEST_BUTTON_PIN, INPUT);
 }
 
 
+
 void loop() {
+    wifiSession.assureConnection();
     unsigned long timeNow = micros();
     loop_LED(timeNow);
     loop_testButton(timeNow);
@@ -42,7 +48,7 @@ void loop() {
 //The loop function for LED
 unsigned long lastRun_FPS;
 void loop_LED(unsigned long timeNow) {
-    unsigned long timeLapsed = (timeNow - lastRun_FPS) % ULONG_MAX;
+    unsigned long timeLapsed = (timeNow - lastRun_FPS) % ULONG_MAXVAL;
     if (timeLapsed > (1000000.0 / ACTIVE_LED_FPS)) {
         lastRun_FPS = timeNow;
         effect.loop();
@@ -52,7 +58,7 @@ void loop_LED(unsigned long timeNow) {
 //The loop function for the test button
 unsigned long lastRun_testButton;
 void loop_testButton(unsigned long timeNow) {
-    unsigned long timeLapsed = (timeNow - lastRun_testButton) % ULONG_MAX;
+    unsigned long timeLapsed = (timeNow - lastRun_testButton) % ULONG_MAXVAL;
     if (timeLapsed > (1000000 / TEST_BUTTON_FPS)) {
         lastRun_testButton = timeNow;
         readTestButton();
