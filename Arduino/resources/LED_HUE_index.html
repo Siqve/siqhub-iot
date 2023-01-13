@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LED Hue Controller</title>
+    <style>
+        /* CSS RESET */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            line-height: calc(1em + 0.5rem);
+            overflow-wrap: break-word;
+        }
+
+        html, body {
+            font-family: Tahoma, serif;
+            cursor: default;
+            height: 100%
+        }
+
+        input, button, textarea, select {
+            font: inherit;
+            font-size: 1rem;
+        }
+
+        /* --------- */
+
+        .main-conatiner {
+            margin: auto;
+            max-width: 600px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .main-conatiner__title {
+            color: #8F95D3;
+            font-size: 3rem;
+            margin: 0.7rem 0;
+        }
+
+        .mode-list-container {
+        }
+
+        .mode-list-container__title {
+            text-align: center;
+            color: #555358;
+            font-size: 2rem;
+        }
+
+        .modes-list {
+            border-top: 0.1rem solid #555358;
+        }
+
+        .modes-list__item {
+            color: #555358;
+            font-size: 2rem;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0 0.6rem;
+        }
+
+        .modes-list__item--active {
+            color: #59CD90;
+        }
+
+        .effect-container {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 2rem 2rem -3.8rem inset;
+            display: grid;
+            overflow: hidden;
+        }
+
+        .static-effect-container {
+            /*margin: auto;*/
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            grid-column: 1;
+            grid-row: 1;
+            transition: all 0.3s ease-in;
+
+        }
+
+        .fade-effect-container {
+            transition: all 0.2s ease-in;
+            grid-column: 1;
+            grid-row: 1;
+            transform: translateX(120%);
+        }
+
+
+        .static-effect-container:not(.effect-container--active) {
+            transform: translateX(-120%);
+        }
+
+        .fade-effect-container.effect-container--active {
+            transform: translateY(0);
+        }
+
+        .static-effect-container__item {
+            margin: 0.5rem;
+        }
+
+        .color-box {
+            background-color: #000;
+            box-shadow: 0 0 0.3rem 0.05rem black;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+        }
+
+        .static-effect-container__item--square {
+            border-radius: 0;
+        }
+
+
+        .static-effect-container__item--square > input {
+            opacity: 0;
+        }
+
+    </style>
+    <script>
+        const activeContainerClass = 'effect-container--active';
+        const activeModeClass = 'modes-list__item--active';
+        let activeMode = 0;
+
+        function onColorChange(input) {
+            let isColorPicker = input.value !== undefined;
+            if (isColorPicker) {
+                const color_picker_wrapper = document.getElementsByClassName("static-effect-container__item--square")[0];
+                color_picker_wrapper.style.backgroundColor = input.value;
+                console.log(input.value)
+            } else {
+                console.log(input.style.backgroundColor)
+            }
+        }
+
+        //Main function for selecting mode
+        function selectMode(id) {
+            if (id === activeMode)
+                return;
+            activeMode = id;
+            updateModeRequest(id);
+            CSS_setActiveModeContainerClass(id);
+            CSS_setActiveModeTitle(id);
+        }
+
+        function CSS_setActiveModeContainerClass(id) {
+            document.querySelector('.' + activeContainerClass).classList.remove(activeContainerClass);
+            document.getElementById('effect-container-' + id).classList.add(activeContainerClass);
+        }
+        function CSS_setActiveModeTitle(id) {
+            document.querySelector('.' + activeModeClass).classList.remove(activeModeClass);
+            document.getElementById('modes-list-item-' + id).classList.add(activeModeClass);
+        }
+
+        //Get and update mode
+        function getModeRequest() {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    const mode = this.responseText;
+                    if (!isNumeric(mode))
+                        return;
+                    console.log(mode);
+                    CSS_setActiveModeContainerClass(parseInt(mode));
+                }
+            };
+            xhr.open("GET", "/mode", true);
+            xhr.send();
+        }
+
+        getModeRequest();
+        setInterval(getModeRequest, 1000);
+
+        //Send an update to mode
+        function updateModeRequest(id) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "/update?mode=" + id, true);
+            xhr.send();
+        }
+
+        //TODO: Determine a system for sending color updates from here, make it abstract enough to be able to also send fade and BPM mode maybe
+        function updateColorRequest(id) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "/update?mode=" + id, true);
+            xhr.send();
+        }
+
+        function isNumeric(value) {
+            return /^\d+$/.test(value);
+        }
+    </script>
+</head>
+<body>
+<div class="main-conatiner">
+    <p class="main-conatiner__title">LED Hue Controller</p>
+    <div class="mode-list-container">
+        <p class="mode-list-container__title">Mode</p>
+        <div class="modes-list">
+            <a id="modes-list-item-0" class="modes-list__item modes-list__item--active" onclick="selectMode(0)">STATIC</a>
+            <a id="modes-list-item-1" class="modes-list__item" onclick="selectMode(1)">FADE</a>
+        </div>
+    </div>
+    <div class="effect-container">
+        <div id="effect-container-0" class="static-effect-container effect-container--active">
+            <div class="static-effect-container__item static-effect-container__item--square color-box"
+                 style="background-color: #e66465">
+                <input type="color" value="#e66465" oninput="onColorChange(this)" onclick="onColorChange(this)">
+            </div>
+            <div class="static-effect-container__item color-box" style="background-color: #ff0000"
+                 onclick="onColorChange(this)"></div>
+            <div class="static-effect-container__item color-box" style="background-color: #ffffff"
+                 onclick="onColorChange(this)"></div>
+            <div class="static-effect-container__item color-box" style="background-color: #e076bb"
+                 onclick="onColorChange(this)"></div>
+            <div class="static-effect-container__item color-box"></div>
+
+        </div>
+        <div id="effect-container-1" class="fade-effect-container">
+            <p>asdasd</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
