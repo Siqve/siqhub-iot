@@ -3,9 +3,9 @@
 
 #include "ESPAsyncWebServer.h"
 
-class ControllerWebServer {
+class InterfaceWebServer {
 public:
-    ControllerWebServer();
+    InterfaceWebServer();
     void initServer();
 private:
     AsyncWebServer server;

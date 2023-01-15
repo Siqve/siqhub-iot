@@ -3,7 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include "Effects/BPMEffect.h"
 #include "web/WiFiSession.h"
-#include "web/ControllerWebServer.h"
+#include "web/InterfaceWebServer.h"
 #include "Constants.h"
 
 #define TEST_BUTTON_PIN D6
@@ -20,7 +20,7 @@ void testButtonClick();
 void setFPS(int fps);
 
 WiFiSession wifiSession(WiFiConstants::WIFI_SSID, WiFiConstants::WIFI_PW);
-ControllerWebServer webServer = ControllerWebServer();
+InterfaceWebServer webServer = InterfaceWebServer();
 
 Adafruit_NeoPixel strip(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
 BPMEffect effect(&strip, PIXEL_COUNT, &setFPS);

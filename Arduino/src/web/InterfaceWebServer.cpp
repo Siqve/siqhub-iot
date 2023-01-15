@@ -1,14 +1,14 @@
 #include <sstream>
-#include "ControllerWebServer.h"
+#include "InterfaceWebServer.h"
 #include "web/generated/index.h"
 #include "utilities/ColorUtils.h"
 
 
-ControllerWebServer::ControllerWebServer() : server(AsyncWebServer(80)), activeMode(0) {
+InterfaceWebServer::InterfaceWebServer() : server(AsyncWebServer(80)), activeMode(0) {
 
 }
 
-void ControllerWebServer::initServer() {
+void InterfaceWebServer::initServer() {
     addRequestListeners();
 
     server.begin();
@@ -16,19 +16,19 @@ void ControllerWebServer::initServer() {
 }
 
 
-void ControllerWebServer::addRequestListeners() {
+void InterfaceWebServer::addRequestListeners() {
     onLandingPage();
     onUpdate();
     onMode();
 }
 
-void ControllerWebServer::onLandingPage() {
+void InterfaceWebServer::onLandingPage() {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
         request->send_P(200, "text/html", index_html);
     });
 }
 
-void ControllerWebServer::onUpdate() {
+void InterfaceWebServer::onUpdate() {
     server.on("/update", HTTP_GET, [this] (AsyncWebServerRequest *request) {
         String inputMessage;
         String inputParam;
@@ -46,7 +46,7 @@ void ControllerWebServer::onUpdate() {
     });
 }
 
-void ControllerWebServer::onMode() {
+void InterfaceWebServer::onMode() {
     server.on("/mode", HTTP_GET, [this] (AsyncWebServerRequest *request) {
         request->send(200, "text/plain", String(activeMode).c_str());
     });
