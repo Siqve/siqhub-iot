@@ -1,5 +1,7 @@
+#include <sstream>
 #include "ControllerWebServer.h"
-#include "index.h"
+#include "web/generated/index.h"
+#include "utilities/ColorUtils.h"
 
 
 ControllerWebServer::ControllerWebServer() : server(AsyncWebServer(80)), activeMode(0) {
@@ -35,6 +37,11 @@ void ControllerWebServer::onUpdate() {
             Serial.print("Mode: ");
             Serial.println(activeMode);
         }
+        if (request->hasParam("staticcolor")) {
+            const char* hexStringParam = request->getParam("staticcolor")->value().c_str();
+            Serial.println(ColorUtils::hexStringToColor(hexStringParam));
+        }
+
         request->send(200, "text/plain", "OK");
     });
 }

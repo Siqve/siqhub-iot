@@ -9,7 +9,8 @@ public:
     void initServer();
 private:
     AsyncWebServer server;
-    int activeMode;
+    int activeMode = 0;
+    int staticColor = 0;
 
     void addRequestListeners();
     void onLandingPage();

@@ -25,7 +25,7 @@
 
         /* --------- */
 
-        .main-conatiner {
+        .main-container {
             margin: auto;
             max-width: 600px;
             display: flex;
@@ -33,7 +33,7 @@
             flex-direction: column;
         }
 
-        .main-conatiner__title {
+        .main-container__title {
             color: #8F95D3;
             font-size: 3rem;
             margin: 0.7rem 0;
@@ -130,13 +130,13 @@
 
         function onColorChange(input) {
             let isColorPicker = input.value !== undefined;
+            let color = input;
             if (isColorPicker) {
+                color = input.value;
                 const color_picker_wrapper = document.getElementsByClassName("static-effect-container__item--square")[0];
-                color_picker_wrapper.style.backgroundColor = input.value;
-                console.log(input.value)
-            } else {
-                console.log(input.style.backgroundColor)
+                color_picker_wrapper.style.backgroundColor = color;
             }
+            request_updateStaticColor(color);
         }
 
         //Main function for selecting mode
@@ -144,7 +144,7 @@
             if (id === activeMode)
                 return;
             activeMode = id;
-            updateModeRequest(id);
+            request_updateMode(id);
             CSS_setActiveModeContainerClass(id);
             CSS_setActiveModeTitle(id);
         }
@@ -153,13 +153,14 @@
             document.querySelector('.' + activeContainerClass).classList.remove(activeContainerClass);
             document.getElementById('effect-container-' + id).classList.add(activeContainerClass);
         }
+
         function CSS_setActiveModeTitle(id) {
             document.querySelector('.' + activeModeClass).classList.remove(activeModeClass);
             document.getElementById('modes-list-item-' + id).classList.add(activeModeClass);
         }
 
         //Get and update mode
-        function getModeRequest() {
+        function request_getMode() {
             const xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status === 200) {
@@ -174,20 +175,22 @@
             xhr.send();
         }
 
-        getModeRequest();
-        setInterval(getModeRequest, 1000);
+        request_getMode();
+        setInterval(request_getMode, 1000);
 
         //Send an update to mode
-        function updateModeRequest(id) {
+        function request_updateMode(modeNumber) {
             let xhr = new XMLHttpRequest();
-            xhr.open("GET", "/update?mode=" + id, true);
+            xhr.open("GET", "/update?mode=" + modeNumber, true);
             xhr.send();
         }
 
         //TODO: Determine a system for sending color updates from here, make it abstract enough to be able to also send fade and BPM mode maybe
-        function updateColorRequest(id) {
+        function request_updateStaticColor(colorHex) {
+            let colorWithoutHashtag = colorHex.replace("#", "")
             let xhr = new XMLHttpRequest();
-            xhr.open("GET", "/update?mode=" + id, true);
+            console.log("sending: " + colorWithoutHashtag);
+            xhr.open("GET", "/update?staticcolor=" + colorWithoutHashtag, true);
             xhr.send();
         }
 
@@ -197,12 +200,13 @@
     </script>
 </head>
 <body>
-<div class="main-conatiner">
-    <p class="main-conatiner__title">LED Hue Controller</p>
+<div class="main-container">
+    <p class="main-container__title">LED Hue Controller</p>
     <div class="mode-list-container">
         <p class="mode-list-container__title">Mode</p>
         <div class="modes-list">
-            <a id="modes-list-item-0" class="modes-list__item modes-list__item--active" onclick="selectMode(0)">STATIC</a>
+            <a id="modes-list-item-0" class="modes-list__item modes-list__item--active"
+               onclick="selectMode(0)">STATIC</a>
             <a id="modes-list-item-1" class="modes-list__item" onclick="selectMode(1)">FADE</a>
         </div>
     </div>
@@ -213,11 +217,11 @@
                 <input type="color" value="#e66465" oninput="onColorChange(this)" onclick="onColorChange(this)">
             </div>
             <div class="static-effect-container__item color-box" style="background-color: #ff0000"
-                 onclick="onColorChange(this)"></div>
+                 onclick="onColorChange('#ff0000')"></div>
             <div class="static-effect-container__item color-box" style="background-color: #ffffff"
-                 onclick="onColorChange(this)"></div>
+                 onclick="onColorChange('#ffffff')"></div>
             <div class="static-effect-container__item color-box" style="background-color: #e076bb"
-                 onclick="onColorChange(this)"></div>
+                 onclick="onColorChange('#e076bb')"></div>
             <div class="static-effect-container__item color-box"></div>
 
         </div>
