@@ -4,7 +4,7 @@
 #include "Effects/BPMEffect.h"
 #include "web/WiFiSession.h"
 #include "web/ControllerWebServer.h"
-#include "constants.h"
+#include "Constants.h"
 
 #define TEST_BUTTON_PIN D6
 #define LED_DATA_PIN D5

@@ -1,3 +1,5 @@
+#include "Constants.h"
+
 const unsigned long ULONG_MAXVAL = 0UL - 1UL;
 
 namespace WiFiConstants {

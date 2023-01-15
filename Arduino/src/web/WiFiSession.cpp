@@ -1,6 +1,6 @@
 #include <ESP8266WiFi.h>
 #include "WiFiSession.h"
-#include "constants.h"
+#include "Constants.h"
 
 WiFiSession::WiFiSession(const char* wifi_ssid, const char* wifi_pw)  {
     this->wifi_ssid = wifi_ssid;
