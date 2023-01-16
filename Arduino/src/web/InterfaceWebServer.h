@@ -2,16 +2,15 @@
 #define CONTROLLERWEBSERVER_H
 
 #include "ESPAsyncWebServer.h"
+#include "LED/LEDController.h"
 
 class InterfaceWebServer {
 public:
-    InterfaceWebServer();
+    explicit InterfaceWebServer(LEDController *ledController);
     void initServer();
 private:
+    LEDController ledController;
     AsyncWebServer server;
-    int activeMode = 0;
-    int staticColor = 0;
-
     void addRequestListeners();
     void onLandingPage();
     void onUpdate();
