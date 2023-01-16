@@ -79,14 +79,16 @@ void LEDController::setFPS(int newFPS) {
 void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
     if (request->hasParam("mode")) {
         int newMode = request->getParam("mode")->value().toInt();
-//        if (newMode >= sizeof(modes) || newMode < 0) {
-//            Serial.println("[LEDController] Received request for nonexistent activeMode: ");
-//            Serial.println(activeMode);
-//            return;
-//        }
+        if (newMode < 0 || newMode >= static_cast<int>(modes.size())) {
+            Serial.println("[LEDController] Received request for nonexistent activeMode: ");
+            Serial.println(newMode);
+            return;
+        }
         activeMode = newMode;
         Serial.print("[LEDController] New Active Mode: ");
         Serial.println(activeMode);
+        Serial.print("Size: ");
+        Serial.println(modes.size());
         return;
     }
     Serial.println("[LEDController] Request received.");
