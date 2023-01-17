@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "LEDController.h"
 #include "Constants.h"
-#include "LED/modes/PulsatingLEDMode.h"
+#include "LED/modes/FadeLEDMode.h"
 #include "LED/modes/StaticLEDMode.h"
 
 #define TEST_BUTTON_PIN D6
@@ -17,7 +17,7 @@ LEDController::LEDController() : activeFPS(DEFAULT_LED_FPS) {
 
 void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
-    modes.push_back(std::make_shared<PulsatingLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<FadeLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
 }
 
 void LEDController::setup() {

@@ -5,9 +5,9 @@
 #include "Adafruit_NeoPixel.h"
 #include "../LEDMode.h"
 
-class PulsatingLEDMode : public LEDMode {
+class FadeLEDMode : public LEDMode {
   public:
-    PulsatingLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount, std::function<void(int)> setFPS);
+    FadeLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount, std::function<void(int)> setFPS);
     void onActivate() override;
     void loop() override;
     void debugButtonClick() override;

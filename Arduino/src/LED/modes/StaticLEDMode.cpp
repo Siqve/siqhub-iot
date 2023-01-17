@@ -1,6 +1,5 @@
 #include "StaticLEDMode.h"
 
-#include <utility>
 #include "utilities/ColorUtils.h"
 #include "utilities/StripUtils.h"
 

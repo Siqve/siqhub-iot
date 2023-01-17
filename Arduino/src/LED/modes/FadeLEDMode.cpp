@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "PulsatingLEDMode.h"
+#include "FadeLEDMode.h"
 
 #include <utility>
 #include "utilities/ColorUtils.h"
@@ -8,10 +8,10 @@
 #define SATURATION 255   /* Control the saturation of your leds */
 #define SPEED 25   /* Control the saturation of your leds */
 #define LED_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
-#define BASE_FPS 2
+#define BASE_FPS 200
 
-PulsatingLEDMode::PulsatingLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount,
-                                   std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), pixelCount) {
+FadeLEDMode::FadeLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount,
+                         std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), pixelCount) {
     this->setFPS = std::move(setFPS);
 }
 
@@ -20,18 +20,18 @@ uint16_t hue = 0;
 
 unsigned long lastBeat = millis();
 
-void PulsatingLEDMode::onActivate() {
+void FadeLEDMode::onActivate() {
 }
 
 
-void PulsatingLEDMode::loop() {
+void FadeLEDMode::loop() {
     cycleFade();
     updateFPS();
     LEDStripPtr->show();
 }
 
 
-void PulsatingLEDMode::cycleFade() {
+void FadeLEDMode::cycleFade() {
     incrementHue(true);
     for (int i = 0; i < LEDStripPixelCount; i++) {
         uint32_t color = ColorUtils::HSVToColor(hue + i * LED_COLOR_HOP, SATURATION, BRIGHTNESS);
@@ -39,31 +39,31 @@ void PulsatingLEDMode::cycleFade() {
     }
 }
 
-void PulsatingLEDMode::updateFPS() {
+void FadeLEDMode::updateFPS() {
     setFPS(BASE_FPS + getSpeedBoost());
 }
 
 
-void PulsatingLEDMode::beat() {
+void FadeLEDMode::beat() {
     speedBoost = 16000;
 }
 
 
-float PulsatingLEDMode::getSpeedBoost() {
+float FadeLEDMode::getSpeedBoost() {
     return stabilizeSpeed();
 }
 
-float PulsatingLEDMode::stabilizeSpeed() {
+float FadeLEDMode::stabilizeSpeed() {
     return speedBoost = max(speedBoost - 0.000005 * pow(speedBoost, 2), 0.0);
 }
 
 
-void PulsatingLEDMode::incrementHue(bool reverse) {
+void FadeLEDMode::incrementHue(bool reverse) {
     //Decreasing hue will lead to effect coming from "source" outwards
     hue -= !reverse ? SPEED : -SPEED;
 }
 
-void PulsatingLEDMode::debugButtonClick() {
+void FadeLEDMode::debugButtonClick() {
     Serial.println("Test");
     beat();
 }
