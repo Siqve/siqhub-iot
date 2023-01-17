@@ -14,7 +14,7 @@ public:
         this->LEDStripPixelCount = pixelCount;
     }
     virtual ~LEDMode() = default;
-    virtual void onActivate() = 0;
+    virtual void onActivate() {};
     virtual void loop() = 0;
     virtual void debugButtonClick() {};
     virtual void onUpdate(AsyncWebServerRequest *request) {};
