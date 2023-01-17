@@ -7,9 +7,10 @@
 
 class PulsatingLEDMode : public LEDMode {
   public:
-    PulsatingLEDMode(Adafruit_NeoPixel* LEDStrip, int pixelCount, std::function<void(int)> setFPS);
+    PulsatingLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount, std::function<void(int)> setFPS);
+    void onActivate() override;
     void loop() override;
-    void testButtonClick() override;
+    void debugButtonClick() override;
   private:
     void cycleFade();
     void beat();

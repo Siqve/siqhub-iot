@@ -126,7 +126,7 @@
     <script>
         const activeContainerClass = 'effect-container--active';
         const activeModeClass = 'modes-list__item--active';
-        let activeMode = 0;
+        let activeModeNumber = 0;
 
         function onColorChange(input) {
             let isColorPicker = input.value !== undefined;
@@ -141,9 +141,9 @@
 
         //Main function for selecting mode
         function selectMode(id) {
-            if (id === activeMode)
+            if (id === activeModeNumber)
                 return;
-            activeMode = id;
+            activeModeNumber = id;
             request_updateMode(id);
             CSS_setActiveModeContainerClass(id);
             CSS_setActiveModeTitle(id);

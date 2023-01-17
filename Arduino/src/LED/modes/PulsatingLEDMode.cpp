@@ -10,9 +10,8 @@
 #define LED_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 #define BASE_FPS 2
 
-PulsatingLEDMode::PulsatingLEDMode(Adafruit_NeoPixel *LEDStrip, int pixelCount, std::function<void(int)> setFPS) {
-    this->LEDStrip = *LEDStrip;
-    LEDStripPixelCount = pixelCount;
+PulsatingLEDMode::PulsatingLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount,
+                                   std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), pixelCount) {
     this->setFPS = std::move(setFPS);
 }
 
@@ -21,10 +20,14 @@ uint16_t hue = 0;
 
 unsigned long lastBeat = millis();
 
+void PulsatingLEDMode::onActivate() {
+}
+
+
 void PulsatingLEDMode::loop() {
     cycleFade();
     updateFPS();
-    LEDStrip.show();
+    LEDStripPtr->show();
 }
 
 
@@ -32,7 +35,7 @@ void PulsatingLEDMode::cycleFade() {
     incrementHue(true);
     for (int i = 0; i < LEDStripPixelCount; i++) {
         uint32_t color = ColorUtils::HSVToColor(hue + i * LED_COLOR_HOP, SATURATION, BRIGHTNESS);
-        LEDStrip.setPixelColor(i, color);
+        LEDStripPtr->setPixelColor(i, color);
     }
 }
 
@@ -60,7 +63,7 @@ void PulsatingLEDMode::incrementHue(bool reverse) {
     hue -= !reverse ? SPEED : -SPEED;
 }
 
-void PulsatingLEDMode::testButtonClick() {
+void PulsatingLEDMode::debugButtonClick() {
     Serial.println("Test");
     beat();
 }

@@ -1,5 +1,6 @@
 #include <sstream>
 #include "ColorUtils.h"
+//#include "Adafruit_NeoPixel.h"
 
 namespace ColorUtils {
 
@@ -88,24 +89,24 @@ namespace ColorUtils {
     }
 
 
-    uint32_t Gamma32(uint32_t x) {
-        uint8_t *y = (uint8_t *) &x;
-        // All four bytes of a 32-bit value are filtered even if RGB (not WRGB),
-        // to avoid a bunch of shifting and masking that would be necessary for
-        // properly handling different endianisms (and each byte is a fairly
-        // trivial operation, so it might not even be wasting cycles vs a check
-        // and branch for the RGB case). In theory this might cause trouble *if*
-        // someone's storing information in the unused most significant byte
-        // of an RGB value, but this seems exceedingly rare and if it's
-        // encountered in reality they can mask values going in or coming out.
-        for (uint8_t i = 0; i < 4; i++)
-            y[i] = Gamma8(y[i]);
-        return x; // Packed 32-bit return
-    }
+//    uint32_t Gamma32(uint32_t x) {
+//        uint8_t *y = (uint8_t *) &x;
+//        // All four bytes of a 32-bit value are filtered even if RGB (not WRGB),
+//        // to avoid a bunch of shifting and masking that would be necessary for
+//        // properly handling different endianisms (and each byte is a fairly
+//        // trivial operation, so it might not even be wasting cycles vs a check
+//        // and branch for the RGB case). In theory this might cause trouble *if*
+//        // someone's storing information in the unused most significant byte
+//        // of an RGB value, but this seems exceedingly rare and if it's
+//        // encountered in reality they can mask values going in or coming out.
+//        for (uint8_t i = 0; i < 4; i++)
+//            y[i] = Gamma8(y[i]);
+//        return x; // Packed 32-bit return
+//    }
 
-    uint8_t Gamma8(uint8_t x) {
-        return pgm_read_byte(&_NeoPixelGammaTable[x]); // 0-255 in, 0-255 out
-    }
+//    uint8_t Gamma8(uint8_t x) {
+//        return pgm_read_byte(&_NeoPixelGammaTable[x]); // 0-255 in, 0-255 out
+//    }
 
     uint32_t rgbToColor(uint8_t r, uint8_t g, uint8_t b) {
         return (uint32_t) r << 16 | (uint16_t) g << 8 | b;

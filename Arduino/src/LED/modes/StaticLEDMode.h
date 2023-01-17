@@ -6,9 +6,12 @@
 
 class StaticLEDMode : public LEDMode {
 public:
-    StaticLEDMode(Adafruit_NeoPixel* LEDStrip, int pixelCount, std::function<void(int)> setFPS);
+    StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStrip, int pixelCount, const std::function<void(int)>& setFPS);
+    void onActivate() override;
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
+private:
+    uint32_t defaultColor = 16711680;
 };
 
 #endif //ARDUINO_STATICLEDMODE_H

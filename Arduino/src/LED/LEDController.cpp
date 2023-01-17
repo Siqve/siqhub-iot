@@ -13,25 +13,25 @@
 
 
 LEDController::LEDController() : activeFPS(DEFAULT_LED_FPS) {
-    initEffects();
-    LEDStrip = Adafruit_NeoPixel(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
 }
 
 void LEDController::initEffects() {
-    modes.push_back(std::make_shared<StaticLEDMode>(&LEDStrip, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
-    modes.push_back(std::make_shared<PulsatingLEDMode>(&LEDStrip, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
-//    modes[1] = &pulsatingMode;
+    modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<PulsatingLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
 }
 
 void LEDController::setup() {
     pinMode(TEST_BUTTON_PIN, INPUT);
-    LEDStrip.begin();
+    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
+    initEffects();
+    LEDStripPtr->begin();
+//TODO: Find out why this LEDStrip code works but not the one on onActivate on staticledmode, maybe different ledstip objects?
 }
 
 void LEDController::loop() {
     unsigned long timeNow = micros();
     loop_LED(timeNow);
-    loop_testButton(timeNow);
+    loop_physicalDebugButton(timeNow);
 }
 
 //The loop function for LED
@@ -41,35 +41,34 @@ void LEDController::loop_LED(unsigned long timeNow) {
     unsigned long timeLapsed = (timeNow - lastRun_FPS) % ULONG_MAXVAL;
     if (timeLapsed > (1000000.0 / activeFPS)) {
         lastRun_FPS = timeNow;
-//        effect.loop();
+        getActiveMode()->loop();
     }
 }
 
 //The loop function for the test button
 unsigned long lastRun_testButton;
 
-void LEDController::loop_testButton(unsigned long timeNow) {
+void LEDController::loop_physicalDebugButton(unsigned long timeNow) {
     unsigned long timeLapsed = (timeNow - lastRun_testButton) % ULONG_MAXVAL;
     if (timeLapsed > (1000000 / TEST_BUTTON_FPS)) {
         lastRun_testButton = timeNow;
-        readTestButton();
+        readPhysicalDebugButton();
     }
 }
 
 int lastInput;
 
-void LEDController::readTestButton() {
+void LEDController::readPhysicalDebugButton() {
     int buttonInput = digitalRead(TEST_BUTTON_PIN);
     if (buttonInput == lastInput)
         return;
     lastInput = buttonInput;
     if (buttonInput == HIGH)
-        testButtonClick();
+        debugButtonClick();
 }
 
-void LEDController::testButtonClick() {
-    Serial.println("bob100");
-//    effect.testButtonClick();
+void LEDController::debugButtonClick() {
+    getActiveMode()->debugButtonClick();
 }
 
 void LEDController::setFPS(int newFPS) {
@@ -77,6 +76,7 @@ void LEDController::setFPS(int newFPS) {
 }
 
 void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
+    //TODO: Code for web debugbuttonclick, which calls LEDController::debugButtonClick
     if (request->hasParam("mode")) {
         int newMode = request->getParam("mode")->value().toInt();
         if (newMode < 0 || newMode >= static_cast<int>(modes.size())) {
@@ -84,17 +84,20 @@ void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
             Serial.println(newMode);
             return;
         }
-        activeMode = newMode;
+        activeModeNumber = newMode;
         Serial.print("[LEDController] New Active Mode: ");
-        Serial.println(activeMode);
-        Serial.print("Size: ");
-        Serial.println(modes.size());
+        Serial.println(activeModeNumber);
+        getActiveMode()->onActivate();
         return;
     }
-    Serial.println("[LEDController] Request received.");
-    modes[activeMode]->onUpdate(request);
+//    Serial.println("[LEDController] Request received.");
+    getActiveMode()->onUpdate(request);
 }
 
-int LEDController::getActiveMode() {
-    return activeMode;
+int LEDController::getActiveModeNumber() const {
+    return activeModeNumber;
+}
+
+std::shared_ptr<LEDMode> LEDController::getActiveMode() {
+    return modes[activeModeNumber];
 }

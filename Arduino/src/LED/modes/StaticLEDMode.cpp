@@ -1,19 +1,30 @@
 #include "StaticLEDMode.h"
-#include "utilities/ColorUtils.h"
 
-StaticLEDMode::StaticLEDMode(Adafruit_NeoPixel *LEDStrip, int pixelCount, std::function<void(int)> setFPS) {
-    this->LEDStrip = *LEDStrip;
+#include <utility>
+#include "utilities/ColorUtils.h"
+#include "utilities/StripUtils.h"
+
+StaticLEDMode::StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount,
+                             const std::function<void(int)>& setFPS) : LEDMode(std::move(LEDStripPtr), pixelCount) {
     this->LEDStripPixelCount = pixelCount;
     setFPS(1);
 }
 
-void StaticLEDMode::loop() {
+void StaticLEDMode::onActivate() {
+    StripUtils::setSolidColor(LEDStripPtr, LEDStripPixelCount, defaultColor);
+    LEDStripPtr->show();
+}
 
+
+void StaticLEDMode::loop() {
+    LEDStripPtr->show();
 }
 
 void StaticLEDMode::onUpdate(AsyncWebServerRequest *request) {
     if (request->hasParam("staticcolor")) {
         String val = request->getParam("staticcolor")->value();
-        Serial.println(val);
+        uint32_t color = ColorUtils::hexStringToColor(val.c_str());
+        StripUtils::setSolidColor(LEDStripPtr, LEDStripPixelCount, color);
+        LEDStripPtr->show();
     }
 }

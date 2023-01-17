@@ -2,10 +2,7 @@
 #define ARDUINO_LEDCONTROLLER_H
 
 
-
 #include "LEDMode.h"
-
-typedef std::shared_ptr<LEDMode> LEDModePtr;
 
 class LEDController {
 public:
@@ -13,21 +10,22 @@ public:
     void setup();
     void loop();
     void incomingUpdate(AsyncWebServerRequest *request);
-    int getActiveMode();
+    int getActiveModeNumber() const;
+    std::shared_ptr<LEDMode> getActiveMode();
 private:
     int activeFPS;
-    std::vector <LEDModePtr> modes;
-    Adafruit_NeoPixel LEDStrip;
+    std::vector <std::shared_ptr<LEDMode>> modes;
+    std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr;
 
-    int activeMode = 0;
+    int activeModeNumber = 0;
     void initEffects();
 
     void loop_LED(unsigned long timeNow);
-    void loop_testButton(unsigned long timeNow);
-    void readTestButton();
-    void testButtonClick();
+
+    void loop_physicalDebugButton(unsigned long timeNow);
+    void readPhysicalDebugButton();
+    void debugButtonClick();
     void setFPS(int newFPS);
 };
-
 
 #endif //ARDUINO_LEDCONTROLLER_H

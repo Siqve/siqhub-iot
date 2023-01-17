@@ -6,10 +6,10 @@
 
 class InterfaceWebServer {
 public:
-    explicit InterfaceWebServer(LEDController *ledController);
+    explicit InterfaceWebServer(std::shared_ptr<LEDController> ledController);
     void initServer();
 private:
-    LEDController ledController;
+    std::shared_ptr<LEDController> ledControllerPtr;
     AsyncWebServer server;
     void addRequestListeners();
     void onLandingPage();
