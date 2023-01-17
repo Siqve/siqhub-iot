@@ -1,6 +1,13 @@
 #include "MusicLEDMode.h"
+#include "utilities/ColorUtils.h"
 
 #include <utility>
+
+#define BRIGHTNESS 255   /* Control the brightness of your leds */
+#define SATURATION 255   /* Control the saturation of your leds */
+#define SPEED 25   /* Controls the HUE increments per cycle */
+#define LED_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
+#define BASE_FPS 200
 
 MusicLEDMode::MusicLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount,
                            std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), pixelCount) {
