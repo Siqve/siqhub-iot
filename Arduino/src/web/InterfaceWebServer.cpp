@@ -20,6 +20,7 @@ void InterfaceWebServer::addRequestListeners() {
     onLandingPage();
     onUpdate();
     onMode();
+    onDebug();
 }
 
 void InterfaceWebServer::onLandingPage() {
@@ -40,5 +41,12 @@ void InterfaceWebServer::onMode() {
     server.on("/mode", HTTP_GET, [this](AsyncWebServerRequest *request) {
         int activeMode = ledControllerPtr->getActiveModeNumber();
         request->send(200, "text/plain", String(activeMode).c_str());
+    });
+}
+
+void InterfaceWebServer::onDebug() {
+    server.on("/debug", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        ledControllerPtr->incomingDebug(request);
+        request->send(200, "text/plain", "OK");
     });
 }

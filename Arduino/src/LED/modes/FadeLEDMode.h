@@ -1,8 +1,6 @@
 #ifndef BPMEffect_h
 #define BPMEffect_h
 
-#include "Arduino.h"
-#include "Adafruit_NeoPixel.h"
 #include "../LEDMode.h"
 
 class FadeLEDMode : public LEDMode {

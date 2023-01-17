@@ -10,11 +10,12 @@ public:
     void setup();
     void loop();
     void incomingUpdate(AsyncWebServerRequest *request);
-    int getActiveModeNumber() const;
+    void incomingDebug(AsyncWebServerRequest *request);
+    int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
 private:
     int activeFPS;
-    std::vector <std::shared_ptr<LEDMode>> modes;
+    std::vector<std::shared_ptr<LEDMode>> modes;
     std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr;
 
     int activeModeNumber = 0;

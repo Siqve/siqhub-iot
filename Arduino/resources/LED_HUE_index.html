@@ -64,7 +64,8 @@
             color: #59CD90;
         }
 
-        .effect-container {
+        /******************* Effect container *******************/
+        .effects-container {
             width: 100%;
             padding: 1rem;
             margin-top: 1rem;
@@ -81,23 +82,29 @@
             flex-direction: row;
             grid-column: 1;
             grid-row: 1;
-            transition: all 0.3s ease-in;
 
+        }
+        .static-effect-container:not(.effect-container--active) {
+            transform: translateX(-120%);
         }
 
         .fade-effect-container {
-            transition: all 0.2s ease-in;
             grid-column: 1;
             grid-row: 1;
             transform: translateX(120%);
         }
 
-
-        .static-effect-container:not(.effect-container--active) {
-            transform: translateX(-120%);
+        .fade-effect-container.effect-container--active {
+            transform: translateX(0);
         }
 
-        .fade-effect-container.effect-container--active {
+        .music-effect-container {
+            grid-column: 1;
+            grid-row: 1;
+            transform: translateX(120%);
+        }
+
+        .music-effect-container.effect-container--active {
             transform: translateY(0);
         }
 
@@ -145,6 +152,14 @@
                 return;
             activeModeNumber = id;
             request_updateMode(id);
+            CSS_setActiveMode(id);
+        }
+
+        function debugButtonClick() {
+            request_debugButtonClick();
+        }
+
+        function CSS_setActiveMode(id) {
             CSS_setActiveModeContainerClass(id);
             CSS_setActiveModeTitle(id);
         }
@@ -185,12 +200,17 @@
             xhr.send();
         }
 
-        //TODO: Determine a system for sending color updates from here, make it abstract enough to be able to also send fade and BPM mode maybe
         function request_updateStaticColor(colorHex) {
             let colorWithoutHashtag = colorHex.replace("#", "")
             let xhr = new XMLHttpRequest();
             console.log("sending: " + colorWithoutHashtag);
             xhr.open("GET", "/update?staticcolor=" + colorWithoutHashtag, true);
+            xhr.send();
+        }
+
+        function request_debugButtonClick() {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "/debug?buttonClick=1", true);
             xhr.send();
         }
 
@@ -201,16 +221,18 @@
 </head>
 <body>
 <div class="main-container">
-    <p class="main-container__title">LED Hue Controller</p>
+    <p class="main-container__title" onclick="debugButtonClick()">LED Controller</p>
     <div class="mode-list-container">
         <p class="mode-list-container__title">Mode</p>
         <div class="modes-list">
             <a id="modes-list-item-0" class="modes-list__item modes-list__item--active"
                onclick="selectMode(0)">STATIC</a>
             <a id="modes-list-item-1" class="modes-list__item" onclick="selectMode(1)">FADE</a>
+            <a id="modes-list-item-2" class="modes-list__item" onclick="selectMode(2)">MUSIC</a>
+
         </div>
     </div>
-    <div class="effect-container">
+    <div class="effects-container">
         <div id="effect-container-0" class="static-effect-container effect-container--active">
             <div class="static-effect-container__item static-effect-container__item--square color-box"
                  style="background-color: #e66465">
@@ -226,7 +248,10 @@
 
         </div>
         <div id="effect-container-1" class="fade-effect-container">
-            <p>asdasd</p>
+            <p>Fade</p>
+        </div>
+        <div id="effect-container-2" class="music-effect-container">
+            <p>Music</p>
         </div>
     </div>
 </div>

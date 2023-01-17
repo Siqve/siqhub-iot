@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include "LED/modes/FadeLEDMode.h"
 #include "LED/modes/StaticLEDMode.h"
+#include "LED/modes/MusicLEDMode.h"
 
 #define TEST_BUTTON_PIN D6
 #define LED_DATA_PIN D5
@@ -18,6 +19,7 @@ LEDController::LEDController() : activeFPS(DEFAULT_LED_FPS) {
 void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
     modes.push_back(std::make_shared<FadeLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<MusicLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
 }
 
 void LEDController::setup() {
@@ -94,7 +96,15 @@ void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
     getActiveMode()->onUpdate(request);
 }
 
-int LEDController::getActiveModeNumber() const {
+
+void LEDController::incomingDebug(AsyncWebServerRequest *request) {
+    if (request->hasParam("buttonClick")) {
+        debugButtonClick();
+    }
+}
+
+
+int LEDController::getActiveModeNumber() {
     return activeModeNumber;
 }
 

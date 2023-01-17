@@ -4,7 +4,7 @@
 
 #include "LED/LEDMode.h"
 
-class MusicLEDMode : LEDMode {
+class MusicLEDMode : public LEDMode {
 public:
     MusicLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount, std::function<void(int)> setFPS);
     void onActivate() override;

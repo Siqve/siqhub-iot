@@ -15,6 +15,7 @@ private:
     void onLandingPage();
     void onUpdate();
     void onMode();
+    void onDebug();
 };
 
 
