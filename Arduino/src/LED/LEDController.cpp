@@ -27,7 +27,6 @@ void LEDController::setup() {
     LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
     initEffects();
     LEDStripPtr->begin();
-//TODO: Find out why this LEDStrip code works but not the one on onActivate on staticledmode, maybe different ledstip objects?
 }
 
 void LEDController::loop() {
