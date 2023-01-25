@@ -1,16 +1,17 @@
 import time
-
 import pyaudio
 import aubio
 import config as cfg
 import numpy as np
+import urllib.request
 
-BUFFER_SIZE = 256  #Lower is better, got "accurate" results with 512 and lower
+BUFFER_SIZE = 128  # Lower is better, got "accurate" results with 512 and lower
 FORMAT = pyaudio.paFloat32
 CHANNELS = 1
 RATE = int(cfg.STEREO_MIX_SAMPLE_RATE)
 
-a_tempo = aubio.tempo("default", BUFFER_SIZE, BUFFER_SIZE//2, RATE)
+a_tempo = aubio.tempo("default", BUFFER_SIZE, BUFFER_SIZE // 2, RATE)
+
 
 def find_stereo_mix_index():
     p = pyaudio.PyAudio()
@@ -20,17 +21,26 @@ def find_stereo_mix_index():
                 device_info.get('defaultSampleRate') == cfg.STEREO_MIX_SAMPLE_RATE:
             return i
 
+
+counter = 0
+def beat():
+    global counter
+    counter += 1
+    print("CLIIIICK " + str(counter))
+    print("BPM: " + str(a_tempo.get_bpm()) + ", confidence: " + str(a_tempo.get_confidence()))
+    contents = urllib.request.urlopen("http://10.0.0.8/debug?buttonClick=1").read()
+
+
 stream_data_buffer = None
 def stream_callback(in_data, frame_count, time_info, flag):
-    global stream_data_buffer, counter
+    global stream_data_buffer
     stream_data_buffer = in_data
-    u_array2 = np.ndarray((BUFFER_SIZE//2,), np.float32, in_data)
+    u_array2 = np.ndarray((BUFFER_SIZE // 2,), np.float32, in_data)
     is_beat = a_tempo(u_array2)
     if is_beat:
-        counter += 1
-        print("CLIIIICK " + str(counter))
-        print("BPM: " + str(a_tempo.get_bpm()) + ", confidence: " + str(a_tempo.get_confidence()))
+        beat()
     return in_data, pyaudio.paContinue
+
 
 def start_listener():
     p = pyaudio.PyAudio()
@@ -41,7 +51,7 @@ def start_listener():
         rate=RATE,
         input=True,
         input_device_index=stereo_mix_index,
-        frames_per_buffer=BUFFER_SIZE//2,
+        frames_per_buffer=BUFFER_SIZE // 2,
         stream_callback=stream_callback
     )
     stream.start_stream()

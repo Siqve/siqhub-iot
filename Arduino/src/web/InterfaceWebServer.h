@@ -14,7 +14,8 @@ private:
     void addRequestListeners();
     void onLandingPage();
     void onUpdate();
-    void onMode();
+    void onModeAndSettings();
+    void onSettings();
     void onDebug();
 };
 

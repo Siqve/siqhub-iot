@@ -5,12 +5,16 @@
 
 class FadeLEDMode : public LEDMode {
   public:
-    FadeLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount, std::function<void(int)> setFPS);
+    FadeLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, std::function<void(int)> setFPS);
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
-  private:
+    String getSettings() override;
+private:
     void cycleFade();
     void incrementHue();
+    int baseFPS{};
+    int speed{};
+    int pixelColorHop{};
     uint16_t currentHue = 0;
     bool reverse = false;
 };

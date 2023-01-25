@@ -19,7 +19,8 @@ void InterfaceWebServer::initServer() {
 void InterfaceWebServer::addRequestListeners() {
     onLandingPage();
     onUpdate();
-    onMode();
+    onModeAndSettings();
+    onSettings();
     onDebug();
 }
 
@@ -36,11 +37,21 @@ void InterfaceWebServer::onUpdate() {
     });
 }
 
-//Request to get the active mode
-void InterfaceWebServer::onMode() {
+//Request to get the active mode and settings
+void InterfaceWebServer::onModeAndSettings() {
     server.on("/mode", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        int activeMode = ledControllerPtr->getActiveModeNumber();
-        request->send(200, "text/plain", String(activeMode).c_str());
+        request->send(200, "text/plain",
+                      ledControllerPtr->getModeAndSettings().c_str());
+    });
+}
+
+//Request to get the active mode
+void InterfaceWebServer::onSettings() {
+    server.on("/settings", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        //Format: LED_PIXEL_COUNT,
+        int LEDPixelCount = ledControllerPtr->getActiveMode()->getLEDStripPixelCount();
+        String response = String(LEDPixelCount) + ",";
+        request->send(200, "text/plain", response.c_str());
     });
 }
 

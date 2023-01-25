@@ -13,6 +13,8 @@ public:
     void incomingDebug(AsyncWebServerRequest *request);
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
+    int getLEDPixelCount();
+    String getModeAndSettings();
 private:
     int activeFPS;
     std::vector<std::shared_ptr<LEDMode>> modes;

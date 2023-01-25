@@ -9,17 +9,22 @@
 
 class LEDMode {
 public:
-    LEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, int pixelCount) {
+    LEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr) {
         this->LEDStripPtr = std::move(LEDStripPtr);
-        this->LEDStripPixelCount = pixelCount;
     }
     virtual ~LEDMode() = default;
     virtual void onActivate() {};
     virtual void loop() = 0;
     virtual void debugButtonClick() {};
     virtual void onUpdate(AsyncWebServerRequest *request) {};
+    virtual String getSettings() {
+        return {};
+    };
+    int getLEDStripPixelCount() {
+        return LEDStripPtr->numPixels();
+    }
 protected:
-    int LEDStripPixelCount;
+//    int LEDStripPixelCount;
     std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr;
     std::function<void(int)> setFPS{};
 };

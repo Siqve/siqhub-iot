@@ -5,7 +5,7 @@
 #include "Adafruit_NeoPixel.h"
 
 namespace StripUtils {
-    extern void setSolidColor(const std::shared_ptr<Adafruit_NeoPixel>& LEDStripPtr, int pixelCount, uint32_t color);
+    extern void setSolidColor(const std::shared_ptr<Adafruit_NeoPixel>& LEDStripPtr, uint32_t color);
 };
 
 

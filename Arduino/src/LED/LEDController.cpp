@@ -7,7 +7,7 @@
 
 #define TEST_BUTTON_PIN D6
 #define LED_DATA_PIN D5
-#define PIXEL_COUNT 6
+#define DEFAULT_PIXEL_COUNT 6
 
 #define DEFAULT_LED_FPS 400
 #define TEST_BUTTON_FPS 20
@@ -17,14 +17,14 @@ LEDController::LEDController() : activeFPS(DEFAULT_LED_FPS) {
 }
 
 void LEDController::initEffects() {
-    modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
-    modes.push_back(std::make_shared<FadeLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
-    modes.push_back(std::make_shared<MusicLEDMode>(LEDStripPtr, PIXEL_COUNT, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<FadeLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
+    modes.push_back(std::make_shared<MusicLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
 }
 
 void LEDController::setup() {
     pinMode(TEST_BUTTON_PIN, INPUT);
-    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
+    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
     initEffects();
     LEDStripPtr->begin();
 //TODO: Find out why this LEDStrip code works but not the one on onActivate on staticledmode, maybe different ledstip objects?
@@ -78,7 +78,6 @@ void LEDController::setFPS(int newFPS) {
 }
 
 void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
-    //TODO: Code for web debugbuttonclick, which calls LEDController::debugButtonClick
     if (request->hasParam("mode")) {
         int newMode = request->getParam("mode")->value().toInt();
         if (newMode < 0 || newMode >= static_cast<int>(modes.size())) {
@@ -92,7 +91,11 @@ void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
         getActiveMode()->onActivate();
         return;
     }
-//    Serial.println("[LEDController] Request received.");
+    if (request->hasParam("pixelcount")) {
+        int pixelCount = request->getParam("pixelcount")->value().toInt();
+        LEDStripPtr->updateLength(pixelCount);
+        return;
+    }
     getActiveMode()->onUpdate(request);
 }
 
@@ -103,11 +106,14 @@ void LEDController::incomingDebug(AsyncWebServerRequest *request) {
     }
 }
 
-
 int LEDController::getActiveModeNumber() {
     return activeModeNumber;
 }
 
 std::shared_ptr<LEDMode> LEDController::getActiveMode() {
     return modes[activeModeNumber];
+}
+
+String LEDController::getModeAndSettings() {
+    return String(activeModeNumber) + "," + getActiveMode()->getSettings();
 }

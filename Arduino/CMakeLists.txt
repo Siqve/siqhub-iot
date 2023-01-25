@@ -30,4 +30,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/constants.h src/constants.cpp)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/LED/modes/MusicLEDMode.cpp src/LED/modes/MusicLEDMode.h)
