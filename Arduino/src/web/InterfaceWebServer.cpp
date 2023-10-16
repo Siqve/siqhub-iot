@@ -1,27 +1,29 @@
 #include <sstream>
 #include <utility>
 #include "InterfaceWebServer.h"
-#include "web/generated/index.h"
+#include "web/generated/index_html.h"
+#include "web/generated/debug_html.h"
 
 
-InterfaceWebServer::InterfaceWebServer(std::shared_ptr<LEDController> ledControllerPtr) : server(AsyncWebServer(80)) {
+InterfaceWebServer::InterfaceWebServer(std::shared_ptr<LEDController> ledControllerPtr, DebugManager &debugManager) :
+        server(AsyncWebServer(80)), debugManager(debugManager) {
     this->ledControllerPtr = std::move(ledControllerPtr);
 }
 
 void InterfaceWebServer::initServer() {
     addRequestListeners();
-
     server.begin();
     Serial.println("HTTP server started");
 }
 
 
 void InterfaceWebServer::addRequestListeners() {
-    onLandingPage();
-    onUpdate();
-    onModeAndSettings();
-    onSettings();
+//    onLandingPage();
+//    onUpdate();
+//    onModeAndSettings();
+//    onSettings();
     onDebug();
+    onDebugConsole();
 }
 
 void InterfaceWebServer::onLandingPage() {
@@ -57,7 +59,28 @@ void InterfaceWebServer::onSettings() {
 
 void InterfaceWebServer::onDebug() {
     server.on("/debug", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        ledControllerPtr->incomingDebug(request);
-        request->send(200, "text/plain", "OK");
+        Serial.println("Incominggggggg");
+        if (request->hasParam("cmd")) {
+            String command = request->getParam("cmd")->value();
+            debugManager.onDebug(command.c_str());
+            request->send_P(200, "text/html", "OK");
+            return;
+        }
+        request->send_P(200, "text/html", debug_html);
+    });
+}
+
+
+void InterfaceWebServer::onDebugConsole() {
+    server.on("/debug-console", HTTP_GET, [this](AsyncWebServerRequest *request) {
+        if (request->hasParam("get")) {
+            String getParam = request->getParam("get")->value();
+            if (getParam == "update-id") {
+                request->send_P(200, "text/html", std::to_string(debugManager.getLogUpdateId()).c_str());
+                return;
+            }
+        }
+        Serial.println("Sending feed.");
+        request->send_P(200, "text/html", debugManager.getLogFeed().c_str());
     });
 }

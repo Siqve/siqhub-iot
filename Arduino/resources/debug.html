@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Panel</title>
+    <style>
+        /* CSS RESET */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            line-height: calc(1em + 0.5rem);
+            overflow-wrap: break-word;
+        }
+
+        html, body {
+            font-family: Tahoma, serif;
+            cursor: default;
+            height: 100%
+        }
+
+        input, button, textarea, select {
+            font: inherit;
+            font-size: 1rem;
+        }
+
+        /* --------- */
+
+        .main-container {
+            box-sizing: border-box;
+            max-width: 768px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding-left: 20px;
+                padding-right: 20px;
+
+            }
+        }
+
+        .console-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: 50px;
+            width: 100%;
+            height: 80%;
+            max-height: 600px;
+        }
+
+        .console {
+            resize: none;
+            width: 100%;
+            height: 100%;
+            padding: 0 0 0 3px;
+            line-height: 18px;
+        }
+
+        .console-status-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #7b7b7b;
+            font-style: italic;
+        }
+
+        .command-input-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .command-input {
+            width: 100%;
+            font-size: 36px;
+            padding: 5px;
+        }
+
+    </style>
+    <script>
+        const CONSOLE_STATUS_TEXT_ID = "console-status-text";
+        const CONSOLE_STATUS_ICON_ID = "console-status-icon";
+        const CONSOLE_ID = "console";
+        const COMMAND_STATUS_TEXT_ID = "command-status-text";
+
+        const consoleUtils = {
+            lastUpdateId: -1,
+            connectionRetries: 0,
+            isNewUpdate(logUpdateId) {
+                if (logUpdateId === this.lastUpdateId)
+                    return false;
+                this.lastUpdateId = logUpdateId;
+                return true;
+            },
+            setConnectedIcon: (connected) => {
+                getElement(CONSOLE_STATUS_ICON_ID).textContent = connected ? "🟢" : "🔴";
+            },
+            setStatusText: (text) => {
+                getElement(CONSOLE_STATUS_TEXT_ID).textContent = text;
+            },
+            setConnected() {
+                this.setConnectedIcon(true);
+                this.setStatusText("Connected!")
+            },
+            setError(optionalText = null) {
+                this.setConnectedIcon(false);
+                this.setStatusText((optionalText ? optionalText + " | " : "") + "Connecting" + ".".repeat(1 + (this.connectionRetries++ % 3)))
+            }
+        }
+
+        const requestFunctions = {
+            getConsoleUpdateId(timeout = 5000) {
+                return new Promise((resolve, reject) => {
+                    const abortController = new AbortController();
+                    const signal = abortController.signal;
+
+                    const connectionTimeoutTimer = setTimeout(() => abortController.abort(), timeout)
+
+                    fetch("/debug-console?get=update-id", {signal})
+                        .then(response => {
+                            clearTimeout(connectionTimeoutTimer);
+                            if (response.ok)
+                                return response.text();
+                            throw new Error(`Failed to connect, response status code: ${response.status}`)
+                        })
+                        .then(updateIdString => {
+                            resolve(parseInt(updateIdString));
+                        })
+                        .catch(error => {
+                            if (error.name === "AbortError")
+                                reject("Connection timed out...")
+                            else
+                                reject(error.message);
+                        })
+
+                })
+            },
+            getAndUpdateConsoleFeed: () => {
+                fetch("/debug-console")
+                    .then(response => {
+                        if (response.ok)
+                            return response.text();
+                        throw new Error(`Failed to fetch console feed, status code: ${response.status}`)
+                    })
+                    .then(responseText => getElement(CONSOLE_ID).value = responseText)
+            },
+            sendCommand(commandString) {
+                fetch(`/debug?cmd=${commandString}`)
+                    .then(response => {
+                        let statusText;
+                        if (response.ok)
+                            statusText = "Command received.";
+                        else
+                            statusText = `Failed to receive command, response status code: ${response.status}`;
+                        getElement(COMMAND_STATUS_TEXT_ID).textContent = statusText;
+                        setTimeout(() => {
+                            getElement(COMMAND_STATUS_TEXT_ID).textContent = "";
+                        }, 2000);
+                    })
+            }
+        }
+
+        //TODO: Find a nicer font, and increase line-height slightly for console, and increase gap between console status and command input
+        // then integrate this into the LED ardunio
+        async function listenForConsoleUpdates() {
+            await requestFunctions.getConsoleUpdateId().then(updateId => {
+                consoleUtils.setConnected();
+                if (!consoleUtils.isNewUpdate(updateId))
+                    return;
+                onConsoleUpdate();
+            }).catch(errorMessage => consoleUtils.setError(errorMessage))
+            await new Promise(r => setTimeout(r, 1000))
+            void listenForConsoleUpdates();
+        }
+
+        function onConsoleUpdate() {
+            requestFunctions.getAndUpdateConsoleFeed();
+        }
+
+        function onCommandInputKeyUp(event) {
+            if (event.key !== 'Enter')
+                return;
+            sendCommand(event.target.value)
+            event.target.value = "";
+        }
+
+        function sendCommand(command) {
+            console.log(command);
+            requestFunctions.sendCommand(command);
+        }
+
+
+        function getElement(id) {
+            return document.getElementById(id);
+
+        }
+
+        function start() {
+            listenForConsoleUpdates();
+        }
+
+        start();
+
+    </script>
+</head>
+<body>
+<div class="main-container">
+    <div class="console-container">
+        <textarea class="console" id="console" disabled>
+            Connecting...
+        </textarea>
+        <div class="console-status-container">
+            <p id="console-status-icon"> 🔵</p>&nbsp;
+            <p id="console-status-text" class="status-text"> Connecting... </p>
+        </div>
+
+    </div>
+    <div class="command-input-container">
+        <input class="command-input" type="text" placeholder="Enter command..." onkeyup="onCommandInputKeyUp(event)"/>
+        <p id="command-status-text" class="status-text"></p>
+    </div>
+
+</div>
+</body>
+</html>
