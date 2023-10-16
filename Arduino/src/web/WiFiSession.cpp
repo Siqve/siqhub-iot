@@ -9,6 +9,9 @@ WiFiSession::WiFiSession(const char* wifi_ssid, const char* wifi_pw)  {
 
 
 void WiFiSession::startSession() {
+    WiFi.config(IPAddress(192, 168, 0, 200),
+                IPAddress(255, 255, 255, 0),
+                IPAddress(192, 168, 0, 1));
     WiFi.begin(wifi_ssid, wifi_pw);
 }
 
