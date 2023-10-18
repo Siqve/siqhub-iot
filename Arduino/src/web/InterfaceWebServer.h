@@ -16,17 +16,11 @@ private:
     DebugManager &debugManager;
 
     void addRequestListeners();
-
     void onLandingPage();
-
     void onUpdate();
-
     void onModeAndSettings();
-
     void onSettings();
-
-    void onDebug();
-
+    void onDebugPage();
     void onDebugConsole();
 };
 

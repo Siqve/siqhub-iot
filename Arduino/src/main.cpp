@@ -22,16 +22,16 @@ void setup() {
     Serial.begin(115200);
     wifiSession.startSession();
     webServer.initServer();
+    ledController->setup(LEDConstants::LED_DATA_PIN);
     ArduinoOTA.begin();
 //    ledController->setup();
 }
 
 void loop() {
+    wifiSession.assureConnection();
     ArduinoOTA.handle();
     wifiSession.assureConnection();
 
-//    ledController->loop();
-//    strip.SetPixelColor(1, RgbColor(0, 0, 255));
-//    strip.Show();
+    ledController->loop();
     delay(1000);
 }

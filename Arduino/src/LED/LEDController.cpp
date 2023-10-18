@@ -6,12 +6,10 @@
 #include "LED/modes/MusicLEDMode.h"
 
 #define TEST_BUTTON_PIN D6
-#define LED_DATA_PIN D5
 #define DEFAULT_PIXEL_COUNT 6
 
 #define DEFAULT_LED_FPS 400
 #define TEST_BUTTON_FPS 20
-
 
 LEDController::LEDController() : activeFPS(DEFAULT_LED_FPS) {
 }
@@ -22,9 +20,9 @@ void LEDController::initEffects() {
     modes.push_back(std::make_shared<MusicLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
 }
 
-void LEDController::setup() {
+void LEDController::setup(int ledDataPin) {
     pinMode(TEST_BUTTON_PIN, INPUT);
-    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, LED_DATA_PIN, NEO_BRG + NEO_KHZ400);
+    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, ledDataPin, NEO_BRG + NEO_KHZ400);
     initEffects();
     LEDStripPtr->begin();
 }
