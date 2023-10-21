@@ -11,10 +11,10 @@
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
 FadeLEDMode::FadeLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr,
-                         std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr)), baseFPS(DEFAULT_BASE_FPS),
+                         std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), std::move(setFPS)),
+                                                            baseFPS(DEFAULT_BASE_FPS),
                                                             speed(DEFAULT_SPEED),
                                                             pixelColorHop(DEFAULT_PIXEL_COLOR_HOP) {
-    this->setFPS = std::move(setFPS);
 }
 
 void FadeLEDMode::onActivate() {

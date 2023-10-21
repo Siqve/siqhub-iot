@@ -4,8 +4,7 @@
 #include "utilities/StripUtils.h"
 
 StaticLEDMode::StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr,
-                             std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr)) {
-    this->setFPS = std::move(setFPS);
+                             std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), std::move(setFPS)) {
 }
 
 void StaticLEDMode::onActivate() {
