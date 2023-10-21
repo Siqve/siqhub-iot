@@ -1,8 +1,8 @@
-#include "Arduino.h"
-#include <sstream>
-
 #ifndef CUSTOMLOGGER_H
 #define CUSTOMLOGGER_H
+
+#include "Arduino.h"
+#include <sstream>
 
 class DebugManager {
 public:
