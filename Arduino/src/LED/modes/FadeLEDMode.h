@@ -10,6 +10,7 @@ class FadeLEDMode : public LEDMode {
     void onUpdate(AsyncWebServerRequest *request) override;
     String getSettings() override;
 private:
+    void onActivate();
     void cycleFade();
     void incrementHue();
     int baseFPS{};

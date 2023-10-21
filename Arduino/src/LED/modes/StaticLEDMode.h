@@ -6,7 +6,7 @@
 
 class StaticLEDMode : public LEDMode {
 public:
-    StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStrip, const std::function<void(int)>& setFPS);
+    StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStrip, std::function<void(int)> setFPS);
     void onActivate() override;
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
