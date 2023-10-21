@@ -13,8 +13,12 @@ public:
     void incomingDebug(AsyncWebServerRequest *request);
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
-    int getLEDPixelCount();
     String getModeAndSettings();
+
+    int getLEDStripPixelCount() {
+        return LEDStripPtr->numPixels();
+    }
+
 
 private:
     int activeFPS;
@@ -24,10 +28,12 @@ private:
 
     void initEffects();
     void loop_LED(unsigned long timeNow);
-    void loop_physicalDebugButton(unsigned long timeNow);
     void readPhysicalDebugButton();
-    void debugButtonClick();
     void setFPS(int newFPS);
+
+
+    void debugButtonClick();
+    void loop_physicalDebugButton(unsigned long timeNow);
 };
 
 #endif //ARDUINO_LEDCONTROLLER_H
