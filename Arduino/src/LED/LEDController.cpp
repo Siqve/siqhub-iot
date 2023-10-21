@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "LEDController.h"
 #include "Constants.h"
 #include "LED/modes/FadeLEDMode.h"
@@ -6,7 +5,7 @@
 #include "LED/modes/MusicLEDMode.h"
 
 #define TEST_BUTTON_PIN D6
-#define DEFAULT_PIXEL_COUNT 6
+#define DEFAULT_PIXEL_COUNT 47
 
 #define DEFAULT_LED_FPS 400
 #define TEST_BUTTON_FPS 20
@@ -22,16 +21,17 @@ void LEDController::initEffects() {
 }
 
 void LEDController::setup(int ledDataPin) {
-    pinMode(TEST_BUTTON_PIN, INPUT);
     LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, ledDataPin, NEO_BRG + NEO_KHZ400);
     initEffects();
     LEDStripPtr->begin();
+    getActiveMode()->onActivate();
+//    pinMode(TEST_BUTTON_PIN, INPUT);
 }
 
 void LEDController::loop() {
     unsigned long timeNow = micros();
     loop_LED(timeNow);
-    loop_physicalDebugButton(timeNow);
+//    loop_physicalDebugButton(timeNow);
 }
 
 //The loop function for LED

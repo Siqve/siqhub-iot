@@ -1,7 +1,6 @@
 #ifndef ARDUINO_LEDCONTROLLER_H
 #define ARDUINO_LEDCONTROLLER_H
 
-
 #include "LEDMode.h"
 
 class LEDController {

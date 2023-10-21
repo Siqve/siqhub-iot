@@ -1,7 +1,6 @@
 #ifndef ColorUtils_h
 #define ColorUtils_h
 
-#include "Arduino.h"
 
 namespace ColorUtils {
     extern uint32_t hexStringToColor(const char* hexString);
