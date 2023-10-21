@@ -4,11 +4,12 @@
 #include "utilities/StripUtils.h"
 
 StaticLEDMode::StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr,
-                             const std::function<void(int)>& setFPS) : LEDMode(std::move(LEDStripPtr)) {
-    setFPS(1);
+                             std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr)) {
+    this->setFPS = std::move(setFPS);
 }
 
 void StaticLEDMode::onActivate() {
+    setFPS(1);
     StripUtils::setSolidColor(LEDStripPtr, defaultColor);
     LEDStripPtr->show();
 }

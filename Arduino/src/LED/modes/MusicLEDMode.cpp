@@ -17,7 +17,6 @@ MusicLEDMode::MusicLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr,
                                                               pixelColorHop(DEFAULT_PIXEL_COLOR_HOP),
                                                               bounce(DEFAULT_BOUNCE) {
     this->setFPS = std::move(setFPS);
-    this->setFPS(DEFAULT_BASE_FPS);
 }
 
 uint16_t hue = 0;
@@ -25,6 +24,7 @@ uint16_t hue = 0;
 unsigned long lastBeat = millis();
 
 void MusicLEDMode::onActivate() {
+    this->setFPS(DEFAULT_BASE_FPS);
 }
 
 
