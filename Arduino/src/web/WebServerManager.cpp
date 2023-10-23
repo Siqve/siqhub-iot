@@ -2,8 +2,6 @@
 #include <utility>
 #include <LittleFS.h>
 #include "WebServerManager.h"
-#include "web/generated/index_html.h"
-#include "web/generated/debug_html.h"
 
 const int WebServerManager::RESPONSE_STATUS_HTTP_OK = 200;
 const char* WebServerManager::RESPONSE_TYPE_PLAIN = "text/plain";
