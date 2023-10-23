@@ -29,9 +29,10 @@ void InterfaceWebServer::addRequestListeners() {
     onDebugConsole();
 }
 
-void InterfaceWebServer::onLandingPage() {
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send_P(HTTP_OK, RESPONSE_TYPE_HTML, index_html);
+
+void WebServerManager::onLandingPage() {
+    server.on("/", HTTP_GET, [this](AsyncWebServerRequest* request) {
+        request->send(LittleFS, "/index.html", RESPONSE_TYPE_HTML);
     });
 }
 
