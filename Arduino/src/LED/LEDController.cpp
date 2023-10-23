@@ -17,7 +17,6 @@ void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
     modes.push_back(std::make_shared<FadeLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
     modes.push_back(std::make_shared<MusicLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
-    getActiveMode()->onActivate();
 }
 
 void LEDController::setup(int ledDataPin) {
@@ -72,6 +71,8 @@ void LEDController::debugButtonClick() {
 }
 
 void LEDController::setFPS(int newFPS) {
+    Serial.print("Updating FPS! ");
+    Serial.println(newFPS);
     activeFPS = newFPS;
 }
 

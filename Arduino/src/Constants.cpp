@@ -7,6 +7,6 @@ namespace LEDConstants {
 }
 
 namespace WiFiConstants {
-    const char* WIFI_SSID = "Studeviken";
-    const char* WIFI_PW = "stud1stud2";
+    const char* WIFI_SSID = "IoTIsland";
+    const char* WIFI_PW = "*";
 }

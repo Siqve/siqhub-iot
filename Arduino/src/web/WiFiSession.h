@@ -5,7 +5,7 @@ class WiFiSession {
 public:
     WiFiSession(const char* wifi_ssid, const char* wifi_pw);
     void startSession();
-    void assureConnection();
+    bool assureConnection();
     void printWiFiIP();
 private:
     const char* wifi_ssid, *wifi_pw;

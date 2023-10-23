@@ -1,91 +1,88 @@
 #include <sstream>
 #include <utility>
-#include "InterfaceWebServer.h"
+#include <LittleFS.h>
+#include "WebServerManager.h"
 #include "web/generated/index_html.h"
 #include "web/generated/debug_html.h"
 
-const int HTTP_OK = 200;
-const String RESPONSE_TYPE_PLAIN = "text/plain";
-const String RESPONSE_TYPE_HTML = "text/html";
+const int WebServerManager::RESPONSE_STATUS_HTTP_OK = 200;
+const char* WebServerManager::RESPONSE_TYPE_PLAIN = "text/plain";
+const char* WebServerManager::RESPONSE_TYPE_HTML = "text/html";
 
-InterfaceWebServer::InterfaceWebServer(std::shared_ptr<LEDController> ledControllerPtr, DebugManager &debugManager) :
+WebServerManager::WebServerManager(std::shared_ptr<LEDController> ledControllerPtr, DebugManager& debugManager) :
         server(AsyncWebServer(80)), debugManager(debugManager) {
     this->ledControllerPtr = std::move(ledControllerPtr);
 }
 
-void InterfaceWebServer::initServer() {
-    addRequestListeners();
+void WebServerManager::initServer() {
     server.begin();
-    Serial.println("HTTP server started");
+    addRequestListeners();
+    debugManager.logger().info("HTTP server started");
 }
 
 
-void InterfaceWebServer::addRequestListeners() {
+void WebServerManager::addRequestListeners() {
     onLandingPage();
+    onDebug();
     onUpdate();
     onModeAndSettings();
     onSettings();
-    onDebugPage();
-    onDebugConsole();
 }
 
-
+// Just used to indicate that server is running
 void WebServerManager::onLandingPage() {
-    server.on("/", HTTP_GET, [this](AsyncWebServerRequest* request) {
-        request->send(LittleFS, "/index.html", RESPONSE_TYPE_HTML);
-    });
-}
-
-void InterfaceWebServer::onUpdate() {
-    server.on("/update", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        ledControllerPtr->incomingUpdate(request);
-        request->send(HTTP_OK, RESPONSE_TYPE_PLAIN, "OK");
-    });
-}
-
-// Request to get the active mode and settings
-void InterfaceWebServer::onModeAndSettings() {
-    server.on("/mode", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        request->send(HTTP_OK, RESPONSE_TYPE_PLAIN,
-                      ledControllerPtr->getModeAndSettings().c_str());
-    });
-}
-
-// Request to get the active mode
-void InterfaceWebServer::onSettings() {
-    server.on("/settings", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        //Format: LED_PIXEL_COUNT,
-        int LEDPixelCount = ledControllerPtr->getLEDStripPixelCount();
-        String response = String(LEDPixelCount) + ",";
-        request->send(HTTP_OK, RESPONSE_TYPE_PLAIN, response.c_str());
-    });
-}
-
-// Request to load the debug page
-void InterfaceWebServer::onDebugPage() {
-    server.on("/debug", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        Serial.println("Incominggggggg");
-        if (request->hasParam("cmd")) {
-            String command = request->getParam("cmd")->value();
-            debugManager.onDebug(command.c_str());
-            request->send(HTTP_OK, RESPONSE_TYPE_PLAIN, "OK");
-            return;
-        }
-        request->send_P(HTTP_OK, RESPONSE_TYPE_HTML, debug_html);
+    server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+        sendResponse(request, "Ok");
     });
 }
 
 // Request to retrieve debug console
-void InterfaceWebServer::onDebugConsole() {
-    server.on("/debug-console", HTTP_GET, [this](AsyncWebServerRequest *request) {
+void WebServerManager::onDebug() {
+    server.on("/debug", HTTP_GET, [this](AsyncWebServerRequest* request) {
         if (request->hasParam("get")) {
             String getParam = request->getParam("get")->value();
             if (getParam == "update-id") {
-                request->send(HTTP_OK, RESPONSE_TYPE_PLAIN, std::to_string(debugManager.getLogUpdateId()).c_str());
+                sendResponse(request, std::to_string(debugManager.logger().getLogUpdateId()).c_str());
                 return;
             }
         }
         Serial.println("Sending feed.");
-        request->send(HTTP_OK, RESPONSE_TYPE_PLAIN, debugManager.getLogFeed().c_str());
+        sendResponse(request, debugManager.logger().getLogFeed().c_str());
     });
+}
+
+
+// Request to receive an update
+void WebServerManager::onUpdate() {
+    server.on("/update", HTTP_GET, [this](AsyncWebServerRequest* request) {
+        ledControllerPtr->incomingUpdate(request);
+        sendResponse(request);
+    });
+}
+
+// Request to retrieve active mode and settings
+void WebServerManager::onModeAndSettings() {
+    server.on("/mode", HTTP_GET, [this](AsyncWebServerRequest* request) {
+        sendResponse(request, ledControllerPtr->getModeAndSettings().c_str());
+    });
+}
+
+// Request to retrieve active mode
+void WebServerManager::onSettings() {
+    server.on("/settings", HTTP_GET, [this](AsyncWebServerRequest* request) {
+        //Format: LED_PIXEL_COUNT,
+        int LEDPixelCount = ledControllerPtr->getLEDStripPixelCount();
+        String response = String(LEDPixelCount) + ",";
+        sendResponse(request, response.c_str());
+    });
+}
+
+
+void WebServerManager::sendResponse(AsyncWebServerRequest* request, const char* responseText, int status,
+                                    const char* responseType) {
+    AsyncWebServerResponse* response = request->beginResponse(status, responseType, responseText);
+    response->addHeader("Access-Control-Allow-Origin", "*");
+    response->addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    response->addHeader("Access-Control-Allow-Headers", "Content-Type");
+    request->send(response);
 }
