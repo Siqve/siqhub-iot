@@ -16,17 +16,18 @@ void WiFiSession::startSession() {
 }
 
 bool lastWifiCheck_connected = false;
-void WiFiSession::assureConnection() {
+bool WiFiSession::assureConnection() {
     if (WiFi.status() == WL_CONNECTED) {
         if (!lastWifiCheck_connected) {
             printWiFiIP();
             lastWifiCheck_connected = true;
         }
-        return;
+        return true;
     }
     if (lastWifiCheck_connected)
         lastWifiCheck_connected = false;
     connectWiFi();
+    return false;
 }
 
 unsigned long timeLastRun_ConnectWiFi;
@@ -42,7 +43,7 @@ void WiFiSession::connectWiFi() {
 
 
 void WiFiSession::printWiFiIP() {
-    Serial.printf("Successfully connected to to %s...\r\n", wifi_ssid);
+    Serial.printf("Successfully connected to %s...\r\n", wifi_ssid);
     Serial.printf("IP Address: %s\r\n", WiFi.localIP().toString().c_str());
 }
 

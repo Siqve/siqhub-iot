@@ -1,23 +1,24 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include "web/WiFiSession.h"
-#include "web/InterfaceWebServer.h"
+#include "web/WebServerManager.h"
 #include "Constants.h"
 #include "LED/LEDController.h"
 #include "utilities/DebugManager.h"
+#include <LittleFS.h>
 
 std::shared_ptr<LEDController> ledController = std::make_shared<LEDController>();
 DebugManager debugManager;
 
 WiFiSession wifiSession(WiFiConstants::WIFI_SSID, WiFiConstants::WIFI_PW);
-InterfaceWebServer webServer  = InterfaceWebServer(ledController, debugManager);
-
-//NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(16);
+WebServerManager webServer  = WebServerManager(ledController, debugManager);
 
 
 
 void setup() {
     Serial.begin(115200);
+    LittleFS.begin();
+
     wifiSession.startSession();
     webServer.initServer();
     ledController->setup(LEDConstants::LED_DATA_PIN);
@@ -26,7 +27,8 @@ void setup() {
 }
 
 void loop() {
-    wifiSession.assureConnection();
+    if (!wifiSession.assureConnection())
+        return;
     ArduinoOTA.handle();
     ledController->loop();
 }
