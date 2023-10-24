@@ -3,27 +3,31 @@
 #include "utilities/ColorUtils.h"
 #include "utilities/StripUtils.h"
 
-StaticLEDMode::StaticLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr,
-                             std::function<void(int)> setFPS) : LEDMode(std::move(LEDStripPtr), std::move(setFPS)) {
+const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
+
+StaticLEDMode::StaticLEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr,
+                             std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)) {
 }
 
 void StaticLEDMode::onActivate() {
     setFPS(1);
-    StripUtils::setSolidColor(LEDStripPtr, defaultColor);
-    LEDStripPtr->show();
+    StripUtils::setSolidColor(LEDStripPtr, staticColor);
+    LEDStripPtr->Show();
 }
 
 
 void StaticLEDMode::loop() {
-    LEDStripPtr->show();
+    StripUtils::setSolidColor(LEDStripPtr, staticColor);
+    LEDStripPtr->Show();
 }
 
 void StaticLEDMode::onUpdate(AsyncWebServerRequest *request) {
-    if (request->hasParam("staticcolor")) {
-        String val = request->getParam("staticcolor")->value();
+    if (request->hasParam(REQUEST_PARAM_STATIC_COLOR)) {
+        String val = request->getParam(REQUEST_PARAM_STATIC_COLOR)->value();
         uint32_t color = ColorUtils::hexStringToColor(val.c_str());
         uint32_t gammaCorrected = ColorUtils::Gamma32(color);
-        StripUtils::setSolidColor(LEDStripPtr, gammaCorrected);
-        LEDStripPtr->show();
+        Serial.println("Updating!");
+        staticColor = gammaCorrected;
+        loop();
     }
 }

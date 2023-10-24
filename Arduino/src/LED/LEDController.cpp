@@ -20,9 +20,9 @@ void LEDController::initEffects() {
 }
 
 void LEDController::setup(int ledDataPin) {
-    LEDStripPtr = std::make_shared<Adafruit_NeoPixel>(DEFAULT_PIXEL_COUNT, ledDataPin, NEO_BRG + NEO_KHZ400);
+    LEDStripPtr = std::make_shared<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>(DEFAULT_PIXEL_COUNT);
     initEffects();
-    LEDStripPtr->begin();
+    LEDStripPtr->Begin();
     getActiveMode()->onActivate();
 //    pinMode(TEST_BUTTON_PIN, INPUT);
 }
@@ -92,7 +92,7 @@ void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
     }
     if (request->hasParam("pixelcount")) {
         int pixelCount = request->getParam("pixelcount")->value().toInt();
-        LEDStripPtr->updateLength(pixelCount);
+        // TODO
         return;
     }
     getActiveMode()->onUpdate(request);

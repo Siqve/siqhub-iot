@@ -2,6 +2,10 @@
 #define ARDUINO_LEDCONTROLLER_H
 
 #include "LEDMode.h"
+#include "ESPAsyncWebServer.h"
+#include "Adafruit_NeoPixel.h"
+#include "NeoPixelBus.h"
+
 
 class LEDController {
 public:
@@ -15,14 +19,14 @@ public:
     String getModeAndSettings();
 
     int getLEDStripPixelCount() {
-        return LEDStripPtr->numPixels();
+        return LEDStripPtr->PixelCount();
     }
 
 
 private:
     int activeFPS;
     std::vector<std::shared_ptr<LEDMode>> modes;
-    std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr;
+    std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>> LEDStripPtr;
     int activeModeNumber = 0;
 
     void initEffects();

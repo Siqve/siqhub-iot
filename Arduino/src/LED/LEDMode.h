@@ -2,25 +2,32 @@
 #define ARDUINO_LEDMODE_H
 
 #include <utility>
+#include <memory>
 #include "Adafruit_NeoPixel.h"
 #include "ESPAsyncWebServer.h"
+#include "NeoPixelBus.h"
 
 class LEDMode {
 public:
     virtual ~LEDMode() = default;
-    virtual void onActivate() {};
+
     virtual void loop() = 0;
+
+    virtual void onActivate() {};
     virtual void debugButtonClick() {};
-    virtual void onUpdate(AsyncWebServerRequest *request) {};
+
+    virtual void onUpdate(AsyncWebServerRequest* request) {};
+
     virtual String getSettings() {
         return {};
     };
 protected:
-    explicit LEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, std::function<void(int)> setFPS) {
-        this->LEDStripPtr = std::move(LEDStripPtr);
+    explicit LEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr,
+                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr) {
         this->setFPS = std::move(setFPS);
     }
-    std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr;
+
+    std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr;
     std::function<void(int)> setFPS{};
 };
 

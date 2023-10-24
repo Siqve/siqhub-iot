@@ -6,7 +6,7 @@
 
 class MusicLEDMode : public LEDMode {
 public:
-    MusicLEDMode(std::shared_ptr<Adafruit_NeoPixel> LEDStripPtr, std::function<void(int)> setFPS);
+    MusicLEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr, std::function<void(int)> setFPS);
     void onActivate() override;
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
