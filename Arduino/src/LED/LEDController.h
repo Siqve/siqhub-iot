@@ -5,38 +5,40 @@
 #include "ESPAsyncWebServer.h"
 #include "Adafruit_NeoPixel.h"
 #include "NeoPixelBus.h"
+#include "utilities/DebugManager.h"
+#include "Constants.h"
 
 
 class LEDController {
 public:
-    LEDController();
-    void setup(int ledDataPin);
+    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LEDConstants::LED_PIXEL_COUNT)),
+                      logger(DebugManager::getInstance().newLogger("LEDController")) {};
+    void setup();
     void loop();
-    void incomingUpdate(AsyncWebServerRequest *request);
-    void incomingDebug(AsyncWebServerRequest *request);
+    void incomingUpdate(AsyncWebServerRequest* request);
+    void incomingDebug(AsyncWebServerRequest* request);
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
     String getModeAndSettings();
 
     int getLEDStripPixelCount() {
-        return LEDStripPtr->PixelCount();
+        return LEDStripPtr.PixelCount();
     }
 
 
 private:
-    int activeFPS;
+    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> LEDStripPtr;
     std::vector<std::shared_ptr<LEDMode>> modes;
-    std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>> LEDStripPtr;
+
+    DebugManager::Logger logger;
+
     int activeModeNumber = 0;
+    int activeFPS = 1;
 
     void initEffects();
     void loop_LED(unsigned long timeNow);
-    void readPhysicalDebugButton();
     void setFPS(int newFPS);
-
-
     void debugButtonClick();
-    void loop_physicalDebugButton(unsigned long timeNow);
 };
 
 #endif //ARDUINO_LEDCONTROLLER_H

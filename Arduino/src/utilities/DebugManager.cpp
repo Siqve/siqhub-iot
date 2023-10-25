@@ -2,49 +2,69 @@
 
 
 void DebugManager::onDebug(const std::string& command) {
-    std::string log = "[DebugManager] Command received: " + command;
-    loggerObject.debug(command);
+    std::string log = "Command received: " + command;
+    logger.debug(log);
 }
 
-DebugManager::Logger& DebugManager::logger() {
-    return loggerObject;
+void DebugManager::logDebug(const std::string& line) {
+    logBuffer << "[Debug] " << line << "\n";
+    logUpdateId++;
+    Serial.print("[Debug] ");
+    Serial.println(line.c_str());
 }
+
+DebugManager::Logger DebugManager::newLogger(const std::string& className) {
+    return Logger(*this, className);
+}
+
 
 void DebugManager::Logger::log(const std::string& line, const std::string& logType) {
-    logBuffer << "[" + logType + "] " << line << "\n";
-    logUpdateId++;
-    Serial.print("[");
-    Serial.print(logType.c_str());
-    Serial.print("] ");
+    if (!className.empty()) {
+        debugManager.logBuffer << "[" + className + "]";
+        Serial.print("[");
+        Serial.print(className.c_str());
+        Serial.print("]");
+    }
+    if (!logType.empty()) {
+        debugManager.logBuffer << "[" + logType + "] ";
+        Serial.print("[");
+        Serial.print(logType.c_str());
+        Serial.print("] ");
+    }
+
+    debugManager.logBuffer << line << "\n";
+    debugManager.logUpdateId++;
+
     Serial.println(line.c_str());
 }
 
 
-std::string DebugManager::Logger::getLogFeed() {
-    return logBuffer.str();
-}
-
-void DebugManager::Logger::clearLog() {
-    logBuffer.str("");
-    logBuffer.clear();
-}
-
-int DebugManager::Logger::getLogUpdateId() {
-    return logUpdateId;
-}
-
 void DebugManager::Logger::info(const std::string& line) {
-    log(line, "info");
+    log(line, "Info");
 }
 
 void DebugManager::Logger::warn(const std::string& line) {
-    log(line, "warn");
+    log(line, "Warn");
 }
 
 void DebugManager::Logger::error(const std::string& line) {
-    log(line, "error");
+    log(line, "Error");
 }
 
 void DebugManager::Logger::debug(const std::string& line) {
-    log(line, "debug");
+    log(line, "Debug");
+}
+
+
+std::string DebugManager::Logger::getLogFeed() {
+    return debugManager.logBuffer.str();
+}
+
+void DebugManager::Logger::clearLog() {
+    debugManager.logBuffer.str("");
+    debugManager.logBuffer.clear();
+}
+
+int DebugManager::Logger::getLogUpdateId() {
+    return debugManager.logUpdateId;
 }

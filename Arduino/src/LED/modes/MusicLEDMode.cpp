@@ -11,7 +11,7 @@
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 #define DEFAULT_BOUNCE 16000
 
-MusicLEDMode::MusicLEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr,
+MusicLEDMode::MusicLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
                            std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)),
                                                               baseFPS(DEFAULT_BASE_FPS), speed(DEFAULT_SPEED),
                                                               pixelColorHop(DEFAULT_PIXEL_COLOR_HOP),
@@ -36,9 +36,9 @@ void MusicLEDMode::loop() {
 
 void MusicLEDMode::cycleFade() {
 //    incrementHue();
-//    for (int i = 0; i < LEDStripPtr->numPixels(); i++) {
+//    for (int i = 0; i < LEDStripPtr.numPixels(); i++) {
 //        uint32_t color = ColorUtils::HSVToColor(hue + i * pixelColorHop, SATURATION, BRIGHTNESS);
-//        LEDStripPtr->setPixelColor(i, color);
+//        LEDStripPtr.setPixelColor(i, color);
 //    }
 }
 

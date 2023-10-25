@@ -6,7 +6,7 @@
 #include "NeoPixelBus.h"
 
 namespace StripUtils {
-    extern void setSolidColor(const std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr, uint32_t color);
+    extern void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, uint32_t color);
 };
 
 

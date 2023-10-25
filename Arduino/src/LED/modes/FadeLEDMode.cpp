@@ -10,7 +10,7 @@
 #define DEFAULT_SPEED 25   /* Controls the HUE increments per cycle */
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
-FadeLEDMode::FadeLEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr,
+FadeLEDMode::FadeLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
                          std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)),
                                                             baseFPS(DEFAULT_BASE_FPS),
                                                             speed(DEFAULT_SPEED),
@@ -23,7 +23,7 @@ void FadeLEDMode::onActivate() {
 
 void FadeLEDMode::loop() {
     cycleFade();
-    LEDStripPtr->Show();
+    LEDStripPtr.Show();
 }
 
 void FadeLEDMode::onUpdate(AsyncWebServerRequest *request) {
@@ -49,9 +49,9 @@ void FadeLEDMode::onUpdate(AsyncWebServerRequest *request) {
 
 void FadeLEDMode::cycleFade() {
     incrementHue();
-    for (int i = 0; i < LEDStripPtr->PixelCount(); i++) {
+    for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
     RgbColor color = ColorUtils::HSVToRgbColor(currentHue + i * pixelColorHop, SATURATION, BRIGHTNESS);
-        LEDStripPtr->SetPixelColor(i, color);
+        LEDStripPtr.SetPixelColor(i, color);
     }
 }
 

@@ -8,7 +8,7 @@
 
 class StaticLEDMode : public LEDMode {
 public:
-    StaticLEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStrip, std::function<void(int)> setFPS);
+    StaticLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStrip, std::function<void(int)> setFPS);
     void onActivate() override;
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;

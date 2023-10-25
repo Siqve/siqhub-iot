@@ -22,12 +22,12 @@ public:
         return {};
     };
 protected:
-    explicit LEDMode(std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr,
+    explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
                      std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr) {
         this->setFPS = std::move(setFPS);
     }
 
-    std::shared_ptr<NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>>& LEDStripPtr;
+    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr;
     std::function<void(int)> setFPS{};
 };
 

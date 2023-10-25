@@ -1,15 +1,24 @@
 #ifndef WIFISESSON_H
 #define WIFISESSON_H
 
+#include "utilities/DebugManager.h"
+#include "Constants.h"
+
 class WiFiSession {
 public:
-    WiFiSession(const char* wifi_ssid, const char* wifi_pw);
+    WiFiSession() : wifi_ssid(WiFiConstants::WIFI_SSID),
+                    wifi_pw(WiFiConstants::WIFI_PW),
+                    logger(DebugManager::getInstance().newLogger(
+                            "WiFiSession")) {}
+
     void startSession();
     bool assureConnection();
-    void printWiFiIP();
+    void printConnected();
 private:
-    const char* wifi_ssid, *wifi_pw;
-    void connectWiFi();
+    const char* wifi_ssid, * wifi_pw;
+    void printConnectingInfo();
+    DebugManager::Logger logger;
+
 };
 
 

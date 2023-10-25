@@ -4,15 +4,29 @@
 #include "Arduino.h"
 #include "ESPAsyncWebServer.h"
 #include <sstream>
+#include <utility>
 
 class DebugManager {
 public:
-    DebugManager() : loggerObject(Logger()) {};
+    // Deleted copy constructor and copy assignment operator
+    DebugManager(const DebugManager&) = delete;
+    DebugManager& operator=(const DebugManager&) = delete;
+
+    // Static method to access Singleton instance
+    static DebugManager& getInstance() {
+        static DebugManager instance;  // Guaranteed to be lazy initialized and destroyed correctly
+        return instance;
+    }
+
     void onDebug(const std::string& command);
+    void logDebug(const std::string& line);
 
     class Logger {
     public:
-        void log(const std::string& line, const std::string& logType);
+        Logger(DebugManager& debugManager, std::string className) : debugManager(debugManager),
+                                                                           className(std::move(className)) {};
+
+        void log(const std::string& line, const std::string& logType = "");
         void info(const std::string& line);
         void warn(const std::string& line);
         void error(const std::string& line);
@@ -22,14 +36,16 @@ public:
         void clearLog();
         int getLogUpdateId();
     private:
-        std::ostringstream logBuffer;
-        int logUpdateId = 0;
+        DebugManager& debugManager;
+        const std::string className;
     };
 
-    Logger& logger();
-
+    Logger newLogger(const std::string& className = "");
 private:
-    Logger loggerObject;
+    DebugManager() : logger(Logger(*this, "DebugManager")) {};
+    Logger logger;
+    std::ostringstream logBuffer;
+    int logUpdateId = 0;
 };
 
 

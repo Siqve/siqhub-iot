@@ -7,18 +7,22 @@
 
 class WebServerManager {
 public:
-    explicit WebServerManager(std::shared_ptr<LEDController> ledController, DebugManager& debugManager);
+    explicit WebServerManager(LEDController& ledControllerPtr) :
+            server(AsyncWebServer(80)), ledControllerPtr(ledControllerPtr),
+            logger(DebugManager::getInstance().newLogger("WebServerManager")) {}
+
     void initServer();
 
 private:
-    std::shared_ptr<LEDController> ledControllerPtr;
     AsyncWebServer server;
-    DebugManager& debugManager;
+    LEDController& ledControllerPtr;
+    DebugManager::Logger logger;
 
     void addRequestListeners();
 
-    static void sendResponse(AsyncWebServerRequest* request, const char* responseText = "", int status = RESPONSE_STATUS_HTTP_OK,
-                      const char* responseType = RESPONSE_TYPE_PLAIN);
+    static void
+    sendResponse(AsyncWebServerRequest* request, const char* responseText = "", int status = RESPONSE_STATUS_HTTP_OK,
+                 const char* responseType = RESPONSE_TYPE_PLAIN);
 
     void onLandingPage();
     void onDebug();
