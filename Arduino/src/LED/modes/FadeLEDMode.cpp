@@ -3,6 +3,7 @@
 
 #include <utility>
 #include "utilities/ColorUtils.h"
+#include "utilities/LEDUtils.h"
 
 #define BRIGHTNESS 255   /* Control the brightness of your leds */
 #define SATURATION 255   /* Control the saturation of your leds */
@@ -50,7 +51,8 @@ void FadeLEDMode::onUpdate(AsyncWebServerRequest *request) {
 void FadeLEDMode::cycleFade() {
     incrementHue();
     for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
-    RgbColor color = ColorUtils::HSVToRgbColor(currentHue + i * pixelColorHop, SATURATION, BRIGHTNESS);
+        int foldedPixel = LEDUtils::getFoldedPixelIndex(i);
+        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + foldedPixel * pixelColorHop, SATURATION, BRIGHTNESS);
         LEDStripPtr.SetPixelColor(i, color);
     }
 }
