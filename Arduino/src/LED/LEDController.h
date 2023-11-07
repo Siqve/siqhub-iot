@@ -16,7 +16,7 @@ public:
     void setup();
     void loop();
     void incomingUpdate(AsyncWebServerRequest* request);
-    void incomingDebug(AsyncWebServerRequest* request);
+    void incomingDebug();
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
     String getModeAndSettings();

@@ -6,6 +6,7 @@
 #include "Adafruit_NeoPixel.h"
 #include "ESPAsyncWebServer.h"
 #include "NeoPixelBus.h"
+#include "utilities/DebugManager.h"
 
 class LEDMode {
 public:
@@ -17,17 +18,18 @@ public:
     virtual void debugButtonClick() {};
 
     virtual void onUpdate(AsyncWebServerRequest* request) {};
+    virtual void onDebugCommand(const std::string& command) {};
 
     virtual String getSettings() {
         return {};
     };
 protected:
     explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr) {
+                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(DebugManager::getInstance().newLogger("LEDController")) {
         this->setFPS = std::move(setFPS);
     }
-
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr;
+    DebugManager::Logger logger;
     std::function<void(int)> setFPS{};
 };
 

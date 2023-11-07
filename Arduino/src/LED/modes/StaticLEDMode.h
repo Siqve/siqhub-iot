@@ -12,6 +12,7 @@ public:
     void onActivate() override;
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
+    void onDebugCommand(const std::string& command) override;
 private:
     uint32_t staticColor = LEDConstants::DEFAULT_STATIC_COLOR;
 };

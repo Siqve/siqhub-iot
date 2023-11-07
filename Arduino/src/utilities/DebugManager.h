@@ -5,6 +5,7 @@
 #include "ESPAsyncWebServer.h"
 #include <sstream>
 #include <utility>
+#include <map>
 
 class DebugManager {
 public:
@@ -18,8 +19,10 @@ public:
         return instance;
     }
 
-    void onDebug(const std::string& command);
+    void onDebugCommand(const std::string& command);
     void logDebug(const std::string& line);
+
+    void registerDebugCommandListener(const std::string& cmd, std::function<void(std::string&)> callback);
 
     class Logger {
     public:
@@ -43,6 +46,9 @@ public:
     Logger newLogger(const std::string& className = "");
 private:
     DebugManager() : logger(Logger(*this, "DebugManager")) {};
+
+    std::map<std::string, std::function<void(std::string&)>> debugCommandListeners;
+
     Logger logger;
     std::ostringstream logBuffer;
     int logUpdateId = 0;

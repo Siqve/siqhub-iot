@@ -1,5 +1,4 @@
 #include <sstream>
-#include <utility>
 #include <LittleFS.h>
 #include "WebServerManager.h"
 
@@ -38,6 +37,12 @@ void WebServerManager::onDebug() {
                 sendResponse(request, std::to_string(logger.getLogUpdateId()).c_str());
                 return;
             }
+        }
+        else if (request->hasParam("cmd")) {
+            String cmd = request->getParam("cmd")->value();
+            DebugManager::getInstance().onDebugCommand(cmd.c_str());
+        } else if (request->hasParam("boost")) {
+            ledControllerPtr.incomingDebug();
         }
         sendResponse(request, logger.getLogFeed().c_str());
     });

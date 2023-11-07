@@ -14,6 +14,9 @@ void LEDController::setup() {
     initEffects();
     LEDStripPtr.Begin();
     getActiveMode()->onActivate();
+    DebugManager::getInstance().registerDebugCommandListener("led", [this](std::string& command) {
+        getActiveMode()->onDebugCommand(command);
+    });
 }
 
 void LEDController::loop() {
@@ -55,10 +58,8 @@ void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
 }
 
 
-void LEDController::incomingDebug(AsyncWebServerRequest *request) {
-    if (request->hasParam("buttonClick")) {
-        debugButtonClick();
-    }
+void LEDController::incomingDebug() {
+    debugButtonClick();
 }
 
 int LEDController::getActiveModeNumber() {
