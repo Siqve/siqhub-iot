@@ -11,3 +11,7 @@ namespace WiFiConstants {
     const char* WIFI_SSID = "IoTIsland";
     const char* WIFI_PW = "68f727f0b4";
 }
+
+namespace DebugConstants {
+    const int MAX_LOG_BUFFER_SIZE = 2048;
+}

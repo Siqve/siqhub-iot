@@ -15,4 +15,8 @@ namespace WiFiConstants {
     extern const char* WIFI_PW;
 }
 
+namespace DebugConstants {
+    extern const int MAX_LOG_BUFFER_SIZE;
+}
+
 #endif //ARDUINO_CONSTANTS_H

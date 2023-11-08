@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "ESPAsyncWebServer.h"
+#include "Constants.h"
 #include <sstream>
 #include <utility>
 #include <map>
@@ -47,9 +48,11 @@ public:
 private:
     DebugManager() : logger(Logger(*this, "DebugManager")) {};
 
-    std::map<std::string, std::function<void(std::string&)>> debugCommandListeners;
+    void checkAndTrimLogger(const std::string& line);
 
+    std::map<std::string, std::function<void(std::string&)>> debugCommandListeners;
     Logger logger;
+    int maxLogBufferSize = DebugConstants::MAX_LOG_BUFFER_SIZE;
     std::ostringstream logBuffer;
     int logUpdateId = 0;
 };
