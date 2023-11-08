@@ -1,0 +1,26 @@
+{
+  "name": "web-server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "b": "npm run build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "upload": "ssh root@192.168.0.30 \"rm -rf /www/iot-web-server\" && scp -r dist root@192.168.0.30:/www/iot-web-server",
+    "u": "npm run upload",
+    "u2": "ssh root@192.168.0.30 \"rm -rf /www/iot-web-server\" && scp -r src/old root@192.168.0.30:/www/iot-web-server",
+    "bu": "npm run b && npm run u"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.2",
+    "@tsconfig/svelte": "^5.0.0",
+    "svelte": "^4.0.5",
+    "svelte-check": "^3.4.6",
+    "tslib": "^2.6.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5"
+  }
+}
