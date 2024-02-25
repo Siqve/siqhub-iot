@@ -59,8 +59,12 @@
             align-items: center; /* Align vertical */
         }
 
-        .settings-item__input_text {
+        .settings-item__input-text {
             width: 2rem;
+        }
+
+        .settings-item__input-text--long {
+            width: 9rem;
         }
 
         .settings-item__input_slider {
@@ -165,6 +169,10 @@
         const activeModeClass = 'modes-list__item--active';
         let activeModeNumber = 0;
 
+        function getHTTPIP() {
+            return "http://" + document.getElementById("settings-ip").value;
+        }
+
         function onColorChange(input) {
             let isColorPicker = input.value !== undefined;
             let color = input;
@@ -173,7 +181,8 @@
                 const color_picker_wrapper = document.getElementsByClassName("static-effect-container__item--square")[0];
                 color_picker_wrapper.style.backgroundColor = color;
             }
-            request_updateStaticColor(color);
+            let colorWithoutHashtag = color.replace("#", "")
+            request_updateSetting("static-color", colorWithoutHashtag);
         }
 
         function onPixelCountChange(input) {
@@ -214,12 +223,8 @@
             if (id === activeModeNumber)
                 return;
             activeModeNumber = id;
-            request_updateMode(id);
+            request_updateSetting("mode", id);
             CSS_setActiveMode(id);
-        }
-
-        function debugButtonClick() {
-            request_debugButtonClick();
         }
 
         function CSS_setActiveMode(id) {
@@ -251,7 +256,8 @@
             updateSettingSlider("music-speed", argArray[2])
             updateSettingSlider("music-hop", argArray[3])
             updateSettingCheckbox("music-reverse", argArray[4])
-            updateSettingCheckbox("music-bounce", argArray[5])
+            updateSettingSlider("music-bounce", argArray[5])
+            updateSettingSlider("music-decayfactor", argArray[6])
         }
 
         //Get and update general settings
@@ -260,37 +266,41 @@
             xhr.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status === 200) {
                     let response = this.responseText;
-                    document.getElementById("settings-pixelcount").value = parseInt(response.split(",")[0]);
+                    console.log(response);
+                    document.getElementById("settings-pixelcount").innerHTML = "Pixel Count: " + parseInt(response.split(",")[0]);
                 }
             };
-            xhr.open("GET", "http://192.168.0.200/settings", true);
+            xhr.open("GET", getHTTPIP() + "/settings", true);
             xhr.send();
         }
 
         let modeUpdateSettingsCallbacks = [null, updateFadeSettings, updateMusicSettings]
         //Get and update mode
         function request_getMode() {
-            const xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    let args = this.responseText.split(",");
-                    const mode = args[0];
-                    if (!isNumeric(mode))
-                        return;
-                    CSS_setActiveMode(parseInt(mode));
-                    modeUpdateSettingsCallbacks[mode](args);
-                }
-            };
-            xhr.open("GET", "http://192.168.0.200/mode", true);
-            xhr.send();
-        }
+             fetch(getHTTPIP() + "/mode")
+                    .then(response => response.text())
+                    .then(responseText => {
+                        let args = responseText.split(",");
+                        const mode = args[0];
+                        if (!isNumeric(mode))
+                            return;
+                        CSS_setActiveMode(parseInt(mode));
+                        modeUpdateSettingsCallbacks[mode](args);
+                    })
 
-
-        //Send an update to mode
-        function request_updateMode(modeNumber) {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://192.168.0.200/update?mode=" + modeNumber, true);
-            xhr.send();
+            // const xhr = new XMLHttpRequest();
+            // xhr.onreadystatechange = function () {
+            //     if (this.readyState === 4 && this.status === 200) {
+            //         let args = this.responseText.split(",");
+            //         const mode = args[0];
+            //         if (!isNumeric(mode))
+            //             return;
+            //         CSS_setActiveMode(parseInt(mode));
+            //         modeUpdateSettingsCallbacks[mode](args);
+            //     }
+            // };
+            // xhr.open("GET", getIPSetting() + "/mode", true);
+            // xhr.send();
         }
 
         /***
@@ -298,27 +308,13 @@
          */
         function request_updateSetting(setting, value) {
             // console.log("sending: " + setting + " = " + value);
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://192.168.0.200/update?" + setting + "=" + value, true);
-            xhr.send();
+            fetch(getHTTPIP() + "/update?" + setting + "=" + value)
         }
 
-        function request_updateStaticColor(colorHex) {
-            let colorWithoutHashtag = colorHex.replace("#", "")
-            let xhr = new XMLHttpRequest();
-            // console.log("sending: " + colorWithoutHashtag);
-            xhr.open("GET", "http://192.168.0.200/update?static-color=" + colorWithoutHashtag, true);
-            xhr.send();
-        }
-
-        function request_debugButtonClick() {
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "http://192.168.0.200/debug?buttonClick=1", true);
-            xhr.send();
-        }
-
-        request_getMode();
-        request_getSettings();
+        setTimeout(() => {
+            request_getMode();
+            request_getSettings();
+        }, 500);
         setInterval(request_getMode, 3000);
 
         function isNumeric(value) {
@@ -328,14 +324,17 @@
 </head>
 <body>
 <div class="main-container">
-    <p class="main-container__title" onclick="debugButtonClick()">LED Controller</p>
+    <p class="main-container__title">LED Controller</p>
 
     <div class="settings-container">
         <p class="settings-container__title">Settings</p>
         <div class="settings-item">
-            <div class="settings-item__title">LED Pixel Count:</div>
-            <input type="text" class="settings-item__input_text" id="settings-pixelcount" name="settings-pixelcount"
-                   value="-" onchange="onPixelCountChange(this)">
+            <div id="settings-pixelcount" class="settings-item__title">Pixel Count: </div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-item__title">IP:</div>
+            <input type="text" class="settings-item__input-text--long" id="settings-ip" name="settings-pixelcount"
+                   value="192.168.0.200" onchange="onPixelCountChange(this)">
         </div>
 
     </div>
@@ -402,9 +401,14 @@
                        min="0" max="25000" value="4000" step="100" oninput="onSliderSettingChange(this)">
             </div>
             <div class="settings-item">
-                <div class="settings-item__title">Bounce (<div id="music-bounce-val">16000</div>)</div>
+                <div class="settings-item__title">Bounce Power (<div id="music-bounce-val">16000</div>)</div>
                 <input type="range" class="settings-item__input_slider" id="music-bounce" name="music-bounce"
                        min="0" max="50000" value="16000" step="500" oninput="onSliderSettingChange(this)">
+            </div>
+            <div class="settings-item">
+                <div class="settings-item__title">Bounce Decay Factor (<div id="music-decayfactor-val">10</div>)</div>
+                <input type="range" class="settings-item__input_slider" id="music-decayfactor" name="music-decayfactor"
+                       min="0" max="100" value="10" step="1" oninput="onSliderSettingChange(this)">
             </div>
             <div class="settings-item">
                 <div class="settings-item__title">Reverse</div>
