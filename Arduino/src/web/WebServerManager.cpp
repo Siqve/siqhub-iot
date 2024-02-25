@@ -41,8 +41,12 @@ void WebServerManager::onDebug() {
         else if (request->hasParam("cmd")) {
             String cmd = request->getParam("cmd")->value();
             DebugManager::getInstance().onDebugCommand(cmd.c_str());
+            sendResponse(request, "Ok");
+            return;
         } else if (request->hasParam("boost")) {
             ledControllerPtr.incomingDebug();
+            sendResponse(request, "Ok");
+            return;
         }
         sendResponse(request, logger.getLogFeed().c_str());
     });

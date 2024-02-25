@@ -4,7 +4,7 @@
 #include <iostream>
 
 void WiFiSession::startSession() {
-    WiFi.config(IPAddress(192, 168, 0, 200),
+    WiFi.config(IPAddress(192, 168, 0, DEVICE_IP),
                 IPAddress(255, 255, 255, 0),
                 IPAddress(192, 168, 0, 1));
     WiFi.begin(wifi_ssid, wifi_pw);

@@ -34,19 +34,15 @@ void StaticLEDMode::onUpdate(AsyncWebServerRequest *request) {
 
 void StaticLEDMode::onDebugCommand(const std::string& command) {
     logger.debug("Incoming debug command: " + command);
-
     std::istringstream commandParser(command);
     std::string firstArgument = CommandUtils::parseNextWord(commandParser);
-    logger.debug("firstArgumentttt: " + firstArgument);
     if (firstArgument.empty())
         return;
     bool isInt = std::find_if(firstArgument.begin(),
                               firstArgument.end(), [](unsigned char c) { return !std::isdigit(c); }) == firstArgument.end();
-    logger.debug(std::string("isInt: ") + (isInt ? " yes" : "no"));
 
     if (isInt) {
         int pixelIndex = std::stoi(firstArgument);
-        logger.debug("aaaaaa: " + std::to_string(pixelIndex));
         LEDUtils::setSolidColor(LEDStripPtr, 0);
         LEDStripPtr.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(LEDConstants::DEFAULT_STATIC_COLOR));
         LEDStripPtr.Show();

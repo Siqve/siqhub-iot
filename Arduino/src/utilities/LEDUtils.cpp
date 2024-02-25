@@ -13,8 +13,8 @@ namespace LEDUtils {
     int getFoldedPixelIndex(int pixel) {
         int actualPixel = pixel;
         int pixelPlusOne = pixel + 1;
-        if (pixelPlusOne > LEDConstants::LED_PIXEL_COUNT / 2)
-            actualPixel = LEDConstants::LED_PIXEL_COUNT - pixelPlusOne;
+        if (pixelPlusOne > LED_PIXEL_COUNT / 2)
+            actualPixel = LED_PIXEL_COUNT - pixelPlusOne;
         return actualPixel;
     }
 

@@ -2,7 +2,6 @@
 #define ARDUINO_LEDUTILS_H
 
 #include <memory>
-#include "Adafruit_NeoPixel.h"
 #include "NeoPixelBus.h"
 
 namespace LEDUtils {

@@ -6,8 +6,8 @@
 
 class WiFiSession {
 public:
-    WiFiSession() : wifi_ssid(WiFiConstants::WIFI_SSID),
-                    wifi_pw(WiFiConstants::WIFI_PW),
+    WiFiSession() : wifi_ssid(WIFI_SSID),
+                    wifi_pw(WIFI_PW),
                     logger(DebugManager::getInstance().newLogger(
                             "WiFiSession")) {}
 

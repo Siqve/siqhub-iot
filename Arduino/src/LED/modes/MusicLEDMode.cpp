@@ -1,5 +1,6 @@
 #include "MusicLEDMode.h"
 #include "utilities/ColorUtils.h"
+#include "utilities/LEDUtils.h"
 
 #include <utility>
 
@@ -7,9 +8,9 @@
 #define SATURATION 255   /* Control the saturation of your leds */
 
 #define DEFAULT_BASE_FPS 20
-#define DEFAULT_SPEED 25   /* Controls the HUE increments per cycle */
+#define DEFAULT_SPEED 150   /* Controls the HUE increments per cycle */
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
-#define DEFAULT_BOUNCE 16000
+#define DEFAULT_BOUNCE 500000
 
 MusicLEDMode::MusicLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
                            std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)),
@@ -18,28 +19,26 @@ MusicLEDMode::MusicLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStri
                                                               bounce(DEFAULT_BOUNCE) {
 }
 
-uint16_t hue = 0;
-
-unsigned long lastBeat = millis();
-
 void MusicLEDMode::onActivate() {
     this->setFPS(DEFAULT_BASE_FPS);
 }
 
 
 void MusicLEDMode::loop() {
-    // Deprecated
-//    cycleFade();
-//    updateFPS();
+    cycleFade();
+    updateFPS();
+    LEDStripPtr.Show();
 }
 
 
+
 void MusicLEDMode::cycleFade() {
-//    incrementHue();
-//    for (int i = 0; i < LEDStripPtr.numPixels(); i++) {
-//        uint32_t color = ColorUtils::HSVToColor(hue + i * pixelColorHop, SATURATION, BRIGHTNESS);
-//        LEDStripPtr.setPixelColor(i, color);
-//    }
+    incrementHue();
+    for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
+        int foldedPixel = LEDUtils::getFoldedPixelIndex(i);
+        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + foldedPixel * pixelColorHop, SATURATION, BRIGHTNESS);
+        LEDStripPtr.SetPixelColor(i, color);
+    }
 }
 
 void MusicLEDMode::updateFPS() {
@@ -47,9 +46,6 @@ void MusicLEDMode::updateFPS() {
 }
 
 
-void MusicLEDMode::beat() {
-    speedBoost = static_cast<float> (bounce);
-}
 
 void MusicLEDMode::onUpdate(AsyncWebServerRequest *request) {
     if (request->hasParam("fps")) {
@@ -73,30 +69,56 @@ void MusicLEDMode::onUpdate(AsyncWebServerRequest *request) {
         int val = request->getParam("bounce")->value().toInt();
         bounce = val;
     }
+    if (request->hasParam("decayfactor")) {
+        int val = request->getParam("decayfactor")->value().toInt();
+        decayFactor = val;
+    }
+    if (request->hasParam("beat")) {
+        float beatPower = request->getParam("beat")->value().toFloat();
+        beat(beatPower);
+    }
 }
 
 
 float MusicLEDMode::getSpeedBoost() {
     return stabilizeSpeed();
 }
+unsigned long lastBeatTime = 0;
+
+void MusicLEDMode::beat(float beatPower) {
+    speedBoost = static_cast<float> (bounce) * beatPower; // Set the initial speed boost
+    lastBeatTime = millis(); // Record the current time as the last beat time
+}
 
 float MusicLEDMode::stabilizeSpeed() {
-    return speedBoost = max(speedBoost - pow(speedBoost/(10.2), 1.02)*0.1 - 10, 0.0);
+    unsigned long currentTime = millis(); // Get the current time
+    float timeSinceLastBeat = (currentTime - lastBeatTime) / 1000.0; // Convert to seconds
+
+    // Apply exponential decay to the speed boost
+    float decayFactorModifier = decayFactor / 100.0f;
+    logger.debug(std::to_string(decayFactorModifier));
+    speedBoost *= exp(-decayFactorModifier * timeSinceLastBeat);
+
+    // Ensure speed boost doesn't go below zero
+    speedBoost = max(speedBoost, 0.0f);
+
+    return speedBoost;
 }
 
 
 void MusicLEDMode::incrementHue() {
     //Decreasing hue will lead to effect coming from "source" outwards
-    hue -= !reverse ? speed : -speed;
+    currentHue -= !reverse ? speed : -speed;
 }
 
 void MusicLEDMode::debugButtonClick() {
-    beat();
+    beat(1);
+    logger.debug("Incoming beatttt!");
 }
 
 /**
  * Format: FPS, SPEED, PIXEL_HOP, REVERSE
  */
 String MusicLEDMode::getSettings() {
-    return String(baseFPS) + "," + String(speed) + "," + String(pixelColorHop) + "," + reverse + "," + String(bounce);
+    return String(baseFPS) + "," + String(speed) + "," + String(pixelColorHop) + "," + reverse + "," + String(bounce) + "," + String(decayFactor);
 }

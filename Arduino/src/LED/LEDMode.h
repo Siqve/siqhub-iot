@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <memory>
-#include "Adafruit_NeoPixel.h"
 #include "ESPAsyncWebServer.h"
 #include "NeoPixelBus.h"
 #include "utilities/DebugManager.h"

@@ -14,18 +14,20 @@ public:
     String getSettings() override;
 private:
     void cycleFade();
-    void beat();
+    void beat(float beatPower);
     void incrementHue();
+    void updateFPS();
+    float getSpeedBoost();
+    float stabilizeSpeed();
+
+    bool reverse = false;
     float speedBoost = 0;
     int baseFPS;
     int speed;
     int pixelColorHop;
     int bounce;
-    void updateFPS();
-    float getSpeedBoost();
-    float stabilizeSpeed();
-    bool reverse = false;
-
+    int decayFactor = 40;
+    uint16_t currentHue = 0;
 };
 
 #endif //ARDUINO_MUSICLEDMODE_H

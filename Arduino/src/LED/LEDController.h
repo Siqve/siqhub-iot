@@ -3,7 +3,6 @@
 
 #include "LEDMode.h"
 #include "ESPAsyncWebServer.h"
-#include "Adafruit_NeoPixel.h"
 #include "NeoPixelBus.h"
 #include "utilities/DebugManager.h"
 #include "Constants.h"
@@ -11,7 +10,7 @@
 
 class LEDController {
 public:
-    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LEDConstants::LED_PIXEL_COUNT)),
+    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT)),
                       logger(DebugManager::getInstance().newLogger("LEDController")) {};
     void setup();
     void loop();
