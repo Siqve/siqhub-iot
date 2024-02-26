@@ -1,13 +1,18 @@
 #include "LEDUtils.h"
 #include "ColorUtils.h"
-#include "Constants.h"
 
 namespace LEDUtils {
     void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, uint32_t color) {
         RgbColor rgbColor = ColorUtils::colorToRgbColor(color);
         LEDStripPtr.ClearTo(rgbColor);
-//        for (int i = 0; i < LEDStripPtr.PixelCount(); i++)
-//            LEDStripPtr.SetPixelColor(i, rgbColor);
+    }
+
+
+    int getAppropriateLedEffectPixel(int pixel) {
+        if (strcmp(PIOENV, "desk") == 0) {
+            return getFoldedPixelIndex(pixel);
+        }
+        return pixel;
     }
 
     int getFoldedPixelIndex(int pixel) {

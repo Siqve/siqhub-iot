@@ -27,7 +27,7 @@ void FadeLEDMode::loop() {
     LEDStripPtr.Show();
 }
 
-void FadeLEDMode::onUpdate(AsyncWebServerRequest *request) {
+void FadeLEDMode::onUpdate(AsyncWebServerRequest* request) {
     if (request->hasParam("fps")) {
         int val = request->getParam("fps")->value().toInt();
         setFPS(val);
@@ -51,8 +51,8 @@ void FadeLEDMode::onUpdate(AsyncWebServerRequest *request) {
 void FadeLEDMode::cycleFade() {
     incrementHue();
     for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
-        int foldedPixel = LEDUtils::getFoldedPixelIndex(i);
-        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + foldedPixel * pixelColorHop, SATURATION, BRIGHTNESS);
+        int ledEffectPixel = LEDUtils::getAppropriateLedEffectPixel(i);
+        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + pixelColorHop * ledEffectPixel, SATURATION, BRIGHTNESS);
         LEDStripPtr.SetPixelColor(i, color);
     }
 }

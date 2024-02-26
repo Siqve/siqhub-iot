@@ -31,12 +31,11 @@ void MusicLEDMode::loop() {
 }
 
 
-
 void MusicLEDMode::cycleFade() {
     incrementHue();
     for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
-        int foldedPixel = LEDUtils::getFoldedPixelIndex(i);
-        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + foldedPixel * pixelColorHop, SATURATION, BRIGHTNESS);
+        int ledEffectPixel = LEDUtils::getFoldedPixelIndex(i);
+        RgbColor color = ColorUtils::HSVToRgbColor(currentHue + pixelColorHop * ledEffectPixel, SATURATION, BRIGHTNESS);
         LEDStripPtr.SetPixelColor(i, color);
     }
 }
@@ -46,8 +45,7 @@ void MusicLEDMode::updateFPS() {
 }
 
 
-
-void MusicLEDMode::onUpdate(AsyncWebServerRequest *request) {
+void MusicLEDMode::onUpdate(AsyncWebServerRequest* request) {
     if (request->hasParam("fps")) {
         int val = request->getParam("fps")->value().toInt();
         setFPS(val);
@@ -83,6 +81,7 @@ void MusicLEDMode::onUpdate(AsyncWebServerRequest *request) {
 float MusicLEDMode::getSpeedBoost() {
     return stabilizeSpeed();
 }
+
 unsigned long lastBeatTime = 0;
 
 void MusicLEDMode::beat(float beatPower) {
@@ -120,5 +119,6 @@ void MusicLEDMode::debugButtonClick() {
  * Format: FPS, SPEED, PIXEL_HOP, REVERSE
  */
 String MusicLEDMode::getSettings() {
-    return String(baseFPS) + "," + String(speed) + "," + String(pixelColorHop) + "," + reverse + "," + String(bounce) + "," + String(decayFactor);
+    return String(baseFPS) + "," + String(speed) + "," + String(pixelColorHop) + "," + reverse + "," + String(bounce) +
+           "," + String(decayFactor);
 }
