@@ -25,8 +25,17 @@
 p {
   @apply text-text-main
 }
+
 h1, h2, h3, h4 {
   @apply text-text-header-main
+}
+
+h1 {
+  @apply text-6xl;
+}
+
+h2 {
+  @apply text-4xl;
 }
 
 body {
