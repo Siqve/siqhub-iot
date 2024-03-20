@@ -3,7 +3,7 @@ import { DeviceList } from "@/containers/DeviceList";
 
 const Home = () => {
     return (
-        <div className="flex flex-col gap-10">
+        <div>
             <HomeHeader />
             <DeviceList/>
         </div>
