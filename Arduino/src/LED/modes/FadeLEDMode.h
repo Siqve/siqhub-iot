@@ -9,13 +9,18 @@ class FadeLEDMode : public LEDMode {
     void loop() override;
     void onUpdate(AsyncWebServerRequest *request) override;
     String getSettings() override;
+    String getSettingsJSON();
 private:
-    void onActivate();
+    void onActivate() override;
     void cycleFade();
+    void updateFps();
     void incrementHue();
-    int baseFPS{};
-    int speed{};
-    int pixelColorHop{};
+
+    int ledFPS;
+    int ledSpeed;
+    int ledPixelHueStep;
+    int ledBrightness;
+
     uint16_t currentHue = 0;
     bool reverse = false;
 };
