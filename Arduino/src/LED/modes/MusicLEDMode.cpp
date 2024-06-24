@@ -51,8 +51,8 @@ void MusicLEDMode::onUpdate(AsyncWebServerRequest* request) {
         setFPS(val);
         baseFPS = val;
     }
-    if (request->hasParam("speed")) {
-        int val = request->getParam("speed")->value().toInt();
+    if (request->hasParam("ledSpeed")) {
+        int val = request->getParam("ledSpeed")->value().toInt();
         speed = val;
     }
     if (request->hasParam("hop")) {
