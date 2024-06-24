@@ -3,8 +3,8 @@
 #include "WebServerManager.h"
 
 const int WebServerManager::RESPONSE_STATUS_HTTP_OK = 200;
-const char* WebServerManager::RESPONSE_TYPE_PLAIN = "text/plain";
-const char* WebServerManager::RESPONSE_TYPE_HTML = "text/html";
+const int WebServerManager::RESPONSE_STATUS_HTTP_BAD = 400;
+const char* WebServerManager::RESPONSE_TYPE_JSON = "text/json";
 
 void WebServerManager::initServer() {
     server.begin();
@@ -24,7 +24,7 @@ void WebServerManager::addRequestListeners() {
 // Just used to indicate that server is running
 void WebServerManager::onLandingPage() {
     server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-        sendResponse(request, "Ok");
+        sendOKResponse(request);
     });
 }
 
@@ -34,21 +34,25 @@ void WebServerManager::onDebug() {
         if (request->hasParam("get")) {
             String getParam = request->getParam("get")->value();
             if (getParam == "update-id") {
-                sendResponse(request, std::to_string(logger.getLogUpdateId()).c_str());
+                sendOKResponse(request, std::to_string(logger.getLogUpdateId()));
                 return;
             }
         }
         else if (request->hasParam("cmd")) {
             String cmd = request->getParam("cmd")->value();
             DebugManager::getInstance().onDebugCommand(cmd.c_str());
-            sendResponse(request, "Ok");
+            sendOKResponse(request);;
             return;
         } else if (request->hasParam("boost")) {
             ledControllerPtr.incomingDebug();
-            sendResponse(request, "Ok");
+            sendOKResponse(request);
+            return;
+        } else if (request->hasParam("console")) {
+            sendOKResponse(request, logger.getLogFeed());
             return;
         }
-        sendResponse(request, logger.getLogFeed().c_str());
+        // TODO: Deprecate
+        sendOKResponse(request, logger.getLogFeed());
     });
 }
 
@@ -57,14 +61,14 @@ void WebServerManager::onDebug() {
 void WebServerManager::onUpdate() {
     server.on("/update", HTTP_GET, [this](AsyncWebServerRequest* request) {
         ledControllerPtr.incomingUpdate(request);
-        sendResponse(request);
+        sendOKResponse(request);
     });
 }
 
 // Request to retrieve active mode and settings
 void WebServerManager::onModeAndSettings() {
     server.on("/mode", HTTP_GET, [this](AsyncWebServerRequest* request) {
-        sendResponse(request, ledControllerPtr.getModeAndSettings().c_str());
+        sendOKResponse(request, ledControllerPtr.getModeAndSettings().c_str());
     });
 }
 
@@ -73,15 +77,33 @@ void WebServerManager::onSettings() {
     server.on("/settings", HTTP_GET, [this](AsyncWebServerRequest* request) {
         //Format: LED_PIXEL_COUNT,
         int LEDPixelCount = ledControllerPtr.getLEDStripPixelCount();
-        String response = String(LEDPixelCount) + ",";
-        sendResponse(request, response.c_str());
+        std::string response = std::to_string(LEDPixelCount) + ",";
+        sendOKResponse(request, response);
     });
 }
 
+void WebServerManager::sendOKResponse(AsyncWebServerRequest* request, const std::string& responsePlain) {
+    sendResponse(request, "\"" + responsePlain + "\"", RESPONSE_STATUS_HTTP_OK);
+}
 
-void WebServerManager::sendResponse(AsyncWebServerRequest* request, const char* responseText, int status,
-                                    const char* responseType) {
-    AsyncWebServerResponse* response = request->beginResponse(status, responseType, responseText);
+void WebServerManager::sendOKResponseJSON(AsyncWebServerRequest* request, const std::string& responseJSON) {
+    sendResponse(request, responseJSON, RESPONSE_STATUS_HTTP_OK);
+}
+
+void WebServerManager::sendBADResponsePlain(AsyncWebServerRequest* request, const std::string& responsePlain) {
+    sendResponse(request, "\"" + responsePlain + "\"", RESPONSE_STATUS_HTTP_BAD);
+}
+
+
+void WebServerManager::sendResponse(AsyncWebServerRequest* request, const std::string& responseJSON, int status) {
+    String finalResponse = String("{")
+                           + "\"status\": " + status;
+    if (!responseJSON.empty()) {
+        finalResponse += ", \"response\": " + String(responseJSON.c_str());
+    }
+    finalResponse += "}";
+
+    AsyncWebServerResponse* response = request->beginResponse(status, RESPONSE_TYPE_JSON, finalResponse);
     response->addHeader("Access-Control-Allow-Origin", "*");
     response->addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
     response->addHeader("Access-Control-Allow-Headers", "Content-Type");

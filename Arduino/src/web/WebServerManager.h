@@ -20,9 +20,11 @@ private:
 
     void addRequestListeners();
 
-    static void
-    sendResponse(AsyncWebServerRequest* request, const char* responseText = "", int status = RESPONSE_STATUS_HTTP_OK,
-                 const char* responseType = RESPONSE_TYPE_PLAIN);
+    static void sendResponse(AsyncWebServerRequest* request, const std::string& responseJSON, int status);
+
+    static void sendOKResponseJSON(AsyncWebServerRequest* request, const std::string& responseJSON = "");
+    static void sendOKResponse(AsyncWebServerRequest* request, const std::string& responsePlain = "");
+    static void sendBADResponsePlain(AsyncWebServerRequest* request, const std::string& responsePlain = "");
 
     void onLandingPage();
     void onDebug();
@@ -32,8 +34,10 @@ private:
 
 
     static const int RESPONSE_STATUS_HTTP_OK;
+    static const int RESPONSE_STATUS_HTTP_BAD;
     static const char* RESPONSE_TYPE_PLAIN;
     static const char* RESPONSE_TYPE_HTML;
+    static const char* RESPONSE_TYPE_JSON;
 };
 
 
