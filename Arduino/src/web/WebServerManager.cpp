@@ -1,6 +1,6 @@
-#include <sstream>
 #include <LittleFS.h>
 #include "WebServerManager.h"
+#include "utilities/TextUtils.h"
 
 const int WebServerManager::RESPONSE_STATUS_HTTP_OK = 200;
 const int WebServerManager::RESPONSE_STATUS_HTTP_BAD = 400;
@@ -41,14 +41,14 @@ void WebServerManager::onDebug() {
         else if (request->hasParam("cmd")) {
             String cmd = request->getParam("cmd")->value();
             DebugManager::getInstance().onDebugCommand(cmd.c_str());
-            sendOKResponse(request);;
+            sendOKResponse(request);
             return;
         } else if (request->hasParam("boost")) {
             ledControllerPtr.incomingDebug();
             sendOKResponse(request);
             return;
         } else if (request->hasParam("console")) {
-            sendOKResponse(request, logger.getLogFeed());
+            sendOKResponse(request, TextUtils::replaceAll(logger.getLogFeed(), "\n", "<br>"));
             return;
         }
         // TODO: Deprecate
