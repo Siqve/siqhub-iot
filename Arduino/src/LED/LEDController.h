@@ -4,7 +4,7 @@
 #include "LEDMode.h"
 #include "ESPAsyncWebServer.h"
 #include "NeoPixelBus.h"
-#include "debug/DebugManager.h"
+#include "debug/DebugCommandHandler.h"
 #include "Constants.h"
 
 

@@ -1,7 +1,7 @@
 #ifndef WIFISESSON_H
 #define WIFISESSON_H
 
-#include "debug/DebugManager.h"
+#include "debug/DebugCommandHandler.h"
 #include "Constants.h"
 #include "debug/Logger.h"
 

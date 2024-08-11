@@ -3,7 +3,7 @@
 
 #include "ESPAsyncWebServer.h"
 #include "LED/LEDController.h"
-#include "debug/DebugManager.h"
+#include "debug/DebugCommandHandler.h"
 #include "debug/Logger.h"
 
 class WebServerManager {

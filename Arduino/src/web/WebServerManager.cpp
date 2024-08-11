@@ -40,7 +40,7 @@ void WebServerManager::onDebug() {
         }
         else if (request->hasParam("cmd")) {
             String cmd = request->getParam("cmd")->value();
-            DebugManager::getInstance().onDebugCommand(cmd.c_str());
+            Debug::DebugCommandHandler::getInstance().execute(cmd.c_str());
             sendOKResponse(request);
             return;
         } else if (request->hasParam("boost")) {

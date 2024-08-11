@@ -14,7 +14,7 @@ void LEDController::setup() {
     initEffects();
     LEDStripPtr.Begin();
     getActiveMode()->onActivate();
-    DebugManager::getInstance().registerDebugCommandListener("led", [this](std::string& command) {
+    Debug::DebugCommandHandler::getInstance().registerListener("led", [this](std::string& command) {
         getActiveMode()->onDebugCommand(command);
     });
 }
@@ -26,6 +26,7 @@ void LEDController::loop() {
 
 //The loop function for LED
 unsigned long lastRun_FPS;
+
 void LEDController::loop_LED(unsigned long timeNow) {
     unsigned long timeLapsed = (timeNow - lastRun_FPS) % ULONG_MAXVAL;
     if (timeLapsed > (1000000.0 / activeFPS)) {
@@ -42,7 +43,7 @@ void LEDController::setFPS(int newFPS) {
     activeFPS = newFPS;
 }
 
-void LEDController::incomingUpdate(AsyncWebServerRequest *request) {
+void LEDController::incomingUpdate(AsyncWebServerRequest* request) {
     if (request->hasParam("mode")) {
         int newMode = request->getParam("mode")->value().toInt();
         if (newMode < 0 || newMode >= static_cast<int>(modes.size())) {
