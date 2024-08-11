@@ -1,15 +1,15 @@
 #ifndef WIFISESSON_H
 #define WIFISESSON_H
 
-#include "utilities/DebugManager.h"
+#include "debug/DebugManager.h"
 #include "Constants.h"
+#include "debug/Logger.h"
 
 class WiFiSession {
 public:
     WiFiSession() : wifi_ssid(WIFI_SSID),
                     wifi_pw(WIFI_PW),
-                    logger(DebugManager::getInstance().newLogger(
-                            "WiFiSession")) {}
+                    logger(Debug::Logger("WiFiSession")) {}
 
     void startSession();
     bool assureConnection();
@@ -17,7 +17,7 @@ public:
 private:
     const char* wifi_ssid, * wifi_pw;
     void printConnectingInfo();
-    DebugManager::Logger logger;
+    Debug::Logger logger;
 
 };
 

@@ -34,7 +34,7 @@ void WebServerManager::onDebug() {
         if (request->hasParam("get")) {
             String getParam = request->getParam("get")->value();
             if (getParam == "update-id") {
-                sendOKResponse(request, std::to_string(logger.getLogUpdateId()));
+                sendOKResponse(request, std::to_string(Debug::Logger::getLogUpdateId()));
                 return;
             }
         }
@@ -48,11 +48,11 @@ void WebServerManager::onDebug() {
             sendOKResponse(request);
             return;
         } else if (request->hasParam("console")) {
-            sendOKResponse(request, TextUtils::replaceAll(logger.getLogFeed(), "\n", "<br>"));
+            sendOKResponse(request, TextUtils::replaceAll(Debug::Logger::getLogFeed(), "\n", "<br>"));
             return;
         }
         // TODO: Deprecate
-        sendOKResponse(request, logger.getLogFeed());
+        sendOKResponse(request, Debug::Logger::getLogFeed());
     });
 }
 

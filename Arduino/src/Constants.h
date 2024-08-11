@@ -9,8 +9,5 @@ namespace LEDConstants {
     extern const uint32_t DEFAULT_STATIC_COLOR;
 }
 
-namespace DebugConstants {
-    extern const int MAX_LOG_BUFFER_SIZE;
-}
 
 #endif //ARDUINO_CONSTANTS_H

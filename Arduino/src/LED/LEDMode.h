@@ -5,7 +5,8 @@
 #include <memory>
 #include "ESPAsyncWebServer.h"
 #include "NeoPixelBus.h"
-#include "utilities/DebugManager.h"
+#include "debug/DebugManager.h"
+#include "debug/Logger.h"
 
 class LEDMode {
 public:
@@ -24,11 +25,11 @@ public:
     };
 protected:
     explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(DebugManager::getInstance().newLogger("LEDController")) {
+                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(Debug::Logger("LEDController")) {
         this->setFPS = std::move(setFPS);
     }
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr;
-    DebugManager::Logger logger;
+    Debug::Logger logger;
     std::function<void(int)> setFPS{};
 };
 

@@ -4,14 +4,14 @@
 #include "LEDMode.h"
 #include "ESPAsyncWebServer.h"
 #include "NeoPixelBus.h"
-#include "utilities/DebugManager.h"
+#include "debug/DebugManager.h"
 #include "Constants.h"
 
 
 class LEDController {
 public:
     LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT)),
-                      logger(DebugManager::getInstance().newLogger("LEDController")) {};
+                      logger(Debug::Logger("LEDController")) {};
     void setup();
     void loop();
     void incomingUpdate(AsyncWebServerRequest* request);
@@ -29,7 +29,7 @@ private:
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> LEDStripPtr;
     std::vector<std::shared_ptr<LEDMode>> modes;
 
-    DebugManager::Logger logger;
+    Debug::Logger logger;
 
     int activeModeNumber = 0;
     int activeFPS = 1;

@@ -3,20 +3,21 @@
 
 #include "ESPAsyncWebServer.h"
 #include "LED/LEDController.h"
-#include "utilities/DebugManager.h"
+#include "debug/DebugManager.h"
+#include "debug/Logger.h"
 
 class WebServerManager {
 public:
     explicit WebServerManager(LEDController& ledControllerPtr) :
             server(AsyncWebServer(80)), ledControllerPtr(ledControllerPtr),
-            logger(DebugManager::getInstance().newLogger("WebServerManager")) {}
+            logger(Debug::Logger("WebServerManager")) {}
 
     void initServer();
 
 private:
     AsyncWebServer server;
     LEDController& ledControllerPtr;
-    DebugManager::Logger logger;
+    Debug::Logger logger;
 
     void addRequestListeners();
 
