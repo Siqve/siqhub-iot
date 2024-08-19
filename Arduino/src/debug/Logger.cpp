@@ -12,24 +12,24 @@ namespace Debug {
 
 
     void Logger::info(const std::string& line) {
-        log(line, "Info", className);
+        log(line, "INFO", className);
     }
 
     void Logger::warn(const std::string& line) {
-        log(line, "Warn", className);
+        log(line, "WARN", className);
     }
 
     void Logger::error(const std::string& line) {
-        log(line, "Error", className);
+        log(line, "ERROR", className);
     }
 
     void Logger::debug(const std::string& line) {
-        log(line, "Debug", className);
+        log(line, "DEBUG", className);
     }
 
 
     void Logger::soloDebugLog(const std::string& line) {
-        log(line, "Debug");
+        log(line, "DEBUG");
     }
 
 
@@ -47,27 +47,31 @@ namespace Debug {
     }
 
 
-    void Logger::log(const std::string& line, const std::string& callerName, const std::string& logLevel) {
+    void Logger::log(const std::string& line, const std::string& logLevel, const std::string& callerName) {
         checkAndTrimLogger(line);
         bool prefixAdded = false;
+        if (!logLevel.empty()) {
+            logBuffer << logLevel;
+            Serial.print(logLevel.c_str());
+            prefixAdded = true;
+        }
+
         if (!callerName.empty()) {
+            if (prefixAdded) {
+                logBuffer << " -- ";
+                Serial.print(" -- ");
+            }
             logBuffer << "[" + callerName + "]";
             Serial.print("[");
             Serial.print(callerName.c_str());
             Serial.print("]");
             prefixAdded = true;
         }
-        if (!logLevel.empty()) {
-            logBuffer << "[" + logLevel + "]";
-            Serial.print("[");
-            Serial.print(logLevel.c_str());
-            Serial.print("]");
-            prefixAdded = true;
-        }
+
 
         if (prefixAdded) {
-            logBuffer << " - ";
-            Serial.print(" - ");
+            logBuffer << ": ";
+            Serial.print(": ");
         }
 
         logBuffer << line << "\n";
