@@ -11,20 +11,56 @@ namespace Debug {
     int Logger::maxLogBufferSize = 2048;
 
 
-    void Logger::log(const std::string& line, const std::string& logType) {
+    void Logger::info(const std::string& line) {
+        log(line, "Info", className);
+    }
+
+    void Logger::warn(const std::string& line) {
+        log(line, "Warn", className);
+    }
+
+    void Logger::error(const std::string& line) {
+        log(line, "Error", className);
+    }
+
+    void Logger::debug(const std::string& line) {
+        log(line, "Debug", className);
+    }
+
+
+    void Logger::soloDebugLog(const std::string& line) {
+        log(line, "Debug");
+    }
+
+
+    std::string Logger::getLogFeed() {
+        return logBuffer.str();
+    }
+
+    void Logger::clearLog() {
+        logBuffer.str("");
+        logBuffer.clear();
+    }
+
+    int Logger::getLogUpdateId() {
+        return logUpdateId;
+    }
+
+
+    void Logger::log(const std::string& line, const std::string& callerName, const std::string& logLevel) {
         checkAndTrimLogger(line);
         bool prefixAdded = false;
-        if (!className.empty()) {
-            logBuffer << "[" + className + "]";
+        if (!callerName.empty()) {
+            logBuffer << "[" + callerName + "]";
             Serial.print("[");
-            Serial.print(className.c_str());
+            Serial.print(callerName.c_str());
             Serial.print("]");
             prefixAdded = true;
         }
-        if (!logType.empty()) {
-            logBuffer << "[" + logType + "]";
+        if (!logLevel.empty()) {
+            logBuffer << "[" + logLevel + "]";
             Serial.print("[");
-            Serial.print(logType.c_str());
+            Serial.print(logLevel.c_str());
             Serial.print("]");
             prefixAdded = true;
         }
@@ -40,8 +76,10 @@ namespace Debug {
         Serial.println(line.c_str());
     }
 
+    /**
+     * Check if new entry fits the buffer, if not trim the buffer
+     */
     void Logger::checkAndTrimLogger(const std::string& line) {
-        // Check if new entry fits the buffer, if not trim the buffer
         std::streamoff potentialNewSize =
                 static_cast<std::streamoff>(logBuffer.tellp()) + static_cast<std::streamoff>(line.length());
 
@@ -64,35 +102,6 @@ namespace Debug {
     }
 
 
-    void Logger::info(const std::string& line) {
-        log(line, "Info");
-    }
-
-    void Logger::warn(const std::string& line) {
-        log(line, "Warn");
-    }
-
-    void Logger::error(const std::string& line) {
-        log(line, "Error");
-    }
-
-    void Logger::debug(const std::string& line) {
-        log(line, "Debug");
-    }
-
-
-    std::string Logger::getLogFeed() {
-        return logBuffer.str();
-    }
-
-    void Logger::clearLog() {
-        logBuffer.str("");
-        logBuffer.clear();
-    }
-
-    int Logger::getLogUpdateId() {
-        return logUpdateId;
-    }
 
 }
 
