@@ -9,14 +9,26 @@ LEDController ledController;
 WiFiSession wifiSession;
 WebServerManager webServer = WebServerManager(ledController);
 
-void setup() {
+
+void systemSetup() {
     Serial.begin(115200);
-    LittleFS.begin(); // Starts the LittleFS file system
+    LittleFS.begin();
+}
+
+void webSetup() {
     wifiSession.startSession();
     webServer.initServer();
-    ledController.setup();
     ArduinoOTA.begin();
 }
+
+void setup() {
+    systemSetup();
+    webSetup();
+
+    supabaseClient.start();
+    ledController.setup();
+}
+
 
 void loop() {
     if (!wifiSession.assureConnection())
