@@ -5,8 +5,9 @@
 
 void WiFiSession::startSession() {
     WiFi.config(IPAddress(192, 168, 0, DEVICE_IP),
+                IPAddress(192, 168, 0, 1),
                 IPAddress(255, 255, 255, 0),
-                IPAddress(192, 168, 0, 1));
+                IPAddress(1, 1, 1, 1));
     WiFi.begin(wifi_ssid, wifi_pw);
 }
 
