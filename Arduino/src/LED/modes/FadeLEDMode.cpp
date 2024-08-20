@@ -32,26 +32,26 @@ void FadeLEDMode::updateFps() {
     setFPS(ledFPS);
 }
 
-void FadeLEDMode::onUpdate(AsyncWebServerRequest* request) {
-    if (request->hasParam("fps")) {
-        int val = request->getParam("fps")->value().toInt();
+void FadeLEDMode::onUpdate(const RequestWrapper& request) {
+    if (request.hasParam("fps")) {
+        int val = request.getParam("fps")->value().toInt();
         ledFPS = val;
         updateFps();
     }
-    if (request->hasParam("ledSpeed")) {
-        int val = request->getParam("ledSpeed")->value().toInt();
+    if (request.hasParam("ledSpeed")) {
+        int val = request.getParam("ledSpeed")->value().toInt();
         ledSpeed = val;
     }
-    if (request->hasParam("hop")) {
-        int val = request->getParam("hop")->value().toInt();
+    if (request.hasParam("hop")) {
+        int val = request.getParam("hop")->value().toInt();
         ledPixelHueStep = val;
     }
-    if (request->hasParam("brightness")) {
-        int val = request->getParam("brightness")->value().toInt();
+    if (request.hasParam("brightness")) {
+        int val = request.getParam("brightness")->value().toInt();
         ledBrightness = val;
     }
-    if (request->hasParam("reverse")) {
-        int val = request->getParam("reverse")->value().toInt();
+    if (request.hasParam("reverse")) {
+        int val = request.getParam("reverse")->value().toInt();
         reverse = val;
     }
 }

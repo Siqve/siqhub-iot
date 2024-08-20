@@ -45,34 +45,34 @@ void MusicLEDMode::updateFPS() {
 }
 
 
-void MusicLEDMode::onUpdate(AsyncWebServerRequest* request) {
-    if (request->hasParam("fps")) {
-        int val = request->getParam("fps")->value().toInt();
+void MusicLEDMode::onUpdate(const RequestWrapper& request) {
+    if (request.hasParam("fps")) {
+        int val = request.getParam("fps")->value().toInt();
         setFPS(val);
         baseFPS = val;
     }
-    if (request->hasParam("ledSpeed")) {
-        int val = request->getParam("ledSpeed")->value().toInt();
+    if (request.hasParam("ledSpeed")) {
+        int val = request.getParam("ledSpeed")->value().toInt();
         speed = val;
     }
-    if (request->hasParam("hop")) {
-        int val = request->getParam("hop")->value().toInt();
+    if (request.hasParam("hop")) {
+        int val = request.getParam("hop")->value().toInt();
         pixelColorHop = val;
     }
-    if (request->hasParam("reverse")) {
-        int val = request->getParam("reverse")->value().toInt();
+    if (request.hasParam("reverse")) {
+        int val = request.getParam("reverse")->value().toInt();
         reverse = val;
     }
-    if (request->hasParam("bounce")) {
-        int val = request->getParam("bounce")->value().toInt();
+    if (request.hasParam("bounce")) {
+        int val = request.getParam("bounce")->value().toInt();
         bounce = val;
     }
-    if (request->hasParam("decayfactor")) {
-        int val = request->getParam("decayfactor")->value().toInt();
+    if (request.hasParam("decayfactor")) {
+        int val = request.getParam("decayfactor")->value().toInt();
         decayFactor = val;
     }
-    if (request->hasParam("beat")) {
-        float beatPower = request->getParam("beat")->value().toFloat();
+    if (request.hasParam("beat")) {
+        float beatPower = request.getParam("beat")->value().toFloat();
         beat(beatPower);
     }
 }

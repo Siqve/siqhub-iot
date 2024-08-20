@@ -9,7 +9,7 @@ public:
     MusicLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, std::function<void(int)> setFPS);
     void onActivate() override;
     void loop() override;
-    void onUpdate(AsyncWebServerRequest *request) override;
+    void onUpdate(const RequestWrapper& request) override;
     void debugButtonClick() override;
     String getSettings() override;
 private:

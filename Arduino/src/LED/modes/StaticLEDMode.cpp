@@ -22,9 +22,9 @@ void StaticLEDMode::loop() {
     LEDStripPtr.Show();
 }
 
-void StaticLEDMode::onUpdate(AsyncWebServerRequest *request) {
-    if (request->hasParam(REQUEST_PARAM_STATIC_COLOR)) {
-        String val = request->getParam(REQUEST_PARAM_STATIC_COLOR)->value();
+void StaticLEDMode::onUpdate(const RequestWrapper& request) {
+    if (request.hasParam(REQUEST_PARAM_STATIC_COLOR)) {
+        String val = request.getParam(REQUEST_PARAM_STATIC_COLOR)->value();
         uint32_t color = ColorUtils::hexStringToColor(val.c_str());
         uint32_t gammaCorrected = ColorUtils::Gamma32(color);
         staticColor = gammaCorrected;

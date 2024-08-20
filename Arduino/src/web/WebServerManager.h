@@ -1,45 +1,34 @@
-#ifndef CONTROLLERWEBSERVER_H
-#define CONTROLLERWEBSERVER_H
+#ifndef WEBSERVERMANAGER_H
+#define WEBSERVERMANAGER_H
 
 #include "ESPAsyncWebServer.h"
-#include "LED/LEDController.h"
-#include "debug/DebugCommandHandler.h"
 #include "debug/Logger.h"
+#include "RequestWrapper.h"
 
 class WebServerManager {
 public:
-    explicit WebServerManager(LEDController& ledControllerPtr) :
-            server(AsyncWebServer(80)), ledControllerPtr(ledControllerPtr),
-            logger(Debug::Logger("WebServerManager")) {}
+    WebServerManager(const WebServerManager&) = delete;
+    WebServerManager& operator=(const WebServerManager&) = delete;
 
-    void initServer();
+    static WebServerManager& getInstance() {
+        static WebServerManager instance;  // Guaranteed to be lazy initialized and destroyed correctly
+        return instance;
+    }
+
+    void init();
+
+    void registerPageCallback(const std::string& path,
+                              const std::function<AsyncWebServerResponse*(const RequestWrapper&)>& callback);
 
 private:
-    AsyncWebServer server;
-    LEDController& ledControllerPtr;
-    Debug::Logger logger;
+    WebServerManager() {}
 
-    void addRequestListeners();
-
-    static void sendResponse(AsyncWebServerRequest* request, const std::string& responseJSON, int status);
-
-    static void sendOKResponseJSON(AsyncWebServerRequest* request, const std::string& responseJSON = "");
-    static void sendOKResponse(AsyncWebServerRequest* request, const std::string& responsePlain = "");
-    static void sendBADResponsePlain(AsyncWebServerRequest* request, const std::string& responsePlain = "");
+    AsyncWebServer server = AsyncWebServer(80);
+    Debug::Logger logger = Debug::Logger("WebServerManager");
 
     void onLandingPage();
-    void onDebug();
-    void onUpdate();
-    void onModeAndSettings();
-    void onSettings();
-
-
-    static const int RESPONSE_STATUS_HTTP_OK;
-    static const int RESPONSE_STATUS_HTTP_BAD;
-    static const char* RESPONSE_TYPE_PLAIN;
-    static const char* RESPONSE_TYPE_HTML;
-    static const char* RESPONSE_TYPE_JSON;
+    void onLogger();
 };
 
 
-#endif //CONTROLLERWEBSERVER_H
+#endif //WEBSERVERMANAGER_H

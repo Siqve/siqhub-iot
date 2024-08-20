@@ -3,6 +3,7 @@
 #include "LED/modes/FadeLEDMode.h"
 #include "LED/modes/StaticLEDMode.h"
 #include "LED/modes/MusicLEDMode.h"
+#include "web/WebServerManager.h"
 
 void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
@@ -14,6 +15,16 @@ void LEDController::setup() {
     initEffects();
     LEDStripPtr.Begin();
     getActiveMode()->onActivate();
+
+    WebServerManager::getInstance().registerPageCallback("/update", [this](const RequestWrapper& request) {
+        return onUpdate(request);
+    });
+
+//        TODO, respond with a correct JSON format
+//    WebServerManager::getInstance().registerPageCallback("/led", [this](const RequestWrapper& request) {
+//        request.ok(getModeAndSettings().c_str());
+//    });
+
     Debug::DebugCommandHandler::getInstance().registerListener("led", [this](std::string& command) {
         getActiveMode()->onDebugCommand(command);
     });
@@ -43,19 +54,21 @@ void LEDController::setFPS(int newFPS) {
     activeFPS = newFPS;
 }
 
-void LEDController::incomingUpdate(AsyncWebServerRequest* request) {
-    if (request->hasParam("mode")) {
-        int newMode = request->getParam("mode")->value().toInt();
+AsyncWebServerResponse* LEDController::onUpdate(const RequestWrapper& request) {
+    if (request.hasParam("mode")) {
+        int newMode = request.getParam("mode")->value().toInt();
         if (newMode < 0 || newMode >= static_cast<int>(modes.size())) {
             logger.warn(std::string("Received request for nonexistent mode: ") + std::to_string(newMode));
-            return;
+            return request.ok();
         }
         activeModeNumber = newMode;
         logger.info(std::string("Active mode updated to: ") + std::to_string(activeModeNumber));
         getActiveMode()->onActivate();
-        return;
+        request.ok();
+        return request.ok();
     }
     getActiveMode()->onUpdate(request);
+    return request.ok();
 }
 
 

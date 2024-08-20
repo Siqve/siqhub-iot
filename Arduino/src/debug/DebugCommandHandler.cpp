@@ -5,7 +5,7 @@
 
 namespace Debug {
 
-    void DebugCommandHandler::execute(const std::string& command) {
+    bool DebugCommandHandler::execute(const std::string& command) {
         std::string log = "Debug command received: " + command;
         logger.debug(log);
         std::istringstream commandParser(command);
@@ -13,7 +13,7 @@ namespace Debug {
         std::string initialCommand = CommandUtils::parseNextWord(commandParser);
 
         if (commandListeners.find(initialCommand) == commandListeners.end()) {
-            return;
+            return false;
         }
 
         std::string argumentsString;
@@ -22,6 +22,7 @@ namespace Debug {
         }
 
         commandListeners[initialCommand](argumentsString);
+        return true;
     }
 
     void

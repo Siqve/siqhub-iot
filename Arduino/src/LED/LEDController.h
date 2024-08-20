@@ -6,6 +6,7 @@
 #include "NeoPixelBus.h"
 #include "debug/DebugCommandHandler.h"
 #include "Constants.h"
+#include "web/RequestWrapper.h"
 
 
 class LEDController {
@@ -14,7 +15,6 @@ public:
                       logger(Debug::Logger("LEDController")) {};
     void setup();
     void loop();
-    void incomingUpdate(AsyncWebServerRequest* request);
     void incomingDebug();
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
@@ -38,6 +38,7 @@ private:
     void loop_LED(unsigned long timeNow);
     void setFPS(int newFPS);
     void debugButtonClick();
+    AsyncWebServerResponse* onUpdate(const RequestWrapper& request);
 };
 
 #endif //ARDUINO_LEDCONTROLLER_H

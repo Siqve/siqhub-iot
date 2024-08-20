@@ -7,6 +7,7 @@
 #include "NeoPixelBus.h"
 #include "debug/DebugCommandHandler.h"
 #include "debug/Logger.h"
+#include "web/RequestWrapper.h"
 
 class LEDMode {
 public:
@@ -17,7 +18,7 @@ public:
     virtual void onActivate() {};
     virtual void debugButtonClick() {};
 
-    virtual void onUpdate(AsyncWebServerRequest* request) {};
+    virtual void onUpdate(const RequestWrapper& request) {};
     virtual void onDebugCommand(const std::string& command) {};
 
     virtual String getSettings() {

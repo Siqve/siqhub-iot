@@ -7,8 +7,6 @@
 
 LEDController ledController;
 WiFiSession wifiSession;
-WebServerManager webServer = WebServerManager(ledController);
-
 
 void systemSetup() {
     Serial.begin(115200);
@@ -17,7 +15,7 @@ void systemSetup() {
 
 void webSetup() {
     wifiSession.startSession();
-    webServer.initServer();
+    WebServerManager::getInstance().init();
     ArduinoOTA.begin();
 }
 
@@ -25,7 +23,6 @@ void setup() {
     systemSetup();
     webSetup();
 
-    supabaseClient.start();
     ledController.setup();
 }
 
