@@ -1,8 +1,8 @@
 #ifndef WEBSERVERMANAGER_H
 #define WEBSERVERMANAGER_H
 
-#include "ESPAsyncWebServer.h"
 #include "debug/Logger.h"
+#include "ESPAsyncWebServer.h"
 #include "RequestWrapper.h"
 
 class WebServerManager {
@@ -16,7 +16,6 @@ public:
     }
 
     void init();
-
     void registerPageCallback(const std::string& path,
                               const std::function<AsyncWebServerResponse*(const RequestWrapper&)>& callback);
 
