@@ -64,7 +64,6 @@ AsyncWebServerResponse* LEDController::onUpdate(const RequestWrapper& request) {
         activeModeNumber = newMode;
         logger.info(std::string("Active mode updated to: ") + std::to_string(activeModeNumber));
         getActiveMode()->onActivate();
-        request.ok();
         return request.ok();
     }
     getActiveMode()->onUpdate(request);
