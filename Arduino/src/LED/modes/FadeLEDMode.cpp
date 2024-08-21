@@ -10,7 +10,7 @@
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
 FadeLEDMode::FadeLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                         std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)),
+                         std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("FadeLEDMode"), std::move(setFPS)),
                                                             ledFPS(DEFAULT_BASE_FPS),
                                                             ledSpeed(DEFAULT_SPEED),
                                                             ledPixelHueStep(DEFAULT_PIXEL_COLOR_HOP),

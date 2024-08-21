@@ -11,7 +11,7 @@
 #define DEFAULT_BOUNCE 500000
 
 MusicLEDMode::MusicLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                           std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)),
+                           std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("MusicLEDMode"), std::move(setFPS)),
                                                               baseFPS(DEFAULT_BASE_FPS), speed(DEFAULT_SPEED),
                                                               pixelColorHop(DEFAULT_PIXEL_COLOR_HOP),
                                                               bounce(DEFAULT_BOUNCE) {

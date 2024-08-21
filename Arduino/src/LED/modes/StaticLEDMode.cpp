@@ -7,7 +7,7 @@
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
 
 StaticLEDMode::StaticLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                             std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, std::move(setFPS)) {
+                             std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("StaticLEDMode"), std::move(setFPS)) {
 }
 
 void StaticLEDMode::onActivate() {

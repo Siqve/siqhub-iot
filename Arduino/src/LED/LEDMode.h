@@ -20,8 +20,8 @@ public:
         return {};
     };
 protected:
-    explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(Debug::Logger("LEDController")) {
+    explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, Debug::Logger logger,
+                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(std::move(logger)) {
         this->setFPS = std::move(setFPS);
     }
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr;
