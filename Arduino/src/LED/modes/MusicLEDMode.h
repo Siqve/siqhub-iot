@@ -1,6 +1,4 @@
-#ifndef ARDUINO_MUSICLEDMODE_H
-#define ARDUINO_MUSICLEDMODE_H
-
+#pragma once
 
 #include "LED/LEDMode.h"
 
@@ -29,5 +27,3 @@ private:
     int decayFactor = 40;
     uint16_t currentHue = 0;
 };
-
-#endif //ARDUINO_MUSICLEDMODE_H

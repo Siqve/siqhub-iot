@@ -1,5 +1,4 @@
-#ifndef ARDUINO_CONSTANTS_H
-#define ARDUINO_CONSTANTS_H
+#pragma once
 
 #include "Arduino.h"
 
@@ -10,4 +9,3 @@ namespace LEDConstants {
 }
 
 
-#endif //ARDUINO_CONSTANTS_H

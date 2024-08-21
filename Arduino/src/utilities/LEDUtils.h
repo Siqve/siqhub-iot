@@ -1,5 +1,4 @@
-#ifndef ARDUINO_LEDUTILS_H
-#define ARDUINO_LEDUTILS_H
+#pragma once
 
 #include <memory>
 #include "NeoPixelBus.h"
@@ -9,6 +8,3 @@ namespace LEDUtils {
     extern int getAppropriateLedEffectPixel(int pixel);
     extern int getFoldedPixelIndex(int pixel);
 };
-
-
-#endif //ARDUINO_LEDUTILS_H

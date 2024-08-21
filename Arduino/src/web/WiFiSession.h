@@ -1,5 +1,4 @@
-#ifndef WIFISESSON_H
-#define WIFISESSON_H
+#pragma once
 
 #include "debug/DebugCommandHandler.h"
 #include "Constants.h"
@@ -20,6 +19,3 @@ private:
     Debug::Logger logger;
 
 };
-
-
-#endif //WIFISESSON_H

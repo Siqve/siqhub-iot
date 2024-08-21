@@ -1,5 +1,4 @@
-#ifndef ARDUINO_REQUESTWRAPPER_H
-#define ARDUINO_REQUESTWRAPPER_H
+#pragma once
 
 #include "ESPAsyncWebServer.h"
 
@@ -25,6 +24,3 @@ private:
 
     [[nodiscard]] AsyncWebServerResponse* createResponse(int status, const std::string& responseContent) const;
 };
-
-
-#endif //ARDUINO_REQUESTWRAPPER_H

@@ -1,5 +1,4 @@
-#ifndef ARDUINO_LOGGER_H
-#define ARDUINO_LOGGER_H
+#pragma once
 
 #include "Arduino.h"
 #include <sstream>
@@ -32,6 +31,3 @@ namespace Debug {
 
     };
 }
-
-
-#endif //ARDUINO_LOGGER_H

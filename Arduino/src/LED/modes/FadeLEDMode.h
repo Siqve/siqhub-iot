@@ -1,5 +1,4 @@
-#ifndef BPMEffect_h
-#define BPMEffect_h
+#pragma once
 
 #include "../LEDMode.h"
 
@@ -24,4 +23,3 @@ private:
     uint16_t currentHue = 0;
     bool reverse = false;
 };
-#endif

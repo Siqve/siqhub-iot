@@ -1,5 +1,4 @@
-#ifndef CUSTOMLOGGER_H
-#define CUSTOMLOGGER_H
+#pragma once
 
 #include "ESPAsyncWebServer.h"
 #include "Constants.h"
@@ -29,5 +28,3 @@ namespace Debug {
     };
 
 }
-
-#endif //CUSTOMLOGGER_H

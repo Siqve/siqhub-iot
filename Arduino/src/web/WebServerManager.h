@@ -1,5 +1,4 @@
-#ifndef WEBSERVERMANAGER_H
-#define WEBSERVERMANAGER_H
+#pragma once
 
 #include "debug/Logger.h"
 #include "ESPAsyncWebServer.h"
@@ -28,6 +27,3 @@ private:
     void onLandingPage();
     void onLogger();
 };
-
-
-#endif //WEBSERVERMANAGER_H

@@ -1,5 +1,4 @@
-#ifndef ColorUtils_h
-#define ColorUtils_h
+#pragma once
 
 #include "NeoPixelBus.h"
 
@@ -13,5 +12,3 @@ namespace ColorUtils {
     extern int * colorToRGB(uint32_t color);
     extern RgbColor colorToRgbColor(uint32_t color);
 }
-
-#endif

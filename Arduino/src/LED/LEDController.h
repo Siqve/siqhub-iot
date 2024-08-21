@@ -1,5 +1,4 @@
-#ifndef ARDUINO_LEDCONTROLLER_H
-#define ARDUINO_LEDCONTROLLER_H
+#pragma once
 
 #include "LEDMode.h"
 #include "ESPAsyncWebServer.h"
@@ -40,5 +39,3 @@ private:
     void debugButtonClick();
     AsyncWebServerResponse* onUpdate(const RequestWrapper& request);
 };
-
-#endif //ARDUINO_LEDCONTROLLER_H

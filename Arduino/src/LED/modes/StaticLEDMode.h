@@ -1,6 +1,4 @@
-#ifndef ARDUINO_STATICLEDMODE_H
-#define ARDUINO_STATICLEDMODE_H
-
+#pragma once
 
 #include "LED/LEDMode.h"
 #include "Constants.h"
@@ -15,5 +13,3 @@ public:
 private:
     uint32_t staticColor = LEDConstants::DEFAULT_STATIC_COLOR;
 };
-
-#endif //ARDUINO_STATICLEDMODE_H

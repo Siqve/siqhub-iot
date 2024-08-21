@@ -1,5 +1,4 @@
-#ifndef ARDUINO_LEDMODE_H
-#define ARDUINO_LEDMODE_H
+#pragma once
 
 #include <utility>
 #include <memory>
@@ -33,6 +32,3 @@ protected:
     Debug::Logger logger;
     std::function<void(int)> setFPS{};
 };
-
-
-#endif //ARDUINO_LEDMODE_H
