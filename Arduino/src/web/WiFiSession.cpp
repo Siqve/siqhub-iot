@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include "WiFiSession.h"
 #include "Constants.h"
-#include <iostream>
 
 void WiFiSession::startSession() {
     WiFi.config(IPAddress(192, 168, 0, DEVICE_IP),

@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <HardwareSerial.h>
 #include <ArduinoOTA.h>
 #include "web/WiFiSession.h"
 #include "web/WebServerManager.h"

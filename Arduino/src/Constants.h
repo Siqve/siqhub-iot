@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Arduino.h"
+#include <cstdint>
 
 extern const unsigned long ULONG_MAXVAL;
 

@@ -1,7 +1,4 @@
-//
-// Created by Siqve on 11/08/2024.
-//
-
+#include <HardwareSerial.h>
 #include "Logger.h"
 
 namespace Debug {
@@ -45,7 +42,6 @@ namespace Debug {
     int Logger::getLogUpdateId() {
         return logUpdateId;
     }
-
 
     void Logger::log(const std::string& line, const std::string& logLevel, const std::string& callerName) {
         checkAndTrimLogger(line);
@@ -104,8 +100,6 @@ namespace Debug {
             logBuffer.seekp(0, std::ios::end);
         }
     }
-
-
 
 }
 

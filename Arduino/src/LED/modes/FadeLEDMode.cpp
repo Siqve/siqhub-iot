@@ -1,7 +1,5 @@
-#include "Arduino.h"
 #include "FadeLEDMode.h"
 
-#include <utility>
 #include "utilities/ColorUtils.h"
 #include "utilities/LEDUtils.h"
 

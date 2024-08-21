@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "NeoPixelBus.h"
 
 namespace LEDUtils {

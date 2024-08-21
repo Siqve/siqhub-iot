@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Arduino.h"
 #include <sstream>
-
 
 namespace Debug {
     class Logger {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ESPAsyncWebServer.h"
 #include "Constants.h"
 #include "Logger.h"
 #include <map>
+#include <functional>
 
 namespace Debug {
 

@@ -2,8 +2,6 @@
 #include "utilities/ColorUtils.h"
 #include "utilities/LEDUtils.h"
 
-#include <utility>
-
 #define BRIGHTNESS 255   /* Control the brightness of your leds */
 #define SATURATION 255   /* Control the saturation of your leds */
 

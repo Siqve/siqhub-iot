@@ -1,9 +1,9 @@
 #include "LEDController.h"
-#include "Constants.h"
 #include "LED/modes/FadeLEDMode.h"
 #include "LED/modes/StaticLEDMode.h"
 #include "LED/modes/MusicLEDMode.h"
 #include "web/WebServerManager.h"
+#include "debug/DebugCommandHandler.h"
 
 void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
