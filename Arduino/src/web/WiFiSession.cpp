@@ -1,6 +1,13 @@
-#include <ESP8266WiFi.h>
 #include "WiFiSession.h"
 #include "Constants.h"
+
+#ifdef ESP32
+  #include <WiFi.h>  // Include the WiFi library for ESP32
+#elif defined(ESP8266)
+  #include <ESP8266WiFi.h>  // Include the WiFi library for ESP8266
+#else
+  #error "Unsupported board! Please select an ESP32 or ESP8266 board."
+#endif
 
 void WiFiSession::startSession() {
     WiFi.config(IPAddress(192, 168, 0, DEVICE_IP),
