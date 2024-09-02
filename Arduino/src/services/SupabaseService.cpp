@@ -48,6 +48,7 @@ void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t l
             break;
         case WStype_CONNECTED:
             logger.info("WebSocket connected");
+//            TODO Create a subscribeToRealtime function so that other classes have to subscribe to this, take inspo from WebServer
             webSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage("color", "id=eq.20").c_str());
             connecting = false;
             break;

@@ -2,7 +2,7 @@
 #include "hardware/LED/modes/FadeLEDMode.h"
 #include "hardware/LED/modes/StaticLEDMode.h"
 #include "hardware/LED/modes/MusicLEDMode.h"
-#include "networking/web/WebServerManager.h"
+#include "networking/web/WebServer.h"
 #include "debug/DebugCommandHandler.h"
 
 void LEDController::initEffects() {
@@ -16,7 +16,7 @@ void LEDController::setup() {
     LEDStripPtr.Begin();
     getActiveMode()->onActivate();
 
-    WebServerManager::getInstance().registerPageCallback("/update", [this](const RequestWrapper& request) {
+    WebServer::getInstance().registerPageCallback("/update", [this](const RequestWrapper& request) {
         return onUpdate(request);
     });
 

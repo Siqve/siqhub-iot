@@ -1,7 +1,7 @@
 #include <HardwareSerial.h>
 #include <ArduinoOTA.h>
 #include "networking/WiFiSession.h"
-#include "networking/web/WebServerManager.h"
+#include "networking/web/WebServer.h"
 #include "hardware/LED/LEDController.h"
 #include <LittleFS.h>
 #include "services/SupabaseService.h"
@@ -18,7 +18,7 @@ void systemSetup() {
 
 void webSetup() {
     wifiSession.startSession();
-    WebServerManager::getInstance().init();
+    WebServer::getInstance().init();
     ArduinoOTA.begin();
 }
 

@@ -1,7 +1,7 @@
-#include "WebServerManager.h"
+#include "WebServer.h"
 #include "utils/TextUtils.h"
 
-void WebServerManager::init() {
+void WebServer::init() {
     server.begin();
     logger.info("HTTP server started.");
     onLandingPage();
@@ -10,14 +10,14 @@ void WebServerManager::init() {
 
 
 // Just used to indicate that server is running
-void WebServerManager::onLandingPage() {
+void WebServer::onLandingPage() {
     registerPageCallback("/", [](const RequestWrapper& request) {
         return request.ok();
     });
 }
 
 // Request to retrieve logger information
-void WebServerManager::onLogger() {
+void WebServer::onLogger() {
     registerPageCallback("/logger", [](const RequestWrapper& request) {
         if (request.hasParam("update-id")) {
             return request.ok(std::to_string(Debug::Logger::getLogUpdateId()));
@@ -26,7 +26,7 @@ void WebServerManager::onLogger() {
     });
 }
 
-void WebServerManager::registerPageCallback(const std::string& path, const std::function<AsyncWebServerResponse*(
+void WebServer::registerPageCallback(const std::string& path, const std::function<AsyncWebServerResponse*(
         const RequestWrapper&)>& callback) {
     logger.info("Registering callback for path: " + path);
     server.on(path.c_str(), HTTP_GET, RequestWrapper::useWrapper(callback));

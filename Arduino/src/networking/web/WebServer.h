@@ -4,13 +4,13 @@
 #include "ESPAsyncWebServer.h"
 #include "RequestWrapper.h"
 
-class WebServerManager {
+class WebServer {
 public:
-    WebServerManager(const WebServerManager&) = delete;
-    WebServerManager& operator=(const WebServerManager&) = delete;
+    WebServer(const WebServer&) = delete;
+    WebServer& operator=(const WebServer&) = delete;
 
-    static WebServerManager& getInstance() {
-        static WebServerManager instance;  // Guaranteed to be lazy initialized and destroyed correctly
+    static WebServer& getInstance() {
+        static WebServer instance;  // Guaranteed to be lazy initialized and destroyed correctly
         return instance;
     }
 
@@ -19,7 +19,7 @@ public:
                               const std::function<AsyncWebServerResponse*(const RequestWrapper&)>& callback);
 
 private:
-    WebServerManager() {}
+    WebServer() {}
 
     AsyncWebServer server = AsyncWebServer(80);
     Debug::Logger logger = Debug::Logger("WebServerManager");

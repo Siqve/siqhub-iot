@@ -1,13 +1,13 @@
 #include "DebugCommandHandler.h"
 
 #include "networking/web/RequestWrapper.h"
-#include "networking/web/WebServerManager.h"
+#include "networking/web/WebServer.h"
 #include "utils/TextUtils.h"
 
 namespace Debug {
 
     DebugCommandHandler::DebugCommandHandler() : logger(Debug::Logger("DebugCommandHandler")) {
-        WebServerManager::getInstance().registerPageCallback("/debug", [](const RequestWrapper& request) {
+        WebServer::getInstance().registerPageCallback("/debug", [](const RequestWrapper& request) {
             String cmd = request.getParam("cmd")->value();
             if (!Debug::DebugCommandHandler::getInstance().execute(cmd.c_str())) {
                 return request.notFound();
