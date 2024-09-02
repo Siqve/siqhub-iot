@@ -1,4 +1,4 @@
-#include "WiFiSession.h"
+#include "WiFiManager.h"
 #include "Constants.h"
 
 #ifdef ESP32
@@ -9,7 +9,7 @@
   #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
-void WiFiSession::startSession() {
+void WiFiManager::connect() {
     WiFi.config(IPAddress(192, 168, 0, DEVICE_IP),
                 IPAddress(192, 168, 0, 1),
                 IPAddress(255, 255, 255, 0),
@@ -18,7 +18,7 @@ void WiFiSession::startSession() {
 }
 
 bool lastWifiCheck_connected = false;
-bool WiFiSession::assureConnection() {
+bool WiFiManager::assureConnection() {
     if (WiFi.status() == WL_CONNECTED) {
         if (!lastWifiCheck_connected) {
             printConnected();
@@ -35,7 +35,7 @@ bool WiFiSession::assureConnection() {
 }
 
 unsigned long timeLastRun_ConnectWiFi;
-void WiFiSession::printConnectingInfo() {
+void WiFiManager::printConnectingInfo() {
     unsigned long timeNow = millis();
     unsigned long timeLapsed = (timeNow - timeLastRun_ConnectWiFi) % ULONG_MAXVAL;
     if (timeLapsed < 2000)
@@ -45,7 +45,7 @@ void WiFiSession::printConnectingInfo() {
 }
 
 
-void WiFiSession::printConnected() {
+void WiFiManager::printConnected() {
     logger.info("Successfully connected to WiFi!");
     logger.info(std::string("SSID: ") + wifi_ssid + ", IP-address: " + WiFi.localIP().toString().c_str());
 }

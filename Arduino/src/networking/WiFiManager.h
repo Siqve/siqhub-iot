@@ -2,13 +2,13 @@
 
 #include "debug/Logger.h"
 
-class WiFiSession {
+class WiFiManager {
 public:
-    WiFiSession() : wifi_ssid(WIFI_SSID),
+    WiFiManager() : wifi_ssid(WIFI_SSID),
                     wifi_pw(WIFI_PW),
                     logger(Debug::Logger("WiFiSession")) {}
 
-    void startSession();
+    void connect();
     bool assureConnection();
     void printConnected();
 private:

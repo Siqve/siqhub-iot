@@ -1,7 +1,7 @@
 #include "WebServer.h"
 #include "utils/TextUtils.h"
 
-void WebServer::init() {
+void WebServer::start() {
     server.begin();
     logger.info("HTTP server started.");
     onLandingPage();

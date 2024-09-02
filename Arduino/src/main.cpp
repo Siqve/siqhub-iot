@@ -1,13 +1,13 @@
 #include <HardwareSerial.h>
 #include <ArduinoOTA.h>
-#include "networking/WiFiSession.h"
+#include "networking/WiFiManager.h"
 #include "networking/web/WebServer.h"
 #include "hardware/LED/LEDController.h"
 #include <LittleFS.h>
 #include "services/SupabaseService.h"
 
 LEDController ledController;
-WiFiSession wifiSession;
+WiFiManager wifiSession;
 SupabaseService supabaseClient;
 
 
@@ -17,8 +17,8 @@ void systemSetup() {
 }
 
 void webSetup() {
-    wifiSession.startSession();
-    WebServer::getInstance().init();
+    wifiSession.connect();
+    WebServer::getInstance().start();
     ArduinoOTA.begin();
 }
 

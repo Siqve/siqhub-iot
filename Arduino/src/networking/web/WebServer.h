@@ -14,7 +14,7 @@ public:
         return instance;
     }
 
-    void init();
+    void start();
     void registerPageCallback(const std::string& path,
                               const std::function<AsyncWebServerResponse*(const RequestWrapper&)>& callback);
 
