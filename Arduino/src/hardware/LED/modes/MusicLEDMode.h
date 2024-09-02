@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LED/LEDMode.h"
+#include "hardware/LED/LEDMode.h"
 
 class MusicLEDMode : public LEDMode {
 public:

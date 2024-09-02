@@ -2,7 +2,7 @@
 #include <ArduinoOTA.h>
 #include "web/WiFiSession.h"
 #include "web/WebServerManager.h"
-#include "LED/LEDController.h"
+#include "hardware/LED/LEDController.h"
 #include <LittleFS.h>
 #include "web/SupabaseClient.h"
 

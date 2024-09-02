@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LED/LEDMode.h"
+#include "hardware/LED/LEDMode.h"
 #include "Constants.h"
 
 class StaticLEDMode : public LEDMode {
