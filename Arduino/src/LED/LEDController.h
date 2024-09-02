@@ -7,7 +7,7 @@
 
 class LEDController {
 public:
-    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT)),
+    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5)),
                       logger(Debug::Logger("LEDController")) {};
     void setup();
     void loop();
