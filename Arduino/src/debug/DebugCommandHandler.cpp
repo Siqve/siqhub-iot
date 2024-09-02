@@ -1,8 +1,8 @@
 #include "DebugCommandHandler.h"
 
 #include "utilities/CommandUtils.h"
-#include "web/RequestWrapper.h"
-#include "web/WebServerManager.h"
+#include "networking/web/RequestWrapper.h"
+#include "networking/web/WebServerManager.h"
 
 namespace Debug {
 

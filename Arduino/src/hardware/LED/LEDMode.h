@@ -2,7 +2,7 @@
 
 #include "NeoPixelBus.h"
 #include "debug/Logger.h"
-#include "web/RequestWrapper.h"
+#include "networking/web/RequestWrapper.h"
 
 class LEDMode {
 public:
