@@ -4,9 +4,12 @@
 #include "web/WebServerManager.h"
 #include "LED/LEDController.h"
 #include <LittleFS.h>
+#include "web/SupabaseClient.h"
 
 LEDController ledController;
 WiFiSession wifiSession;
+SupabaseClient supabaseClient;
+
 
 void systemSetup() {
     Serial.begin(115200);
@@ -31,5 +34,6 @@ void loop() {
     if (!wifiSession.assureConnection())
         return;
     ArduinoOTA.handle();
+    supabaseClient.loop();
     ledController.loop();
 }
