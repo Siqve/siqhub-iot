@@ -2,7 +2,7 @@
 
 #include "networking/web/RequestWrapper.h"
 #include "networking/web/WebServerManager.h"
-#include "utilities/TextUtils.h"
+#include "utils/TextUtils.h"
 
 namespace Debug {
 

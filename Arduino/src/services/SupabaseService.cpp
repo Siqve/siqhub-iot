@@ -1,5 +1,5 @@
 #include "SupabaseService.h"
-#include "utilities/SupabaseUtils.h"
+#include "utils/SupabaseUtils.h"
 #include "ArduinoJson.h"
 
 #ifdef ESP32
