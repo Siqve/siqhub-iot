@@ -2,7 +2,7 @@
 
 #include "utilities/ColorUtils.h"
 #include "utilities/LEDUtils.h"
-#include "utilities/CommandUtils.h"
+#include "utilities/TextUtils.h"
 
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
 
@@ -35,7 +35,7 @@ void StaticLEDMode::onUpdate(const RequestWrapper& request) {
 void StaticLEDMode::onDebugCommand(const std::string& command) {
     logger.debug("Incoming debug command: " + command);
     std::istringstream commandParser(command);
-    std::string firstArgument = CommandUtils::parseNextWord(commandParser);
+    std::string firstArgument = TextUtils::parseNextWord(commandParser);
     if (firstArgument.empty())
         return;
     bool isInt = std::find_if(firstArgument.begin(),

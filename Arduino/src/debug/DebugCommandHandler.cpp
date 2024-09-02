@@ -1,8 +1,8 @@
 #include "DebugCommandHandler.h"
 
-#include "utilities/CommandUtils.h"
 #include "networking/web/RequestWrapper.h"
 #include "networking/web/WebServerManager.h"
+#include "utilities/TextUtils.h"
 
 namespace Debug {
 
@@ -22,7 +22,7 @@ namespace Debug {
         logger.debug(log);
         std::istringstream commandParser(command);
 
-        std::string initialCommand = CommandUtils::parseNextWord(commandParser);
+        std::string initialCommand = TextUtils::parseNextWord(commandParser);
 
         if (commandListeners.find(initialCommand) == commandListeners.end()) {
             return false;

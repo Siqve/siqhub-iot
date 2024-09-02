@@ -1,4 +1,5 @@
 #include "TextUtils.h"
+#include <sstream>
 
 namespace TextUtils {
 
@@ -10,5 +11,13 @@ namespace TextUtils {
         }
         return str;
     }
+
+    std::string parseNextWord(std::istringstream& istringstream) {
+        istringstream >> std::ws;
+        std::string nextWord;
+        istringstream >> nextWord;
+        return nextWord;
+    }
+
 
 }
