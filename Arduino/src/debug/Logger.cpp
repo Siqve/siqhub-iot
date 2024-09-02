@@ -1,11 +1,18 @@
 #include <HardwareSerial.h>
 #include "Logger.h"
 
+
+#ifdef ESP8266
+  #define LOG_BUFFER_SIZE 2048
+#else
+  #define LOG_BUFFER_SIZE 4096
+#endif
+
 namespace Debug {
 
     std::ostringstream Logger::logBuffer;
     int Logger::logUpdateId = 0;
-    int Logger::maxLogBufferSize = 2048;
+    int Logger::maxLogBufferSize = LOG_BUFFER_SIZE ;
 
 
     void Logger::info(const std::string& line) {
