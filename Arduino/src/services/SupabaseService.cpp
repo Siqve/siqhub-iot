@@ -65,7 +65,7 @@ void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t l
 }
 
 
-std::unique_ptr<JsonDocument> SupabaseService::sendRequest(const std::string& url, const std::string& query) {
+std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url, const std::string& query) {
     WiFiClientSecure wifiClient;
     wifiClient.setInsecure();
     HTTPClient httpsClient;
@@ -74,7 +74,7 @@ std::unique_ptr<JsonDocument> SupabaseService::sendRequest(const std::string& ur
     logger.info("Sending request to: " + url);
     if (!httpsClient.begin(wifiClient, url.c_str())) {
         logger.error("Unable to connect to the token url");
-        return nullptr;
+        return std::nullopt;
     }
 
     httpsClient.addHeader("apiKey", SUPABASE_API_KEY);
@@ -89,15 +89,14 @@ std::unique_ptr<JsonDocument> SupabaseService::sendRequest(const std::string& ur
     if (httpCode <= 0) {
         logger.error(("Request failed. Error: " + HTTPClient::errorToString(httpCode)).c_str());
         httpsClient.end();
-        return nullptr;
+        return std::nullopt;
     }
 
-    auto doc = std::unique_ptr<JsonDocument>(new JsonDocument());
-    deserializeJson(*doc, httpsClient.getString());
+    JsonDocument doc;
+    deserializeJson(doc, httpsClient.getString());
     httpsClient.end();
     return doc;
 }
-
 
 
 void SupabaseService::processWebSocketMessage(const std::string& message) {
@@ -106,6 +105,7 @@ void SupabaseService::processWebSocketMessage(const std::string& message) {
 }
 
 uint32_t lastHeartbeatMillis = 0;
+
 void SupabaseService::manageHeartbeat() {
     if (millis() - lastHeartbeatMillis >= 30000) {
         logger.info("Sending Supabase Realtime heartbeat");
@@ -135,23 +135,26 @@ void SupabaseService::acquireToken() {
             std::string(R"({"email": ")") + SUPABASE_USER_EMAIL + R"(", "password": ")" + SUPABASE_USER_PASSWORD +
             "\"}";
 
-    auto responseJson = sendRequest(SupabaseUtils::getTokenUrl(SUPABASE_PROJECT_REFERENCE), postQuery);
-    if (!responseJson) {
+    auto responseJsonOptional = sendRequest(SupabaseUtils::getTokenUrl(SUPABASE_PROJECT_REFERENCE), postQuery);
+    if (!responseJsonOptional.has_value()) {
         logger.error("Token request failed. No response received");
         return;
-    }
 
-    if (!responseJson->containsKey(TOKEN_RESPONSE_ACCESS_TOKEN_KEY)) {
+    }
+    JsonDocument responseJson = responseJsonOptional.value();
+
+
+    if (!responseJson.containsKey(TOKEN_RESPONSE_ACCESS_TOKEN_KEY)) {
         logger.error("Token request failed. Error: " +
-                     (responseJson->containsKey(TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY)
-                      ? (*responseJson)[TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
+                     (responseJson.containsKey(TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY)
+                      ? responseJson[TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
                       : "Unknown error"));
         return;
     }
 
     SupabaseToken newToken;
-    newToken.accessToken = (*responseJson)[TOKEN_RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
-    newToken.expiresAt = (*responseJson)[TOKEN_RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
+    newToken.accessToken = responseJson[TOKEN_RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
+    newToken.expiresAt = responseJson[TOKEN_RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
     token = newToken;
     logger.info("token acquired: " + newToken.accessToken);
     logger.info("Supabase token acquired successfully");

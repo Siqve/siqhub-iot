@@ -4,6 +4,7 @@
 #include "debug/Logger.h"
 #include <cstdint>
 #include "ArduinoJson.h"
+#include <optional>
 
 struct SupabaseToken {
     std::string accessToken;
@@ -26,7 +27,7 @@ private:
     bool checkToken();
     void acquireToken();
 
-    std::unique_ptr<JsonDocument> sendRequest(const std::string& url, const std::string& query = "");
+    std::optional<JsonDocument> sendRequest(const std::string& url, const std::string& query = "");
 
     WebSocketsClient webSocket;
     Debug::Logger logger;
