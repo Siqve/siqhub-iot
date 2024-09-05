@@ -3,11 +3,13 @@
 #include "ArduinoJson.h"
 
 #ifdef ESP32
-  #include <HTTPClient.h>  // Include the WiFi library for ESP32
+
+#include <HTTPClient.h>  // Include the WiFi library for ESP32
+
 #elif defined(ESP8266)
-  #include <ESP8266HTTPClient.h>  // Include the WiFi library for ESP8266
+#include <ESP8266HTTPClient.h>  // Include the WiFi library for ESP8266
 #else
-  #error "Unsupported board! Please select an ESP32 or ESP8266 board."
+#error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
 static const std::string TOKEN_RESPONSE_ACCESS_TOKEN_KEY = "access_token";
@@ -22,7 +24,6 @@ void SupabaseService::loop() {
         return;
     }
     manageHeartbeat();
-
     webSocket.loop();
 }
 
@@ -39,6 +40,21 @@ void SupabaseService::connectRealtime() {
         this->onWebSocketEvent(type, payload, length);
     });
     connecting = true;
+}
+
+
+void SupabaseService::processWebSocketMessage(const std::string& message) {
+    logger.debug("Processing WebSocket message: " + message);
+    JsonDocument doc;
+    deserializeJson(doc, message);
+
+//    TODO: Get this to work.
+//   Then start to work on core/SettingsManager, which will subscribe to the settings table for device with the same name as this device "hops32"
+// from this create a color listener "if right device" etc. etc.
+    auto topic = doc["topic"].as<std::string>();
+    if (channelCallbacks.find(topic) != channelCallbacks.end()) {
+        channelCallbacks[topic](doc["payload"]["data"].as<JsonDocument>());
+    }
 }
 
 void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
@@ -62,6 +78,13 @@ void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t l
             logger.info("Received unsupported WebSocket event: " + std::to_string(type));
             break;
     }
+}
+
+void
+SupabaseService::createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic,
+                                       const std::function<void(const JsonDocument&)>& callback) {
+    webSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
+    channelCallbacks[topic] = callback;
 }
 
 
@@ -98,11 +121,6 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
     return doc;
 }
 
-
-void SupabaseService::processWebSocketMessage(const std::string& message) {
-    JsonDocument doc;
-    deserializeJson(doc, message);
-}
 
 uint32_t lastHeartbeatMillis = 0;
 
@@ -159,5 +177,4 @@ void SupabaseService::acquireToken() {
     logger.info("token acquired: " + newToken.accessToken);
     logger.info("Supabase token acquired successfully");
 }
-
 

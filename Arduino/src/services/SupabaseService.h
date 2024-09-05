@@ -5,6 +5,7 @@
 #include <cstdint>
 #include "ArduinoJson.h"
 #include <optional>
+#include <map>
 
 struct SupabaseToken {
     std::string accessToken;
@@ -16,6 +17,8 @@ public:
     SupabaseService() : logger(Debug::Logger("SupabaseClient")) {};
 
     void loop();
+    void createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonDocument&)>& callback);
+
 private:
     void initialize();
 
@@ -32,8 +35,9 @@ private:
     WebSocketsClient webSocket;
     Debug::Logger logger;
     SupabaseToken token;
+    std::map<std::string, std::function<void(const JsonDocument&)>> channelCallbacks;
 
-    bool initialized = false;
+
     bool connecting = false;
 
 };

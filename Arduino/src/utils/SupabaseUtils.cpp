@@ -25,16 +25,31 @@ namespace SupabaseUtils {
             return "/realtime/v1/websocket?apikey=" + apiKey + "&log_level=info&vsn=1.0.0";
         }
 
-        std::string createJoinMessage(const std::string& table, const std::string& filter) {
+        std::string createJoinMessage(const std::string& table, const std::string& filter, const std::optional<std::string>& topic) {
             JsonDocument json;
             json["event"] = "phx_join";
-            json["topic"] = std::string("realtime:") + PIOENV + ":" + table + ":" + filter;
+            if (topic.has_value()) {
+                json["topic"] = topic.value();
+            } else {
+                json["topic"] = std::string("realtime:") + PIOENV + ":" + table + ":" + filter;
+            }
             json["payload"]["config"]["postgres_changes"][0]["event"] = "UPDATE";
             json["payload"]["config"]["postgres_changes"][0]["schema"] = "public";
             json["payload"]["config"]["postgres_changes"][0]["table"] = table;
             json["payload"]["config"]["postgres_changes"][0]["filter"] = filter;
             json["ref"] = "Creating join message. Device: " + std::string(PIOENV) + ", table: " + table + ", filter: " +
                           filter;
+            std::string message;
+            serializeJson(json, message);
+            return message;
+        }
+
+        std::string createLeaveMessage(const std::string& topic) {
+            JsonDocument json;
+            json["event"] = "phx_leave";
+            json["topic"] = topic;
+            json["payload"] = "{}";
+            json["ref"] = "Leaving topic: " + topic;
             std::string message;
             serializeJson(json, message);
             return message;
