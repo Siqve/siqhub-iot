@@ -3,7 +3,6 @@
 #include "networking/WiFiManager.h"
 #include "networking/web/WebServer.h"
 #include "hardware/LED/LEDController.h"
-#include <LittleFS.h>
 #include "services/SupabaseService.h"
 
 LEDController ledController;
@@ -13,7 +12,6 @@ SupabaseService supabaseClient;
 
 void systemSetup() {
     Serial.begin(115200);
-    LittleFS.begin(true);
 }
 
 void webSetup() {
