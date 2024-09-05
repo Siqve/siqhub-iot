@@ -13,7 +13,7 @@ SupabaseService supabaseClient;
 
 void systemSetup() {
     Serial.begin(115200);
-    LittleFS.begin();
+    LittleFS.begin(true);
 }
 
 void webSetup() {
