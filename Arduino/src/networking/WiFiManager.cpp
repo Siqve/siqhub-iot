@@ -45,6 +45,6 @@ void WiFiManager::printConnectingInfo() {
 
 void WiFiManager::printConnected() {
     logger.info("Successfully connected to WiFi!");
-    logger.info(std::string("SSID: ") + WIFI_PW + ", IP-address: " + WiFi.localIP().toString().c_str());
+    logger.info(std::string("SSID: ") + WIFI_SSID + ", IP-address: " + WiFi.localIP().toString().c_str());
 }
 
