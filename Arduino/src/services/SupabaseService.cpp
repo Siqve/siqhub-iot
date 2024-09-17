@@ -47,13 +47,13 @@ void SupabaseService::processWebSocketMessage(const std::string& message) {
     JsonDocument doc;
     deserializeJson(doc, message);
 
-    auto topic = doc[SupabaseConstants::REALTIME_TOPIC_KEY].as<std::string>();
+    auto topic = doc[SupabaseConstants::Realtime::TOPIC_KEY].as<std::string>();
     logger.info(std::string("Received message on topic: ") + topic);
 
     auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
     if (channelCallbacks.find(topicFiltered) != channelCallbacks.end()) {
-        if (doc[SupabaseConstants::REALTIME_PAYLOAD_KEY].containsKey(SupabaseConstants::REALTIME_PAYLOAD_DATA_KEY)) {
-            channelCallbacks[topic](doc[SupabaseConstants::REALTIME_PAYLOAD_KEY][SupabaseConstants::REALTIME_PAYLOAD_DATA_KEY].as<JsonObject>());
+        if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
+            channelCallbacks[topic](doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY].as<JsonObject>());
         }
     }
 }
@@ -161,17 +161,17 @@ void SupabaseService::acquireToken() {
     }
     JsonDocument responseJson = responseJsonOptional.value();
 
-    if (!responseJson.containsKey(SupabaseConstants::TOKEN_RESPONSE_ACCESS_TOKEN_KEY)) {
+    if (!responseJson.containsKey(SupabaseConstants::Token::RESPONSE_ACCESS_TOKEN_KEY)) {
         logger.error("Token request failed. Error: " +
-                     (responseJson.containsKey(SupabaseConstants::TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY)
-                      ? responseJson[SupabaseConstants::TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
+                     (responseJson.containsKey(SupabaseConstants::Token::RESPONSE_ERROR_DESCRIPTION_KEY)
+                      ? responseJson[SupabaseConstants::Token::RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
                       : "Unknown error"));
         return;
     }
 
     SupabaseToken newToken;
-    newToken.accessToken = responseJson[SupabaseConstants::TOKEN_RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
-    newToken.expiresAt = responseJson[SupabaseConstants::TOKEN_RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
+    newToken.accessToken = responseJson[SupabaseConstants::Token::RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
+    newToken.expiresAt = responseJson[SupabaseConstants::Token::RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
     token = newToken;
     logger.info("token acquired: " + newToken.accessToken);
     logger.info("Supabase token acquired successfully");
