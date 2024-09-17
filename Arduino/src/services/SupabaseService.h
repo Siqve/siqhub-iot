@@ -33,7 +33,7 @@ private:
     void manageRealtimeHeartbeat();
 
     WebSocketsClient realtimeWebSocket;
-    std::map<std::string, std::function<void(const JsonObject&)>> channelCallbacks;
+    std::map<std::string, std::function<void(const JsonObject&)>> realtimeChannelCallbacks;
 
     bool realtimeConnecting = false;
     Debug::Logger logger = Debug::Logger("SupabaseService");

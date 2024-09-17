@@ -49,9 +49,9 @@ void SupabaseService::processRealtimeMessage(const std::string& message) {
     logger.info(std::string("Received message on topic: ") + topic);
 
     auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
-    if (channelCallbacks.find(topicFiltered) != channelCallbacks.end()) {
+    if (realtimeChannelCallbacks.find(topicFiltered) != realtimeChannelCallbacks.end()) {
         if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
-            channelCallbacks[topic](
+            realtimeChannelCallbacks[topic](
                     doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY].as<JsonObject>());
         }
     }
@@ -83,7 +83,7 @@ SupabaseService::createRealtimeChannel(const std::string& table, const std::stri
                                        const std::function<void(const JsonObject&)>& callback) {
     logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
     realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
-    channelCallbacks[topic] = callback;
+    realtimeChannelCallbacks[topic] = callback;
 }
 
 
