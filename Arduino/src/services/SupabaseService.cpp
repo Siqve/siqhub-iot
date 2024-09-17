@@ -96,7 +96,7 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
 
     logger.info("Sending request to: " + url);
     if (!httpsClient.begin(wifiClient, url.c_str())) {
-        logger.error("Unable to connect to the token url");
+        logger.error("Unable to connect to request URL");
         return std::nullopt;
     }
 
@@ -131,49 +131,3 @@ void SupabaseService::manageHeartbeat() {
         lastHeartbeatMillis = millis();
     }
 }
-
-
-bool SupabaseService::checkToken() {
-    if (token.expiresAt * 1000 < millis()) {
-        if (token.expiresAt == 0) {
-            logger.info("No token available.");
-        } else {
-            logger.info("Token expired.");
-        }
-        return false;
-    }
-    return true;
-}
-
-
-void SupabaseService::acquireToken() {
-    logger.info("Starting token acquiring process");
-
-    std::string postQuery =
-            std::string(R"({"email": ")") + SUPABASE_USER_EMAIL + R"(", "password": ")" + SUPABASE_USER_PASSWORD +
-            "\"}";
-
-    auto responseJsonOptional = sendRequest(SupabaseUtils::getTokenUrl(SUPABASE_PROJECT_REFERENCE), postQuery);
-    if (!responseJsonOptional.has_value()) {
-        logger.error("Token request failed. No response received");
-        return;
-
-    }
-    JsonDocument responseJson = responseJsonOptional.value();
-
-    if (!responseJson.containsKey(SupabaseConstants::Token::RESPONSE_ACCESS_TOKEN_KEY)) {
-        logger.error("Token request failed. Error: " +
-                     (responseJson.containsKey(SupabaseConstants::Token::RESPONSE_ERROR_DESCRIPTION_KEY)
-                      ? responseJson[SupabaseConstants::Token::RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
-                      : "Unknown error"));
-        return;
-    }
-
-    SupabaseToken newToken;
-    newToken.accessToken = responseJson[SupabaseConstants::Token::RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
-    newToken.expiresAt = responseJson[SupabaseConstants::Token::RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
-    token = newToken;
-    logger.info("token acquired: " + newToken.accessToken);
-    logger.info("Supabase token acquired successfully");
-}
-

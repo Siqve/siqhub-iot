@@ -12,10 +12,6 @@ namespace SupabaseUtils {
         return "https://" + reference + ".supabase.co/";
     }
 
-    std::string getTokenUrl(const std::string& reference) {
-        return getUrl(reference) + "auth/v1/token?grant_type=password";
-    }
-
     std::string getRESTUrl(const std::string& reference, const std::string& table, const std::string& selectQuery) {
         return getUrl(reference) + "rest/v1/" + table;
     }

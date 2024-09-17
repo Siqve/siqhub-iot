@@ -7,11 +7,6 @@
 #include <optional>
 #include <map>
 
-struct SupabaseToken {
-    std::string accessToken;
-    uint32_t expiresAt;
-};
-
 class SupabaseService {
 public:
     SupabaseService(const SupabaseService&) = delete;
@@ -36,15 +31,11 @@ private:
     std::optional<JsonDocument> sendRequest(const std::string& url, const std::string& query = "");
 
     void manageHeartbeat();
-    bool checkToken();
-    void acquireToken();
 
     WebSocketsClient webSocket;
-    SupabaseToken token;
     std::map<std::string, std::function<void(const JsonObject&)>> channelCallbacks;
 
     Debug::Logger logger = Debug::Logger("SupabaseService");
-
 
     bool connecting = false;
 
