@@ -36,14 +36,13 @@ void LEDController::loop() {
 }
 
 //The loop function for LED
-unsigned long lastRun_FPS;
-
+unsigned long lastLoopTime;
 void LEDController::loop_LED(unsigned long timeNow) {
-    unsigned long timeLapsed = (timeNow - lastRun_FPS) % ULONG_MAXVAL;
-    if (timeLapsed > (1000000.0 / activeFPS)) {
-        lastRun_FPS = timeNow;
-        getActiveMode()->loop();
+    if (timeNow - lastLoopTime < (1000000.0 / activeFPS)) {
+        return;
     }
+    lastLoopTime = timeNow;
+    getActiveMode()->loop();
 }
 
 void LEDController::debugButtonClick() {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "hardware/LED/LEDMode.h"
-#include "Constants.h"
 
 class StaticLEDMode : public LEDMode {
 public:
@@ -11,5 +10,5 @@ public:
     void onUpdate(const RequestWrapper& request) override;
     void onDebugCommand(const std::string& command) override;
 private:
-    uint32_t staticColor = LEDConstants::DEFAULT_STATIC_COLOR;
+    uint32_t staticColor = 16711680; // Default static color, red
 };

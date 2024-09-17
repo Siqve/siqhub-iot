@@ -1,5 +1,4 @@
 #include "WiFiManager.h"
-#include "Constants.h"
 
 #ifdef ESP32
   #include <WiFi.h>  // Include the WiFi library for ESP32
@@ -34,13 +33,12 @@ bool WiFiManager::assureConnection() {
     return false;
 }
 
-unsigned long timeLastRun_ConnectWiFi;
+unsigned long lastPrintTime;
 void WiFiManager::printConnectingInfo() {
     unsigned long timeNow = millis();
-    unsigned long timeLapsed = (timeNow - timeLastRun_ConnectWiFi) % ULONG_MAXVAL;
-    if (timeLapsed < 2000)
+    if (timeNow - lastPrintTime < 2000)
         return;
-    timeLastRun_ConnectWiFi = timeNow;
+    lastPrintTime = timeNow;
     logger.info(std::string("Connecting... (ssid: ") + wifi_ssid + ")");
 }
 
