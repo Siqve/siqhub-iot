@@ -7,7 +7,6 @@
 
 LEDController ledController;
 WiFiManager wifiSession;
-SupabaseService supabaseClient;
 
 
 void systemSetup() {
@@ -31,6 +30,6 @@ void loop() {
         return;
 
     ArduinoOTA.handle();
-    supabaseClient.loop();
+    SupabaseService::getInstance().loop();
     ledController.loop();
 }

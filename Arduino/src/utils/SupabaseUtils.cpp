@@ -1,5 +1,6 @@
 #include "SupabaseUtils.h"
 #include "ArduinoJson.h"
+#include "TextUtils.h"
 
 namespace SupabaseUtils {
 
@@ -29,7 +30,7 @@ namespace SupabaseUtils {
             JsonDocument json;
             json["event"] = "phx_join";
             if (topic.has_value()) {
-                json["topic"] = topic.value();
+                json["topic"] = std::string("realtime:") + topic.value();
             } else {
                 json["topic"] = std::string("realtime:") + PIOENV + ":" + table + ":" + filter;
             }
@@ -47,7 +48,7 @@ namespace SupabaseUtils {
         std::string createLeaveMessage(const std::string& topic) {
             JsonDocument json;
             json["event"] = "phx_leave";
-            json["topic"] = topic;
+            json["topic"] = std::string("realtime:") + topic;
             json["payload"] = "{}";
             json["ref"] = "Leaving topic: " + topic;
             std::string message;
@@ -64,6 +65,10 @@ namespace SupabaseUtils {
             std::string message;
             serializeJson(json, message);
             return message;
+        }
+
+        std::string getTopicFiltered(const std::string& topic) {
+            return TextUtils::replaceAll(topic, "realtime:", "");
         }
     }
 

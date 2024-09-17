@@ -16,6 +16,7 @@ namespace SupabaseUtils {
         std::string createLeaveMessage(const std::string& table, const std::string& filter);
         std::string createHeartbeat();
         std::string createAuthMessage(const std::string& access_token);
+        std::string getTopicFiltered(const std::string& topic);
     }
 
 }

@@ -1,6 +1,8 @@
 #include "SupabaseService.h"
 #include "utils/SupabaseUtils.h"
 #include "ArduinoJson.h"
+#include "utils/TextUtils.h"
+#include "constants/SupabaseConstants.h"
 
 #ifdef ESP32
 
@@ -12,9 +14,6 @@
 #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
-static const std::string TOKEN_RESPONSE_ACCESS_TOKEN_KEY = "access_token";
-static const std::string TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY = "error_description";
-static const std::string TOKEN_RESPONSE_EXPIRES_AT_KEY = "expires_at";
 
 // INSPO https://github.com/jhagas/ESPSupabase/blob/master/src/Realtime.cpp
 
@@ -48,12 +47,14 @@ void SupabaseService::processWebSocketMessage(const std::string& message) {
     JsonDocument doc;
     deserializeJson(doc, message);
 
-//    TODO: Get this to work.
-//   Then start to work on core/SettingsManager, which will subscribe to the settings table for device with the same name as this device "hops32"
-// from this create a color listener "if right device" etc. etc.
-    auto topic = doc["topic"].as<std::string>();
-    if (channelCallbacks.find(topic) != channelCallbacks.end()) {
-        channelCallbacks[topic](doc["payload"]["data"].as<JsonDocument>());
+    auto topic = doc[SupabaseConstants::REALTIME_TOPIC_KEY].as<std::string>();
+    logger.info(std::string("Received message on topic: ") + topic);
+
+    auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
+    if (channelCallbacks.find(topicFiltered) != channelCallbacks.end()) {
+        if (doc[SupabaseConstants::REALTIME_PAYLOAD_KEY].containsKey(SupabaseConstants::REALTIME_PAYLOAD_DATA_KEY)) {
+            channelCallbacks[topic](doc[SupabaseConstants::REALTIME_PAYLOAD_KEY][SupabaseConstants::REALTIME_PAYLOAD_DATA_KEY].as<JsonObject>());
+        }
     }
 }
 
@@ -64,12 +65,10 @@ void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t l
             break;
         case WStype_CONNECTED:
             logger.info("WebSocket connected");
-//            TODO Create a subscribeToRealtime function so that other classes have to subscribe to this, take inspo from WebServer
-            webSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage("color", "id=eq.20").c_str());
             connecting = false;
             break;
         case WStype_TEXT:
-            logger.debug("WebSocket message received: " + std::string((char*) payload, length));
+            processWebSocketMessage(std::string((char*) payload, length));
             break;
         case WStype_ERROR:
             logger.error("WebSocket error. Payload: " + std::string((char*) payload, length));
@@ -82,7 +81,8 @@ void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t l
 
 void
 SupabaseService::createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic,
-                                       const std::function<void(const JsonDocument&)>& callback) {
+                                       const std::function<void(const JsonObject&)>& callback) {
+    logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
     webSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
     channelCallbacks[topic] = callback;
 }
@@ -161,18 +161,17 @@ void SupabaseService::acquireToken() {
     }
     JsonDocument responseJson = responseJsonOptional.value();
 
-
-    if (!responseJson.containsKey(TOKEN_RESPONSE_ACCESS_TOKEN_KEY)) {
+    if (!responseJson.containsKey(SupabaseConstants::TOKEN_RESPONSE_ACCESS_TOKEN_KEY)) {
         logger.error("Token request failed. Error: " +
-                     (responseJson.containsKey(TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY)
-                      ? responseJson[TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
+                     (responseJson.containsKey(SupabaseConstants::TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY)
+                      ? responseJson[SupabaseConstants::TOKEN_RESPONSE_ERROR_DESCRIPTION_KEY].as<std::string>()
                       : "Unknown error"));
         return;
     }
 
     SupabaseToken newToken;
-    newToken.accessToken = responseJson[TOKEN_RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
-    newToken.expiresAt = responseJson[TOKEN_RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
+    newToken.accessToken = responseJson[SupabaseConstants::TOKEN_RESPONSE_ACCESS_TOKEN_KEY].as<std::string>();
+    newToken.expiresAt = responseJson[SupabaseConstants::TOKEN_RESPONSE_EXPIRES_AT_KEY].as<uint32_t>();
     token = newToken;
     logger.info("token acquired: " + newToken.accessToken);
     logger.info("Supabase token acquired successfully");
