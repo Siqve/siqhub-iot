@@ -125,9 +125,11 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
 uint32_t lastHeartbeatMillis = 0;
 
 void SupabaseService::manageHeartbeat() {
-    if (millis() - lastHeartbeatMillis >= 30000) {
-        logger.info("Sending Supabase Realtime heartbeat");
-        webSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
-        lastHeartbeatMillis = millis();
-    }
+    unsigned long timeNow = millis();
+    if (timeNow - lastHeartbeatMillis < 30000)
+        return;
+    logger.info("Sending Supabase Realtime heartbeat");
+    webSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
+    lastHeartbeatMillis = timeNow;
+
 }
