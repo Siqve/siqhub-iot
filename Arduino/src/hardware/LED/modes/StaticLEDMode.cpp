@@ -44,7 +44,7 @@ void StaticLEDMode::onDebugCommand(const std::string& command) {
     if (isInt) {
         int pixelIndex = std::stoi(firstArgument);
         LEDUtils::setSolidColor(LEDStripPtr, 0);
-        LEDStripPtr.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(LEDConstants::DEFAULT_STATIC_COLOR));
+        LEDStripPtr.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(16711680));
         LEDStripPtr.Show();
         return;
     }
