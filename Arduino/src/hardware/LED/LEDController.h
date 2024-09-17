@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LEDMode.h"
+#include "hardware/LED/modes/LEDMode.h"
 #include "ESPAsyncWebServer.h"
 #include "networking/web/RequestWrapper.h"
 
