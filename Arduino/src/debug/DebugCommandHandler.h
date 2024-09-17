@@ -23,7 +23,7 @@ namespace Debug {
         DebugCommandHandler();
 
         std::map<std::string, std::function<void(std::string&)>> commandListeners;
-        Debug::Logger logger;
+        Debug::Logger logger = Debug::Logger("DebugCommandHandler");
     };
 
 }

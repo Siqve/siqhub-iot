@@ -13,7 +13,7 @@ void WiFiManager::connect() {
                 IPAddress(192, 168, 0, 1),
                 IPAddress(255, 255, 255, 0),
                 IPAddress(1, 1, 1, 1));
-    WiFi.begin(wifi_ssid, wifi_pw);
+    WiFi.begin(WIFI_SSID, WIFI_PW);
 }
 
 bool lastWifiCheck_connected = false;
@@ -39,12 +39,12 @@ void WiFiManager::printConnectingInfo() {
     if (timeNow - lastPrintTime < 2000)
         return;
     lastPrintTime = timeNow;
-    logger.info(std::string("Connecting... (ssid: ") + wifi_ssid + ")");
+    logger.info(std::string("Connecting... (SSID: ") + WIFI_SSID + ")");
 }
 
 
 void WiFiManager::printConnected() {
     logger.info("Successfully connected to WiFi!");
-    logger.info(std::string("SSID: ") + wifi_ssid + ", IP-address: " + WiFi.localIP().toString().c_str());
+    logger.info(std::string("SSID: ") + WIFI_PW + ", IP-address: " + WiFi.localIP().toString().c_str());
 }
 

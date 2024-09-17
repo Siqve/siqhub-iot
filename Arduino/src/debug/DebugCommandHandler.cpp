@@ -6,7 +6,7 @@
 
 namespace Debug {
 
-    DebugCommandHandler::DebugCommandHandler() : logger(Debug::Logger("DebugCommandHandler")) {
+    DebugCommandHandler::DebugCommandHandler() {
         WebServer::getInstance().registerPageCallback("/debug", [](const RequestWrapper& request) {
             String cmd = request.getParam("cmd")->value();
             if (!Debug::DebugCommandHandler::getInstance().execute(cmd.c_str())) {

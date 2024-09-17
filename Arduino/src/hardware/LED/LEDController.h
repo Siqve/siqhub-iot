@@ -7,8 +7,6 @@
 
 class LEDController {
 public:
-    LEDController() : LEDStripPtr(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5)),
-                      logger(Debug::Logger("LEDController")) {};
     void setup();
     void loop();
     void incomingDebug();
@@ -20,12 +18,11 @@ public:
         return LEDStripPtr.PixelCount();
     }
 
-
 private:
-    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> LEDStripPtr;
+    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> LEDStripPtr = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5);
     std::vector<std::shared_ptr<LEDMode>> modes;
 
-    Debug::Logger logger;
+    Debug::Logger logger = Debug::Logger("LEDController");
 
     int activeModeNumber = 0;
     int activeFPS = 1;

@@ -14,7 +14,7 @@ void systemSetup() {
 }
 
 void webSetup() {
-    wifiSession.connect();
+    WiFiManager::connect();
     WebServer::getInstance().start();
     ArduinoOTA.begin();
 }

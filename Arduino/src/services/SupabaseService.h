@@ -14,7 +14,6 @@ struct SupabaseToken {
 
 class SupabaseService {
 public:
-    SupabaseService() : logger(Debug::Logger("SupabaseClient")) {};
     SupabaseService(const SupabaseService&) = delete;
     SupabaseService& operator=(const SupabaseService&) = delete;
 
@@ -27,6 +26,8 @@ public:
     void createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonObject&)>& callback);
 
 private:
+    SupabaseService() = default;
+
     void connectRealtime();
 
     void onWebSocketEvent(WStype_t type, uint8_t* payload, size_t length);
@@ -39,9 +40,10 @@ private:
     void acquireToken();
 
     WebSocketsClient webSocket;
-    Debug::Logger logger;
     SupabaseToken token;
     std::map<std::string, std::function<void(const JsonObject&)>> channelCallbacks;
+
+    Debug::Logger logger = Debug::Logger("SupabaseService");
 
 
     bool connecting = false;
