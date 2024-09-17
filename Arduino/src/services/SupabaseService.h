@@ -25,19 +25,18 @@ private:
 
     void connectRealtime();
 
-    void onWebSocketEvent(WStype_t type, uint8_t* payload, size_t length);
-    void processWebSocketMessage(const std::string& message);
+    void onRealtimeEvent(WStype_t type, uint8_t* payload, size_t length);
+    void processRealtimeMessage(const std::string& message);
 
-    std::optional<JsonDocument> sendRequest(const std::string& url, const std::string& query = "");
+    std::optional<JsonDocument> sendRequest(const std::string& url, const std::string& body = "");
 
-    void manageHeartbeat();
+    void manageRealtimeHeartbeat();
 
-    WebSocketsClient webSocket;
+    WebSocketsClient realtimeWebSocket;
     std::map<std::string, std::function<void(const JsonObject&)>> channelCallbacks;
 
+    bool realtimeConnecting = false;
     Debug::Logger logger = Debug::Logger("SupabaseService");
-
-    bool connecting = false;
 
 };
 

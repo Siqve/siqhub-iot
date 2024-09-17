@@ -18,32 +18,30 @@
 // INSPO https://github.com/jhagas/ESPSupabase/blob/master/src/Realtime.cpp
 
 void SupabaseService::loop() {
-    if (!webSocket.isConnected() && !connecting) {
+    if (!realtimeWebSocket.isConnected() && !realtimeConnecting) {
         connectRealtime();
         return;
     }
-    manageHeartbeat();
-    webSocket.loop();
+    manageRealtimeHeartbeat();
+    realtimeWebSocket.loop();
 }
 
 
 void SupabaseService::connectRealtime() {
-    logger.info("Connecting to Supabase WebSocket");
+    logger.info("Connecting to Supabase realtime websocket");
 
     std::string hostname = SupabaseUtils::getHostname(SUPABASE_PROJECT_REFERENCE);
     std::string realtimeSlug = SupabaseUtils::Realtime::getSlug(SUPABASE_API_KEY);
-    logger.debug("Hostname: " + hostname);
-    logger.debug("Realtime to: " + realtimeSlug);
-    webSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
-    webSocket.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
-        this->onWebSocketEvent(type, payload, length);
+    realtimeWebSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
+    realtimeWebSocket.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
+        this->onRealtimeEvent(type, payload, length);
     });
-    connecting = true;
+    realtimeConnecting = true;
 }
 
 
-void SupabaseService::processWebSocketMessage(const std::string& message) {
-    logger.debug("Processing WebSocket message: " + message);
+void SupabaseService::processRealtimeMessage(const std::string& message) {
+    logger.debug("Processing realtime message: " + message);
     JsonDocument doc;
     deserializeJson(doc, message);
 
@@ -53,28 +51,29 @@ void SupabaseService::processWebSocketMessage(const std::string& message) {
     auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
     if (channelCallbacks.find(topicFiltered) != channelCallbacks.end()) {
         if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
-            channelCallbacks[topic](doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY].as<JsonObject>());
+            channelCallbacks[topic](
+                    doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY].as<JsonObject>());
         }
     }
 }
 
-void SupabaseService::onWebSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
+void SupabaseService::onRealtimeEvent(WStype_t type, uint8_t* payload, size_t length) {
     switch (type) {
         case WStype_DISCONNECTED:
-            logger.info("WebSocket disconnected");
+            logger.info("Realtime websocket disconnected");
             break;
         case WStype_CONNECTED:
-            logger.info("WebSocket connected");
-            connecting = false;
+            logger.info("Realtime websocket connected");
+            realtimeConnecting = false;
             break;
         case WStype_TEXT:
-            processWebSocketMessage(std::string((char*) payload, length));
+            processRealtimeMessage(std::string((char*) payload, length));
             break;
         case WStype_ERROR:
-            logger.error("WebSocket error. Payload: " + std::string((char*) payload, length));
+            logger.error("Realtime websocket error. Payload: " + std::string((char*) payload, length));
             break;
         default:
-            logger.info("Received unsupported WebSocket event: " + std::to_string(type));
+            logger.info("Received unsupported realtime websocket event: " + std::to_string(type));
             break;
     }
 }
@@ -83,12 +82,12 @@ void
 SupabaseService::createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic,
                                        const std::function<void(const JsonObject&)>& callback) {
     logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
-    webSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
+    realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
     channelCallbacks[topic] = callback;
 }
 
 
-std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url, const std::string& query) {
+std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url, const std::string& body) {
     WiFiClientSecure wifiClient;
     wifiClient.setInsecure();
     HTTPClient httpsClient;
@@ -103,10 +102,10 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
     httpsClient.addHeader("apiKey", SUPABASE_API_KEY);
     httpsClient.addHeader("Content-Type", "application/json");
     int httpCode;
-    if (query.empty()) {
+    if (body.empty()) {
         httpCode = httpsClient.GET();
     } else {
-        httpCode = httpsClient.POST(query.c_str());
+        httpCode = httpsClient.POST(body.c_str());
     }
 
     if (httpCode <= 0) {
@@ -124,12 +123,12 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
 
 uint32_t lastHeartbeatMillis = 0;
 
-void SupabaseService::manageHeartbeat() {
+void SupabaseService::manageRealtimeHeartbeat() {
     unsigned long timeNow = millis();
     if (timeNow - lastHeartbeatMillis < 30000)
         return;
     logger.info("Sending Supabase Realtime heartbeat");
-    webSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
+    realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
     lastHeartbeatMillis = timeNow;
 
 }
