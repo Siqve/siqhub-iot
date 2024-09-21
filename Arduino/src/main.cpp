@@ -6,14 +6,14 @@
 #include "services/SupabaseService.h"
 
 LEDController ledController;
-WiFiManager wifiSession;
+WiFiManager wifiManager;
 
 
 void systemSetup() {
     Serial.begin(115200);
 }
 
-void webSetup() {
+void networkingSetup() {
     WiFiManager::connect();
     WebServer::getInstance().start();
     ArduinoOTA.begin();
@@ -21,12 +21,12 @@ void webSetup() {
 
 void setup() {
     systemSetup();
-    webSetup();
+    networkingSetup();
     ledController.setup();
 }
 
 void loop() {
-    if (!wifiSession.assureConnection())
+    if (!wifiManager.assureConnection())
         return;
 
     ArduinoOTA.handle();
