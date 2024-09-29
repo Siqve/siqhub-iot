@@ -18,6 +18,7 @@ namespace Debug {
 
         bool execute(const std::string& command);
         void registerListener(const std::string& cmd, std::function<void(std::string&)> callback);
+        void removeListener(const std::string& cmd);
 
     private:
         DebugCommandHandler();

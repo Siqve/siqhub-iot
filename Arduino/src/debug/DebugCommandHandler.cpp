@@ -37,10 +37,11 @@ namespace Debug {
         return true;
     }
 
-    void
-    DebugCommandHandler::registerListener(const std::string& cmd, std::function<void(std::string&)> callback) {
+    void DebugCommandHandler::registerListener(const std::string& cmd, std::function<void(std::string&)> callback) {
         commandListeners[cmd] = std::move(callback);
     }
 
-
+    void DebugCommandHandler::removeListener(const std::string& cmd) {
+        commandListeners.erase(cmd);
+    }
 }
