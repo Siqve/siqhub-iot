@@ -12,7 +12,7 @@ namespace SupabaseUtils {
         return "https://" + reference + ".supabase.co/";
     }
 
-    std::string getRESTUrl(const std::string& reference, const std::string& table, const std::string& selectQuery) {
+    std::string getRestApiUrl(const std::string& reference, const std::string& table, const std::string& selectQuery) {
         return getUrl(reference) + "rest/v1/" + table;
     }
 
@@ -22,7 +22,8 @@ namespace SupabaseUtils {
             return "/realtime/v1/websocket?apikey=" + apiKey + "&log_level=info&vsn=1.0.0";
         }
 
-        std::string createJoinMessage(const std::string& table, const std::string& filter, const std::optional<std::string>& topic) {
+        std::string createJoinMessage(const std::string& table, const std::string& filter,
+                                      const std::optional<std::string>& topic) {
             JsonDocument json;
             json["event"] = "phx_join";
             if (topic.has_value()) {
@@ -68,5 +69,11 @@ namespace SupabaseUtils {
         }
     }
 
+    namespace Filters {
 
+        std::string equals(const std::string& column, const std::string& value) {
+            return column + "=eq." + value;
+        }
+
+    }
 }
