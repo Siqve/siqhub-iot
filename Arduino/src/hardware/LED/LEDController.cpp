@@ -20,11 +20,6 @@ void LEDController::setup() {
         return onUpdate(request);
     });
 
-//        TODO, respond with a correct JSON format
-//    WebServerManager::getInstance().registerPageCallback("/led", [this](const RequestWrapper& request) {
-//        request.ok(getModeAndSettings().c_str());
-//    });
-
     Debug::DebugCommandHandler::getInstance().registerListener("led", [this](std::string& command) {
         getActiveMode()->onDebugCommand(command);
     });
@@ -43,10 +38,6 @@ void LEDController::loop_LED(unsigned long timeNow) {
     }
     lastLoopTime = timeNow;
     getActiveMode()->loop();
-}
-
-void LEDController::debugButtonClick() {
-    getActiveMode()->debugButtonClick();
 }
 
 void LEDController::setFPS(int newFPS) {
@@ -69,11 +60,6 @@ AsyncWebServerResponse* LEDController::onUpdate(const RequestWrapper& request) {
     return request.ok();
 }
 
-
-void LEDController::incomingDebug() {
-    debugButtonClick();
-}
-
 int LEDController::getActiveModeNumber() {
     return activeModeNumber;
 }
@@ -84,4 +70,8 @@ std::shared_ptr<LEDMode> LEDController::getActiveMode() {
 
 String LEDController::getModeAndSettings() {
     return String(activeModeNumber) + "," + getActiveMode()->getSettings();
+}
+
+LEDController::~LEDController() {
+    Debug::DebugCommandHandler::getInstance().removeListener("led");
 }

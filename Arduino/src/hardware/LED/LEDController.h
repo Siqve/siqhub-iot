@@ -7,9 +7,9 @@
 
 class LEDController {
 public:
+    ~LEDController();
     void setup();
     void loop();
-    void incomingDebug();
     int getActiveModeNumber();
     std::shared_ptr<LEDMode> getActiveMode();
     String getModeAndSettings();
@@ -30,6 +30,5 @@ private:
     void initEffects();
     void loop_LED(unsigned long timeNow);
     void setFPS(int newFPS);
-    void debugButtonClick();
     AsyncWebServerResponse* onUpdate(const RequestWrapper& request);
 };
