@@ -2,17 +2,24 @@
 
 namespace SupabaseConstants {
 
-    namespace Token {
-            const std::string RESPONSE_ACCESS_TOKEN_KEY = "access_token";
-            const std::string RESPONSE_ERROR_DESCRIPTION_KEY = "error_description";
-            const std::string RESPONSE_EXPIRES_AT_KEY = "expires_at";
-    }
-
-
     namespace Realtime {
         const std::string TOPIC_KEY = "topic";
         const std::string PAYLOAD_KEY = "payload";
         const std::string PAYLOAD_DATA_KEY = "data";
+        const std::string UPDATE_RECORD_KEY = "record";
+    }
+
+    namespace Tables {
+
+        namespace Device {
+
+            const std::string TABLE_NAME = "device";
+            const std::string COLUMN_ID = "id";
+            const std::string COLUMN_TYPE = "type";
+            const std::string COLUMN_SETTINGS_JSON = "settings_json";
+
+        }
+
     }
 
 }
