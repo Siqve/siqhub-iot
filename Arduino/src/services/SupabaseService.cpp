@@ -49,11 +49,14 @@ void SupabaseService::processRealtimeMessage(const std::string& message) {
     logger.info(std::string("Received message on topic: ") + topic);
 
     auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
-    if (realtimeChannelCallbacks.find(topicFiltered) != realtimeChannelCallbacks.end()) {
-        if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
-            realtimeChannelCallbacks[topic](
-                    doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY].as<JsonObject>());
-        }
+    if (realtimeChannelCallbacks.find(topicFiltered) == realtimeChannelCallbacks.end()) {
+        logger.error("No callback found for topic: " + topicFiltered);
+        return;
+    }
+    logger.info("Calling callback for topic: " + topicFiltered);
+    if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
+        auto payloadData = doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY];
+        realtimeChannelCallbacks[topicFiltered](payloadData);
     }
 }
 
@@ -78,33 +81,48 @@ void SupabaseService::onRealtimeEvent(WStype_t type, uint8_t* payload, size_t le
     }
 }
 
-void
+
+/**
+ * Create a realtime channel for the given table, filter, and topic.
+ * The callback will be called when a message is received on the channel.
+ * @return true if the channel was created successfully, false otherwise
+ */
+bool
 SupabaseService::createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic,
-                                       const std::function<void(const JsonObject&)>& callback) {
+                                       const std::function<void(const JsonVariantConst&)>& callback) {
+    if (!realtimeWebSocket.isConnected()) {
+        return false;
+    }
     logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
     realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
     realtimeChannelCallbacks[topic] = callback;
+    return true;
 }
 
+std::optional<JsonDocument> SupabaseService::select(const std::string& table, const std::string& column, const std::string& value) {
+    return sendRestRequest(table + "?" + SupabaseUtils::Filters::equals(column, value));
+}
 
-std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url, const std::string& body) {
+std::optional<JsonDocument> SupabaseService::sendRestRequest(const std::string& slug, const std::string& body) {
     WiFiClientSecure wifiClient;
     wifiClient.setInsecure();
     HTTPClient httpsClient;
     httpsClient.setTimeout(10000);
 
-    logger.info("Sending request to: " + url);
-    if (!httpsClient.begin(wifiClient, url.c_str())) {
+    std::string restUrl = SupabaseUtils::getRestApiUrl(SUPABASE_PROJECT_REFERENCE, slug);
+    logger.info("Sending request to: " + restUrl);
+
+    if (!httpsClient.begin(wifiClient, restUrl.c_str())) {
         logger.error("Unable to connect to request URL");
         return std::nullopt;
     }
 
     httpsClient.addHeader("apiKey", SUPABASE_API_KEY);
-    httpsClient.addHeader("Content-Type", "application/json");
     int httpCode;
     if (body.empty()) {
         httpCode = httpsClient.GET();
     } else {
+        httpsClient.addHeader("Content-Type", "application/json");
         httpCode = httpsClient.POST(body.c_str());
     }
 
@@ -114,8 +132,11 @@ std::optional<JsonDocument> SupabaseService::sendRequest(const std::string& url,
         return std::nullopt;
     }
 
+    std::string responseString = httpsClient.getString().c_str();
+    logger.debug("Response: " + responseString);
+
     JsonDocument doc;
-    deserializeJson(doc, httpsClient.getString());
+    deserializeJson(doc, responseString);
     httpsClient.end();
     return doc;
 }

@@ -18,22 +18,24 @@ public:
     }
 
     void loop();
-    void createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonObject&)>& callback);
+
+    [[nodiscard]] bool createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonVariantConst&)>& callback);
+    std::optional<JsonDocument> select(const std::string& table, const std::string& column, const std::string& value);
 
 private:
     SupabaseService() = default;
 
+    // Realtime
     void connectRealtime();
-
     void onRealtimeEvent(WStype_t type, uint8_t* payload, size_t length);
     void processRealtimeMessage(const std::string& message);
-
-    std::optional<JsonDocument> sendRequest(const std::string& url, const std::string& body = "");
-
     void manageRealtimeHeartbeat();
 
+    // Rest
+    std::optional<JsonDocument> sendRestRequest(const std::string& slug, const std::string& body = "");
+
     WebSocketsClient realtimeWebSocket;
-    std::map<std::string, std::function<void(const JsonObject&)>> realtimeChannelCallbacks;
+    std::map<std::string, std::function<void(const JsonVariantConst&)>> realtimeChannelCallbacks;
 
     bool realtimeConnecting = false;
     Debug::Logger logger = Debug::Logger("SupabaseService");
