@@ -4,9 +4,11 @@
 #include "networking/web/WebServer.h"
 #include "hardware/LED/LEDController.h"
 #include "services/SupabaseService.h"
+#include "core/DeviceManager.h"
 
 LEDController ledController;
 WiFiManager wifiManager;
+DeviceManager deviceManager;
 
 
 void systemSetup() {
@@ -32,4 +34,5 @@ void loop() {
     ArduinoOTA.handle();
     SupabaseService::getInstance().loop();
     ledController.loop();
+    deviceManager.loop();
 }
