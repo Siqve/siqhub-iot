@@ -1,4 +1,5 @@
 #include "LedStripDevice.h"
+#include "utils/TimeUtils.h"
 
 LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
 }
@@ -14,13 +15,12 @@ void LedStripDevice::applySettings(const JsonDocument& settings) {
 
 }
 
-unsigned long lastLoopTime2;
+static uint32_t lastLoopTimeMillis;
 void LedStripDevice::loop() {
-//    if (timeNow - lastLoopTime < (1000000.0 / activeFPS)) {
-    if (micros() - lastLoopTime2 < (1000000.0 / 1)) {
+    if (!TimeUtils::isMillisElapsed(millis(), lastLoopTimeMillis, 2000)) {
         return;
     }
-    lastLoopTime2 = micros();
+    lastLoopTimeMillis = millis();
     logger.info("LedStripDevice loop");
 }
 

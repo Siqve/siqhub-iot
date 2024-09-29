@@ -3,6 +3,7 @@
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 #include "constants/SupabaseConstants.h"
+#include "utils/TimeUtils.h"
 
 #ifdef ESP32
 
@@ -142,14 +143,12 @@ std::optional<JsonDocument> SupabaseService::sendRestRequest(const std::string& 
 }
 
 
-uint32_t lastHeartbeatMillis = 0;
-
+static uint32_t lastHeartbeatMillis = 0;
 void SupabaseService::manageRealtimeHeartbeat() {
-    unsigned long timeNow = millis();
-    if (timeNow - lastHeartbeatMillis < 30000)
+    if (!TimeUtils::isMillisElapsed(millis(), lastHeartbeatMillis, 30000)) {
         return;
+    }
+    lastHeartbeatMillis = millis();
     logger.info("Sending Supabase Realtime heartbeat");
     realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
-    lastHeartbeatMillis = timeNow;
-
 }

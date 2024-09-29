@@ -4,6 +4,7 @@
 #include "utils/SupabaseUtils.h"
 #include "constants/SupabaseConstants.h"
 #include "core/types/LedStripDevice.h"
+#include "utils/TimeUtils.h"
 
 
 void DeviceManager::loop() {
@@ -51,15 +52,25 @@ JsonDocument DeviceManager::getDeviceConfig() {
     return firstElement;
 }
 
+static unsigned long lastListenerRegisterAttemptMillis;
 void DeviceManager::registerChangeListener() {
+    if (!TimeUtils::isMillisElapsed(millis(), lastListenerRegisterAttemptMillis, 5000)) {
+        return;
+    }
+    lastListenerRegisterAttemptMillis = millis();
+
     logger.info("Registering change listener for device config");
     std::string deviceIdFilter = SupabaseUtils::Filters::equals(SupabaseConstants::Tables::Device::COLUMN_ID, DEVICE_UUID);
 
-    listenerActive = SupabaseService::getInstance().createRealtimeChannel(SupabaseConstants::Tables::Device::TABLE_NAME, deviceIdFilter,
-                                                                          "DeviceManager:device", [this](const JsonVariantConst& data) {
+    auto listenerCreated = SupabaseService::getInstance().createRealtimeChannel(SupabaseConstants::Tables::Device::TABLE_NAME, deviceIdFilter,
+                                                                                "DeviceManager:device", [this](const JsonVariantConst& data) {
                 logger.info("Received device config change");
                 configure(data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY]);
             });
+
+    if (listenerCreated) {
+        listenerActive = true;
+    }
 }
 
 

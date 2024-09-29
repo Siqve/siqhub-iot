@@ -4,6 +4,7 @@
 #include "hardware/LED/modes/MusicLEDMode.h"
 #include "networking/web/WebServer.h"
 #include "debug/DebugCommandHandler.h"
+#include "utils/TimeUtils.h"
 
 void LEDController::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(LEDStripPtr, [this](int newFPS) { setFPS(newFPS); }));
@@ -31,12 +32,12 @@ void LEDController::loop() {
 }
 
 //The loop function for LED
-unsigned long lastLoopTime;
+static unsigned long lastLoopTimeMicros;
 void LEDController::loop_LED(unsigned long timeNow) {
-    if (timeNow - lastLoopTime < (1000000.0 / activeFPS)) {
+    if (!TimeUtils::isFrameRipe(timeNow, lastLoopTimeMicros, activeFPS)) {
         return;
     }
-    lastLoopTime = timeNow;
+    lastLoopTimeMicros = timeNow;
     getActiveMode()->loop();
 }
 
