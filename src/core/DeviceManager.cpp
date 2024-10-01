@@ -77,20 +77,25 @@ void DeviceManager::registerChangeListener() {
 void DeviceManager::configure(const JsonVariantConst& config) {
     logger.info("Configuring device with new config");
     logger.debug("Config: " + config.as<std::string>());
-    auto deviceType = config[SupabaseConstants::Tables::Device::COLUMN_TYPE].as<std::string>();
-    if (!device || deviceType != device->getType()) {
-        if (!device) {
-            logger.info("Creating new device. Device type: " + deviceType);
-        } else {
-            logger.info("Changing device type from: " + device->getType() + ", to: " + deviceType);
-        }
-        device = createDevice(deviceType);
-    }
 
+    auto deviceType = config[SupabaseConstants::Tables::Device::COLUMN_TYPE].as<std::string>();
     auto settingsRef = config[SupabaseConstants::Tables::Device::COLUMN_SETTINGS_JSON];
     JsonDocument settings;
     settings.set(settingsRef);
-    device->applySettings(settings);
+
+    if (!device) {
+        logger.info("Configuring first device set up. Device type: " + deviceType);
+        device = createDevice(deviceType);
+        device->setup(settings);
+        return;
+    }
+
+    if (deviceType != device->getType()) {
+        logger.info("Changing device type from: " + device->getType() + ", to: " + deviceType);
+        device = createDevice(deviceType);
+    }
+
+    device->updateSettings(settings);
 }
 
 
