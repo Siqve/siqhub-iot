@@ -10,8 +10,11 @@ StaticLEDMode::StaticLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDSt
                              std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("StaticLEDMode"), std::move(setFPS)) {
 }
 
-void StaticLEDMode::onActivate() {
+void StaticLEDMode::onActivate(const JsonDocument& settings) {
     setFPS(0);
+    if (settings.containsKey("activeColorId")) {
+        staticColor = settings["activeColorId"];
+    }
     LEDUtils::setSolidColor(LEDStripPtr, staticColor);
     LEDStripPtr.Show();
 }

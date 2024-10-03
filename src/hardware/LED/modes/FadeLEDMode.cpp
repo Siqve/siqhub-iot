@@ -17,7 +17,7 @@ FadeLEDMode::FadeLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripP
                                                             ledBrightness(DEFAULT_BRIGHTNESS) {
 }
 
-void FadeLEDMode::onActivate() {
+void FadeLEDMode::onActivate(const JsonDocument& settings) {
     setFPS(DEFAULT_BASE_FPS);
 }
 

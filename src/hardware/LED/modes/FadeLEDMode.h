@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LEDMode.h"
+#include "ArduinoJson.h"
 
 class FadeLEDMode : public LEDMode {
   public:
@@ -10,7 +11,7 @@ class FadeLEDMode : public LEDMode {
     String getSettings() override;
     String getSettingsJSON();
 private:
-    void onActivate() override;
+    void onActivate(const JsonDocument& settings) override;
     void cycleFade();
     void updateFps();
     void incrementHue();

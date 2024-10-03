@@ -1,7 +1,6 @@
 #include "LEDController.h"
 #include "hardware/LED/modes/FadeLEDMode.h"
 #include "hardware/LED/modes/StaticLEDMode.h"
-#include "hardware/LED/modes/MusicLEDMode.h"
 #include "networking/web/WebServer.h"
 #include "debug/DebugCommandHandler.h"
 #include "utils/TimeUtils.h"

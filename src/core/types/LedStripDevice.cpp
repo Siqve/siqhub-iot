@@ -2,13 +2,20 @@
 #include "utils/TimeUtils.h"
 #include "hardware/LED/modes/StaticLEDMode.h"
 #include "hardware/LED/modes/FadeLEDMode.h"
+#include "constants/LedConstants.h"
 
 LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
     initEffects();
+    ledStrip.Begin();
 }
 
 void LedStripDevice::setup(const JsonDocument& settings) {
-    ledStrip.Begin();
+    auto modeSetting = settings[LedConstants::Settings::MODE_KEY].as<std::string>();
+    if (modeSetting == "static") {
+        activeModeNumber = 0;
+    } else if (modeSetting == "fade") {
+        activeModeNumber = 1;
+    }
 
     getActiveMode()->onActivate();
 }

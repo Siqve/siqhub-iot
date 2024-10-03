@@ -3,6 +3,7 @@
 #include "NeoPixelBus.h"
 #include "debug/Logger.h"
 #include "networking/web/RequestWrapper.h"
+#include "ArduinoJson.h"
 
 class LEDMode {
 public:
@@ -10,8 +11,7 @@ public:
 
     virtual void loop() = 0;
 
-    virtual void onActivate() {};
-    virtual void debugButtonClick() {};
+    virtual void onActivate(const JsonDocument& settings) {};
 
     virtual void onUpdate(const RequestWrapper& request) {};
     virtual void onDebugCommand(const std::string& command) {};
