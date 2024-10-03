@@ -2,7 +2,6 @@
 #include "utils/TimeUtils.h"
 #include "hardware/LED/modes/StaticLEDMode.h"
 #include "hardware/LED/modes/FadeLEDMode.h"
-#include "hardware/LED/modes/MusicLEDMode.h"
 
 LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
     initEffects();
@@ -35,7 +34,6 @@ void LedStripDevice::updateSettings(const JsonDocument& settings) {
 void LedStripDevice::initEffects() {
     modes.push_back(std::make_shared<StaticLEDMode>(ledStrip, [this](int newFps) { setFPS(newFps); }));
     modes.push_back(std::make_shared<FadeLEDMode>(ledStrip, [this](int newFPS) { setFPS(newFPS); }));
-    modes.push_back(std::make_shared<MusicLEDMode>(ledStrip, [this](int newFPS) { setFPS(newFPS); }));
 }
 
 std::shared_ptr<LEDMode> LedStripDevice::getActiveMode() {
