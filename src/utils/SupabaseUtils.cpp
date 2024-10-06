@@ -26,7 +26,7 @@ namespace SupabaseUtils {
                                       const std::optional<std::string>& topic) {
             JsonDocument json;
             json["event"] = "phx_join";
-            if (topic.has_value()) {
+            if (!topic) {
                 json["topic"] = std::string("realtime:") + topic.value();
             } else {
                 json["topic"] = std::string("realtime:") + PIOENV + ":" + table + ":" + filter;
