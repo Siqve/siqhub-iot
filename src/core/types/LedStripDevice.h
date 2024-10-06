@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <constants/LedConstants.h>
+
 #include "ArduinoJson.h"
 #include "BaseDevice.h"
 #include "hardware/LED/modes/LEDMode.h"
@@ -10,18 +12,19 @@ public:
     explicit LedStripDevice();
     void loop() override;
     void updateSettings(const JsonDocument& settings) override;
-    void setup(const JsonDocument& settings) override;
+    void initialize(const JsonDocument& settings) override;
 private:
     std::shared_ptr<LEDMode> getActiveMode();
     void initEffects();
 
     void setFPS(int newFPS);
-
     int activeFps = 1;
-    int activeModeNumber = 0;
 
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5);
-    std::vector<std::shared_ptr<LEDMode>> modes;
+
+    LedConstants::LedModeType::Value activeModeType = LedConstants::LedModeType::Value::UNKNOWN;
+    std::unordered_map<LedConstants::LedModeType::Value, std::shared_ptr<LEDMode>> ledModes;
+
     Debug::Logger logger = Debug::Logger("LedStripDevice");
 
 };

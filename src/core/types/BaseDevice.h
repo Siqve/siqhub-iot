@@ -9,7 +9,7 @@ public:
     virtual ~BaseDevice() = default;
     virtual void loop() = 0;
     virtual void updateSettings(const JsonDocument& settings) = 0;
-    virtual void setup(const JsonDocument& settings) = 0;
+    virtual void initialize(const JsonDocument& settings) = 0;
 
     [[nodiscard]] std::string getType() const {
         return type;
