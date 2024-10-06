@@ -19,7 +19,7 @@ public:
 
     void loop();
 
-    [[nodiscard]] bool createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonVariantConst&)>& callback);
+    [[nodiscard]] bool addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonVariantConst&)>& callback);
     std::optional<JsonDocument> select(const std::string& table, const std::string& column, const std::string& value);
 
 private:

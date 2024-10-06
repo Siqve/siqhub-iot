@@ -15,6 +15,8 @@
 #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
+using namespace SupabaseUtils;
+using namespace SupabaseConstants::Realtime;
 
 // INSPO https://github.com/jhagas/ESPSupabase/blob/master/src/Realtime.cpp
 
@@ -31,9 +33,10 @@ void SupabaseService::loop() {
 void SupabaseService::connectRealtime() {
     logger.info("Connecting to Supabase realtime websocket");
 
-    std::string hostname = SupabaseUtils::getHostname(SUPABASE_PROJECT_REFERENCE);
-    std::string realtimeSlug = SupabaseUtils::Realtime::getSlug(SUPABASE_API_KEY);
+    const std::string hostname = getHostname(SUPABASE_PROJECT_REFERENCE);
+    const std::string realtimeSlug = Realtime::getSlug(SUPABASE_API_KEY);
     realtimeWebSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
+
     realtimeWebSocket.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
         this->onRealtimeEvent(type, payload, length);
     });
@@ -46,22 +49,22 @@ void SupabaseService::processRealtimeMessage(const std::string& message) {
     JsonDocument doc;
     deserializeJson(doc, message);
 
-    auto topic = doc[SupabaseConstants::Realtime::TOPIC_KEY].as<std::string>();
+    const std::string& topic = doc[TOPIC_KEY].as<std::string>();
     logger.info(std::string("Received message on topic: ") + topic);
 
-    auto topicFiltered = SupabaseUtils::Realtime::getTopicFiltered(topic);
-    if (realtimeChannelCallbacks.find(topicFiltered) == realtimeChannelCallbacks.end()) {
+    const std::string topicFiltered = Realtime::getTopicFiltered(topic);
+    if (!realtimeChannelCallbacks.contains(topicFiltered)) {
         logger.error("No callback found for topic: " + topicFiltered);
         return;
     }
     logger.info("Calling callback for topic: " + topicFiltered);
-    if (doc[SupabaseConstants::Realtime::PAYLOAD_KEY].containsKey(SupabaseConstants::Realtime::PAYLOAD_DATA_KEY)) {
-        auto payloadData = doc[SupabaseConstants::Realtime::PAYLOAD_KEY][SupabaseConstants::Realtime::PAYLOAD_DATA_KEY];
+    if (doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY].is<JsonVariant>()) {
+        const JsonVariantConst payloadData = doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY];
         realtimeChannelCallbacks[topicFiltered](payloadData);
     }
 }
 
-void SupabaseService::onRealtimeEvent(WStype_t type, uint8_t* payload, size_t length) {
+void SupabaseService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
     switch (type) {
         case WStype_DISCONNECTED:
             logger.info("Realtime websocket disconnected");
@@ -89,19 +92,19 @@ void SupabaseService::onRealtimeEvent(WStype_t type, uint8_t* payload, size_t le
  * @return true if the channel was created successfully, false otherwise
  */
 bool
-SupabaseService::createRealtimeChannel(const std::string& table, const std::string& filter, const std::string& topic,
+SupabaseService::addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic,
                                        const std::function<void(const JsonVariantConst&)>& callback) {
     if (!realtimeWebSocket.isConnected()) {
         return false;
     }
     logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
-    realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createJoinMessage(table, filter, topic).c_str());
+    realtimeWebSocket.sendTXT(Realtime::createJoinMessage(table, filter, topic).c_str());
     realtimeChannelCallbacks[topic] = callback;
     return true;
 }
 
 std::optional<JsonDocument> SupabaseService::select(const std::string& table, const std::string& column, const std::string& value) {
-    return sendRestRequest(table + "?" + SupabaseUtils::Filters::equals(column, value));
+    return sendRestRequest(table + "?" + Filters::equals(column, value));
 }
 
 std::optional<JsonDocument> SupabaseService::sendRestRequest(const std::string& slug, const std::string& body) {
@@ -110,7 +113,7 @@ std::optional<JsonDocument> SupabaseService::sendRestRequest(const std::string& 
     HTTPClient httpsClient;
     httpsClient.setTimeout(10000);
 
-    std::string restUrl = SupabaseUtils::getRestApiUrl(SUPABASE_PROJECT_REFERENCE, slug);
+    std::string restUrl = getRestApiUrl(SUPABASE_PROJECT_REFERENCE, slug);
     logger.info("Sending request to: " + restUrl);
 
     if (!httpsClient.begin(wifiClient, restUrl.c_str())) {
@@ -150,5 +153,5 @@ void SupabaseService::manageRealtimeHeartbeat() {
     }
     lastHeartbeatMillis = millis();
     logger.info("Sending Supabase Realtime heartbeat");
-    realtimeWebSocket.sendTXT(SupabaseUtils::Realtime::createHeartbeat().c_str());
+    realtimeWebSocket.sendTXT(Realtime::createHeartbeat().c_str());
 }
