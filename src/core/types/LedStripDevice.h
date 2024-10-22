@@ -14,7 +14,7 @@ public:
     void updateSettings(const JsonDocument& settings) override;
     void initialize(const JsonDocument& settings) override;
 private:
-    std::shared_ptr<LEDMode> getActiveMode();
+    std::shared_ptr<LEDMode> getMode();
     void initEffects();
 
     void setFPS(int newFPS);

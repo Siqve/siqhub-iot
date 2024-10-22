@@ -12,8 +12,9 @@ LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
     ledStrip.Begin();
 }
 
+
 void LedStripDevice::initialize(const JsonDocument &settings) {
-    // TODO: Test this
+    logger.info("Initializing LedStripDevice");
     const std::string &modeSetting = settings[Settings::MODE_KEY].as<std::string>();
     const LedModeType::Value ledModeType = LedModeType::from(modeSetting);
 
@@ -28,19 +29,19 @@ void LedStripDevice::initialize(const JsonDocument &settings) {
         // TODO: Register color listener for active color id
     }
 
-    getActiveMode()->initialize(settings);
+    getMode()->initialize(settings);
 }
 
 
 static uint32_t lastLoopTimeMillis;
 
 void LedStripDevice::loop() {
-    if (!TimeUtils::isMillisElapsed(millis(), lastLoopTimeMillis, 2000)) {
+    if (!TimeUtils::isMillisElapsed(millis(), lastLoopTimeMillis, 5000)) {
         return;
     }
     lastLoopTimeMillis = millis();
     logger.info("LedStripDevice loop");
-    getActiveMode()->loop();
+    getMode()->loop();
 }
 
 void LedStripDevice::updateSettings(const JsonDocument &settings) {
@@ -53,7 +54,7 @@ void LedStripDevice::initEffects() {
     ledModes[LedModeType::Value::FADE] = std::make_shared<FadeLEDMode>(ledStrip, [this](int newFps) { setFPS(newFps); });
 }
 
-std::shared_ptr<LEDMode> LedStripDevice::getActiveMode() {
+std::shared_ptr<LEDMode> LedStripDevice::getMode() {
     return ledModes[activeModeType];
 }
 
