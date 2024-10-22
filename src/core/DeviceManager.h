@@ -2,21 +2,34 @@
 #include "debug/Logger.h"
 #include "core/types/BaseDevice.h"
 #include "ArduinoJson.h"
+#include "constants/CoreConstants.h"
 
 class DeviceManager {
 public:
     void loop();
 private:
-    void init();
+
+    void configure();
+    void first(); //TODO usikker på hva denne er
     void registerChangeListener();
 
-    std::unique_ptr<BaseDevice> createDevice(const std::string& deviceType);
-    void configure(const JsonVariantConst& config);
-    JsonDocument getDeviceConfig();
+    std::shared_ptr<BaseDevice> getDevice();
+    std::shared_ptr<BaseDevice> createDevice(CoreConstants::DeviceType::Value deviceType);
+
+    void handleConfigUpdate(const JsonVariantConst &config);
+    void changeDevice(CoreConstants::DeviceType::Value deviceType);
+    void onConfigUpdate(const JsonVariantConst& config);
+    [[nodiscard]] JsonDocument getDeviceConfig();
+    [[nodiscard]] bool isConfigured() const;
+
+    CoreConstants::DeviceType::Value activeDeviceType = CoreConstants::DeviceType::Value::UNKNOWN;
+    std::unordered_map<CoreConstants::DeviceType::Value, std::shared_ptr<BaseDevice>> deviceTypes;
+
+
 
     std::unique_ptr<BaseDevice> device;
+
     Debug::Logger logger = Debug::Logger("DeviceManager");
-    boolean initialized = false;
     boolean listenerActive = false;
 };
 
