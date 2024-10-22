@@ -50,18 +50,20 @@ void SupabaseService::processRealtimeMessage(const std::string& message) {
     deserializeJson(doc, message);
 
     const std::string& topic = doc[TOPIC_KEY].as<std::string>();
-    logger.info(std::string("Received message on topic: ") + topic);
-
     const std::string topicFiltered = Realtime::getTopicFiltered(topic);
+    logger.info("Received message on topic: " + topicFiltered + " (original: " + topic + ")");
     if (!realtimeChannelCallbacks.contains(topicFiltered)) {
-        logger.error("No callback found for topic: " + topicFiltered);
+        logger.error("No callback found.");
         return;
     }
-    logger.info("Calling callback for topic: " + topicFiltered);
-    if (doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY].is<JsonVariant>()) {
-        const JsonVariantConst payloadData = doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY];
-        realtimeChannelCallbacks[topicFiltered](payloadData);
+    if (!doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY].is<JsonVariant>()) {
+        logger.info("No data found in payload. Ignoring message.");
+        return;
     }
+
+    logger.info("Calling callback for topic: " + topicFiltered);
+    const JsonVariantConst payloadData = doc[PAYLOAD_KEY][PAYLOAD_DATA_KEY];
+    realtimeChannelCallbacks[topicFiltered](payloadData);
 }
 
 void SupabaseService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
