@@ -7,11 +7,11 @@
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
 
 StaticLedMode::StaticLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
-                             std::function<void(int)> setFPS) : LedMode(ledStrip, Debug::Logger("StaticLedMode"), std::move(setFPS)) {
+                             std::function<void(int)> setFps) : LedMode(ledStrip, Debug::Logger("StaticLedMode"), std::move(setFps)) {
 }
 
 void StaticLedMode::initialize(const JsonDocument& settings) {
-    setFPS(0);
+    setFps(0);
     if (settings.containsKey("activeColorId")) {
         staticColor = settings["activeColorId"];
     }

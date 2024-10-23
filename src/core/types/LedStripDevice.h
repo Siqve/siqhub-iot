@@ -17,7 +17,7 @@ private:
     std::shared_ptr<LedMode> getMode();
     void initEffects();
 
-    void setFPS(int newFPS);
+    void setFps(int newFps);
     int activeFps = 1;
 
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5);

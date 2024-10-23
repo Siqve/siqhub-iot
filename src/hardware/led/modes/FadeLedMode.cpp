@@ -10,15 +10,15 @@
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
 FadeLedMode::FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
-                         std::function<void(int)> setFPS) : LedMode(ledStrip, Debug::Logger("FadeLedMode"), std::move(setFPS)),
-                                                            ledFPS(DEFAULT_BASE_FPS),
+                         std::function<void(int)> setFps) : LedMode(ledStrip, Debug::Logger("FadeLedMode"), std::move(setFps)),
+                                                            ledFps(DEFAULT_BASE_FPS),
                                                             ledSpeed(DEFAULT_SPEED),
                                                             ledPixelHueStep(DEFAULT_PIXEL_COLOR_HOP),
                                                             ledBrightness(DEFAULT_BRIGHTNESS) {
 }
 
 void FadeLedMode::initialize(const JsonDocument& settings) {
-    setFPS(DEFAULT_BASE_FPS);
+    setFps(DEFAULT_BASE_FPS);
 }
 
 void FadeLedMode::loop() {
@@ -27,13 +27,13 @@ void FadeLedMode::loop() {
 }
 
 void FadeLedMode::updateFps() {
-    setFPS(ledFPS);
+    setFps(ledFps);
 }
 
 void FadeLedMode::onUpdate(const RequestWrapper& request) {
     if (request.hasParam("fps")) {
         int val = request.getParam("fps")->value().toInt();
-        ledFPS = val;
+        ledFps = val;
         updateFps();
     }
     if (request.hasParam("ledSpeed")) {
@@ -73,12 +73,12 @@ void FadeLedMode::incrementHue() {
  * Format: FPS, SPEED, PIXEL_HOP, REVERSE
  */
 String FadeLedMode::getSettings() {
-    return String(ledFPS) + "," + String(ledSpeed) + "," + String(ledPixelHueStep) + "," + String(ledBrightness) + "," + reverse;
+    return String(ledFps) + "," + String(ledSpeed) + "," + String(ledPixelHueStep) + "," + String(ledBrightness) + "," + reverse;
 }
 
 String FadeLedMode::getSettingsJSON() {
     return String("{") +
-           "\"ledFPS\": " + ledFPS +
+           "\"ledFps\": " + ledFps +
            ", \"ledSpeed\": " + ledSpeed +
            ", \"ledPixelHueStep\": " + ledPixelHueStep +
            ", \"ledBrightness\": " + ledBrightness +
