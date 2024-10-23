@@ -1,7 +1,7 @@
 #include "StaticLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/ledUtils.h"
+#include "utils/LedUtils.h"
 #include "utils/TextUtils.h"
 
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
@@ -15,13 +15,13 @@ void StaticLedMode::initialize(const JsonDocument& settings) {
     if (settings.containsKey("activeColorId")) {
         staticColor = settings["activeColorId"];
     }
-    ledUtils::setSolidColor(ledStrip, staticColor);
+    LedUtils::setSolidColor(ledStrip, staticColor);
     ledStrip.Show();
 }
 
 
 void StaticLedMode::loop() {
-    ledUtils::setSolidColor(ledStrip, staticColor);
+    LedUtils::setSolidColor(ledStrip, staticColor);
     ledStrip.Show();
 }
 
@@ -46,7 +46,7 @@ void StaticLedMode::onDebugCommand(const std::string& command) {
 
     if (isInt) {
         int pixelIndex = std::stoi(firstArgument);
-        ledUtils::setSolidColor(ledStrip, 0);
+        LedUtils::setSolidColor(ledStrip, 0);
         ledStrip.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(16711680));
         ledStrip.Show();
         return;

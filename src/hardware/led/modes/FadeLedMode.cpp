@@ -1,7 +1,7 @@
 #include "FadeLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/ledUtils.h"
+#include "utils/LedUtils.h"
 
 #define DEFAULT_BRIGHTNESS 255
 #define SATURATION 255
@@ -57,7 +57,7 @@ void FadeLedMode::onUpdate(const RequestWrapper& request) {
 void FadeLedMode::cycleFade() {
     incrementHue();
     for (int i = 0; i < ledStrip.PixelCount(); i++) {
-        int ledEffectPixel = ledUtils::getAppropriateLedEffectPixel(i);
+        int ledEffectPixel = LedUtils::getAppropriateLedEffectPixel(i);
         RgbColor color = ColorUtils::HSVToRgbColor((ledPixelHueStep * ledEffectPixel) + currentHue, SATURATION,
                                                    ledBrightness);
         ledStrip.SetPixelColor(i, color);
