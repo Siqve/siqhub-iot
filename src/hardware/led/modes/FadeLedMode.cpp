@@ -1,7 +1,7 @@
-#include "FadeLEDMode.h"
+#include "FadeLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/LEDUtils.h"
+#include "utils/ledUtils.h"
 
 #define DEFAULT_BRIGHTNESS 255
 #define SATURATION 255
@@ -9,28 +9,28 @@
 #define DEFAULT_SPEED 25   /* Controls the HUE increments per cycle */
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
-FadeLEDMode::FadeLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                         std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("FadeLEDMode"), std::move(setFPS)),
+FadeLedMode::FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
+                         std::function<void(int)> setFPS) : LedMode(ledStrip, Debug::Logger("FadeLedMode"), std::move(setFPS)),
                                                             ledFPS(DEFAULT_BASE_FPS),
                                                             ledSpeed(DEFAULT_SPEED),
                                                             ledPixelHueStep(DEFAULT_PIXEL_COLOR_HOP),
                                                             ledBrightness(DEFAULT_BRIGHTNESS) {
 }
 
-void FadeLEDMode::initialize(const JsonDocument& settings) {
+void FadeLedMode::initialize(const JsonDocument& settings) {
     setFPS(DEFAULT_BASE_FPS);
 }
 
-void FadeLEDMode::loop() {
+void FadeLedMode::loop() {
     cycleFade();
-    LEDStripPtr.Show();
+    ledStrip.Show();
 }
 
-void FadeLEDMode::updateFps() {
+void FadeLedMode::updateFps() {
     setFPS(ledFPS);
 }
 
-void FadeLEDMode::onUpdate(const RequestWrapper& request) {
+void FadeLedMode::onUpdate(const RequestWrapper& request) {
     if (request.hasParam("fps")) {
         int val = request.getParam("fps")->value().toInt();
         ledFPS = val;
@@ -54,17 +54,17 @@ void FadeLEDMode::onUpdate(const RequestWrapper& request) {
     }
 }
 
-void FadeLEDMode::cycleFade() {
+void FadeLedMode::cycleFade() {
     incrementHue();
-    for (int i = 0; i < LEDStripPtr.PixelCount(); i++) {
-        int ledEffectPixel = LEDUtils::getAppropriateLedEffectPixel(i);
+    for (int i = 0; i < ledStrip.PixelCount(); i++) {
+        int ledEffectPixel = ledUtils::getAppropriateLedEffectPixel(i);
         RgbColor color = ColorUtils::HSVToRgbColor((ledPixelHueStep * ledEffectPixel) + currentHue, SATURATION,
                                                    ledBrightness);
-        LEDStripPtr.SetPixelColor(i, color);
+        ledStrip.SetPixelColor(i, color);
     }
 }
 
-void FadeLEDMode::incrementHue() {
+void FadeLedMode::incrementHue() {
     //Decreasing hue will lead to effect coming from "source" outwards
     currentHue += reverse ? -ledSpeed : ledSpeed;
 }
@@ -72,11 +72,11 @@ void FadeLEDMode::incrementHue() {
 /**
  * Format: FPS, SPEED, PIXEL_HOP, REVERSE
  */
-String FadeLEDMode::getSettings() {
+String FadeLedMode::getSettings() {
     return String(ledFPS) + "," + String(ledSpeed) + "," + String(ledPixelHueStep) + "," + String(ledBrightness) + "," + reverse;
 }
 
-String FadeLEDMode::getSettingsJSON() {
+String FadeLedMode::getSettingsJSON() {
     return String("{") +
            "\"ledFPS\": " + ledFPS +
            ", \"ledSpeed\": " + ledSpeed +

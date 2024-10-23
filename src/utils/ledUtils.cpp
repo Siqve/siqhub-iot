@@ -1,10 +1,10 @@
-#include "LEDUtils.h"
+#include "ledUtils.h"
 #include "ColorUtils.h"
 
-namespace LEDUtils {
-    void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, uint32_t color) {
+namespace ledUtils {
+    void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, uint32_t color) {
         RgbColor rgbColor = ColorUtils::colorToRgbColor(color);
-        LEDStripPtr.ClearTo(rgbColor);
+        ledStrip.ClearTo(rgbColor);
     }
 
 

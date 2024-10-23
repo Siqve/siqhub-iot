@@ -1,11 +1,11 @@
 #pragma once
 
-#include "LEDMode.h"
+#include "LedMode.h"
 #include "ArduinoJson.h"
 
-class FadeLEDMode : public LEDMode {
+class FadeLedMode : public LedMode {
   public:
-    FadeLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, std::function<void(int)> setFPS);
+    FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, std::function<void(int)> setFPS);
     void loop() override;
     void onUpdate(const RequestWrapper& request) override;
     String getSettings() override;

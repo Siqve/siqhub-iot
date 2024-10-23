@@ -5,7 +5,7 @@
 
 #include "ArduinoJson.h"
 #include "BaseDevice.h"
-#include "hardware/LED/modes/LEDMode.h"
+#include "hardware/led/modes/LedMode.h"
 
 class LedStripDevice : public BaseDevice {
 public:
@@ -14,7 +14,7 @@ public:
     void updateSettings(const JsonDocument& settings) override;
     void initialize(const JsonDocument& settings) override;
 private:
-    std::shared_ptr<LEDMode> getMode();
+    std::shared_ptr<LedMode> getMode();
     void initEffects();
 
     void setFPS(int newFPS);
@@ -23,7 +23,7 @@ private:
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5);
 
     LedConstants::LedModeType::Value activeModeType = LedConstants::LedModeType::Value::UNKNOWN;
-    std::unordered_map<LedConstants::LedModeType::Value, std::shared_ptr<LEDMode>> ledModes;
+    std::unordered_map<LedConstants::LedModeType::Value, std::shared_ptr<LedMode>> ledModes;
 
     Debug::Logger logger = Debug::Logger("LedStripDevice");
 

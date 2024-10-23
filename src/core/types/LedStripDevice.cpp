@@ -1,8 +1,8 @@
 #include "LedStripDevice.h"
 
 #include "utils/TimeUtils.h"
-#include "hardware/LED/modes/StaticLEDMode.h"
-#include "hardware/LED/modes/FadeLEDMode.h"
+#include "hardware/led/modes/StaticLedMode.h"
+#include "hardware/led/modes/FadeLedMode.h"
 #include "constants/LedConstants.h"
 
 using namespace LedConstants;
@@ -51,11 +51,11 @@ void LedStripDevice::updateSettings(const JsonDocument &settings) {
 
 
 void LedStripDevice::initEffects() {
-    ledModes[LedModeType::Value::STATIC] = std::make_shared<StaticLEDMode>(ledStrip, [this](int newFps) { setFPS(newFps); });
-    ledModes[LedModeType::Value::FADE] = std::make_shared<FadeLEDMode>(ledStrip, [this](int newFps) { setFPS(newFps); });
+    ledModes[LedModeType::Value::STATIC] = std::make_shared<StaticLedMode>(ledStrip, [this](int newFps) { setFPS(newFps); });
+    ledModes[LedModeType::Value::FADE] = std::make_shared<FadeLedMode>(ledStrip, [this](int newFps) { setFPS(newFps); });
 }
 
-std::shared_ptr<LEDMode> LedStripDevice::getMode() {
+std::shared_ptr<LedMode> LedStripDevice::getMode() {
     return ledModes[activeModeType];
 }
 

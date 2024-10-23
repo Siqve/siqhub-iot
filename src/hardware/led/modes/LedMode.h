@@ -5,9 +5,9 @@
 #include "networking/web/RequestWrapper.h"
 #include "ArduinoJson.h"
 
-class LEDMode {
+class LedMode {
 public:
-    virtual ~LEDMode() = default;
+    virtual ~LedMode() = default;
 
     virtual void loop() = 0;
 
@@ -20,11 +20,11 @@ public:
         return {};
     };
 protected:
-    explicit LEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr, Debug::Logger logger,
-                     std::function<void(int)> setFPS) : LEDStripPtr(LEDStripPtr), logger(std::move(logger)) {
+    explicit LedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, Debug::Logger logger,
+                     std::function<void(int)> setFPS) : ledStrip(ledStrip), logger(std::move(logger)) {
         this->setFPS = std::move(setFPS);
     }
-    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr;
+    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip;
     Debug::Logger logger;
     std::function<void(int)> setFPS{};
 };

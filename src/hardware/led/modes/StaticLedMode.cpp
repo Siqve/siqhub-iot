@@ -1,31 +1,31 @@
-#include "StaticLEDMode.h"
+#include "StaticLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/LEDUtils.h"
+#include "utils/ledUtils.h"
 #include "utils/TextUtils.h"
 
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
 
-StaticLEDMode::StaticLEDMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& LEDStripPtr,
-                             std::function<void(int)> setFPS) : LEDMode(LEDStripPtr, Debug::Logger("StaticLEDMode"), std::move(setFPS)) {
+StaticLedMode::StaticLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
+                             std::function<void(int)> setFPS) : LedMode(ledStrip, Debug::Logger("StaticLedMode"), std::move(setFPS)) {
 }
 
-void StaticLEDMode::initialize(const JsonDocument& settings) {
+void StaticLedMode::initialize(const JsonDocument& settings) {
     setFPS(0);
     if (settings.containsKey("activeColorId")) {
         staticColor = settings["activeColorId"];
     }
-    LEDUtils::setSolidColor(LEDStripPtr, staticColor);
-    LEDStripPtr.Show();
+    ledUtils::setSolidColor(ledStrip, staticColor);
+    ledStrip.Show();
 }
 
 
-void StaticLEDMode::loop() {
-    LEDUtils::setSolidColor(LEDStripPtr, staticColor);
-    LEDStripPtr.Show();
+void StaticLedMode::loop() {
+    ledUtils::setSolidColor(ledStrip, staticColor);
+    ledStrip.Show();
 }
 
-void StaticLEDMode::onUpdate(const RequestWrapper& request) {
+void StaticLedMode::onUpdate(const RequestWrapper& request) {
     if (request.hasParam(REQUEST_PARAM_STATIC_COLOR)) {
         String val = request.getParam(REQUEST_PARAM_STATIC_COLOR)->value();
         uint32_t color = ColorUtils::hexStringToColor(val.c_str());
@@ -35,7 +35,7 @@ void StaticLEDMode::onUpdate(const RequestWrapper& request) {
     }
 }
 
-void StaticLEDMode::onDebugCommand(const std::string& command) {
+void StaticLedMode::onDebugCommand(const std::string& command) {
     logger.debug("Incoming debug command: " + command);
     std::istringstream commandParser(command);
     std::string firstArgument = TextUtils::parseNextWord(commandParser);
@@ -46,9 +46,9 @@ void StaticLEDMode::onDebugCommand(const std::string& command) {
 
     if (isInt) {
         int pixelIndex = std::stoi(firstArgument);
-        LEDUtils::setSolidColor(LEDStripPtr, 0);
-        LEDStripPtr.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(16711680));
-        LEDStripPtr.Show();
+        ledUtils::setSolidColor(ledStrip, 0);
+        ledStrip.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(16711680));
+        ledStrip.Show();
         return;
     }
 }
