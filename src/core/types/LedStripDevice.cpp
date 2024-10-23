@@ -15,21 +15,7 @@ LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
 
 void LedStripDevice::initialize(const JsonDocument &settings) {
     logger.info("Initializing LedStripDevice");
-    const std::string &modeSetting = settings[Settings::MODE_KEY].as<std::string>();
-    const LedModeType::Value ledModeType = LedModeType::from(modeSetting);
-
-    if (ledModeType == LedModeType::Value::UNKNOWN) {
-        logger.error("Unknown LED mode set: " + modeSetting + ". Defaulting to STATIC.");
-        activeModeType = LedModeType::Value::STATIC;
-    } else {
-        activeModeType = ledModeType;
-    }
-
-    if (activeModeType == LedModeType::Value::STATIC) {
-        // TODO: Register color listener for active color id
-    }
-
-    getMode()->initialize(settings);
+    updateSettings(settings);
 }
 
 
@@ -45,7 +31,22 @@ void LedStripDevice::loop() {
 }
 
 void LedStripDevice::updateSettings(const JsonDocument &settings) {
-    //TODO
+    logger.info("Updating settings for LedStripDevice");
+    const std::string &modeSetting = settings[Settings::MODE_KEY].as<std::string>();
+    const LedModeType::Value ledModeType = LedModeType::from(modeSetting);
+
+    if (ledModeType == LedModeType::Value::UNKNOWN) {
+        activeModeType = LedModeType::Value::STATIC;
+        logger.error("Unknown LED mode set: " + modeSetting + ". Defaulting to STATIC.");
+    } else {
+        activeModeType = ledModeType;
+    }
+
+    if (activeModeType == LedModeType::Value::STATIC) {
+        // TODO: Register color listener for active color id
+    }
+
+    getMode()->initialize(settings);
 }
 
 

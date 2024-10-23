@@ -63,14 +63,14 @@ void DeviceManager::handleConfigUpdate(const JsonVariantConst& config) {
     deserializeJson(settings, config[COLUMN_SETTINGS_JSON]);
     const std::string& deviceTypeString = config[COLUMN_TYPE].as<std::string>();
 
-    CoreConstants::DeviceType::Value deviceType = CoreConstants::DeviceType::from(deviceTypeString); // TODO Try to just do ::from(config[COLUMN_TYPE]);
+    CoreConstants::DeviceType::Value deviceType = CoreConstants::DeviceType::from(deviceTypeString);
     if (deviceType == CoreConstants::DeviceType::Value::UNKNOWN) {
-        logger.warn("Unknown device type: " + deviceTypeString + ". Defaulting to LED_STRIP.");
         deviceType = CoreConstants::DeviceType::Value::LED_STRIP;
+        logger.warn("Unknown device type: " + deviceTypeString + ". Defaulting to " + CoreConstants::DeviceType::toString(deviceType) + ".");
     }
 
     if (activeDeviceType == deviceType) {
-        logger.info("Updating settings.");
+        logger.info("Updating settings for active device type: " + CoreConstants::DeviceType::toString(deviceType));
         getDevice()->updateSettings(settings);
         return;
     }

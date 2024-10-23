@@ -11,11 +11,12 @@ namespace CoreConstants {
             UNKNOWN
         };
 
-        static const std::unordered_map<std::string, Value> stringToEnum;
-        static const std::unordered_map<Value, std::string> enumToString;
-
         static Value from(const std::string &value);
         static std::string toString(Value value);
+
+    private:
+        static const std::unordered_map<std::string, Value> stringToEnum;
+        static const std::unordered_map<Value, std::string> enumToString;
 
     };
 
