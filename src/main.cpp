@@ -2,7 +2,7 @@
 #include <ArduinoOTA.h>
 #include "networking/WiFiManager.h"
 #include "networking/web/WebServer.h"
-#include "services/SupabaseService.h"
+#include "services/supabase/SupabaseService.h"
 #include "core/DeviceManager.h"
 
 WiFiManager wifiManager;

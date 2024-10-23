@@ -1,7 +1,7 @@
 #include "DeviceManager.h"
 #include <string>
 #include <constants/CoreConstants.h>
-#include "services/SupabaseService.h"
+#include "services/supabase/SupabaseService.h"
 #include "utils/SupabaseUtils.h"
 #include "constants/SupabaseConstants.h"
 #include "core/types/LedStripDevice.h"
