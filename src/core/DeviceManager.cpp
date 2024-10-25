@@ -2,7 +2,7 @@
 #include <string>
 #include <constants/CoreConstants.h>
 #include "services/supabase/SupabaseService.h"
-#include "utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseUtils.h"
 #include "constants/SupabaseConstants.h"
 #include "core/types/LedStripDevice.h"
 #include "utils/TimeUtils.h"

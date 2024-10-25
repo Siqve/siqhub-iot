@@ -1,5 +1,5 @@
 #include "SupabaseService.h"
-#include "utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 #include "constants/SupabaseConstants.h"

@@ -10,9 +10,7 @@ namespace SupabaseUtils {
     std::string getRestApiUrl(const std::string& reference, const std::string& table, const std::string& selectQuery = "");
 
     namespace Filters {
-        std::string getApiUrl(const std::string& reference, const std::string& slug);
         std::string equals(const std::string& column, const std::string& value);
-
     }
 
     namespace Realtime {

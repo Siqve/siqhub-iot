@@ -1,6 +1,6 @@
 #include "SupabaseUtils.h"
 #include "ArduinoJson.h"
-#include "TextUtils.h"
+#include "utils/TextUtils.h"
 
 namespace SupabaseUtils {
 
