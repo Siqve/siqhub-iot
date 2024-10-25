@@ -1,5 +1,5 @@
 #include "LedUtils.h"
-#include "ColorUtils.h"
+#include "utils/ColorUtils.h"
 
 namespace LedUtils {
     void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, uint32_t color) {

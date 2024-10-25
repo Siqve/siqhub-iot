@@ -1,7 +1,7 @@
 #include "FadeLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/LedUtils.h"
+#include "hardware/led/utils/LedUtils.h"
 
 #define DEFAULT_BRIGHTNESS 255
 #define SATURATION 255

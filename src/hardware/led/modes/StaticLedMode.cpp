@@ -1,7 +1,7 @@
 #include "StaticLedMode.h"
 
 #include "utils/ColorUtils.h"
-#include "utils/LedUtils.h"
+#include "hardware/led/utils/LedUtils.h"
 #include "utils/TextUtils.h"
 
 const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
