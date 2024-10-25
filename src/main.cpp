@@ -2,7 +2,7 @@
 #include <ArduinoOTA.h>
 #include "networking/WiFiManager.h"
 #include "networking/web/WebServer.h"
-#include "services/supabase/SupabaseService.h"
+#include "services/supabase/SupabaseRealtimeService.h"
 #include "core/DeviceManager.h"
 
 WiFiManager wifiManager;
@@ -29,6 +29,6 @@ void loop() {
         return;
 
     ArduinoOTA.handle();
-    SupabaseService::getInstance().loop();
+    SupabaseRealtimeService::getInstance().loop();
     deviceManager.loop();
 }

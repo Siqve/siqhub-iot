@@ -1,4 +1,4 @@
-#include "SupabaseService.h"
+#include "SupabaseRealtimeService.h"
 #include "services/supabase/utils/SupabaseUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
@@ -18,9 +18,7 @@
 using namespace SupabaseUtils;
 using namespace SupabaseConstants::Realtime;
 
-// INSPO https://github.com/jhagas/ESPSupabase/blob/master/src/Realtime.cpp
-
-void SupabaseService::loop() {
+void SupabaseRealtimeService::loop() {
     if (!realtimeWebSocket.isConnected() && !realtimeConnecting) {
         connectRealtime();
         return;
@@ -30,7 +28,7 @@ void SupabaseService::loop() {
 }
 
 
-void SupabaseService::connectRealtime() {
+void SupabaseRealtimeService::connectRealtime() {
     logger.info("Connecting to Supabase realtime websocket");
 
     const std::string hostname = getHostname(SUPABASE_PROJECT_REFERENCE);
@@ -44,7 +42,7 @@ void SupabaseService::connectRealtime() {
 }
 
 
-void SupabaseService::processRealtimeMessage(const std::string& message) {
+void SupabaseRealtimeService::processRealtimeMessage(const std::string& message) {
     logger.debug("Processing realtime message: " + message);
     JsonDocument doc;
     deserializeJson(doc, message);
@@ -66,7 +64,7 @@ void SupabaseService::processRealtimeMessage(const std::string& message) {
     realtimeChannelCallbacks[topicFiltered](payloadData);
 }
 
-void SupabaseService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
+void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
     switch (type) {
         case WStype_DISCONNECTED:
             logger.info("Realtime websocket disconnected");
@@ -94,8 +92,8 @@ void SupabaseService::onRealtimeEvent(const WStype_t type, uint8_t* payload, con
  * @return true if the channel was created successfully, false otherwise
  */
 bool
-SupabaseService::addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic,
-                                       const std::function<void(const JsonVariantConst&)>& callback) {
+SupabaseRealtimeService::addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic,
+                                             const std::function<void(const JsonVariantConst&)>& callback) {
     if (!realtimeWebSocket.isConnected()) {
         return false;
     }
@@ -105,51 +103,8 @@ SupabaseService::addRealtimeListener(const std::string& table, const std::string
     return true;
 }
 
-std::optional<JsonDocument> SupabaseService::select(const std::string& table, const std::string& column, const std::string& value) {
-    return sendRestRequest(table + "?" + Filters::equals(column, value));
-}
-
-std::optional<JsonDocument> SupabaseService::sendRestRequest(const std::string& slug, const std::string& body) {
-    WiFiClientSecure wifiClient;
-    wifiClient.setInsecure();
-    HTTPClient httpsClient;
-    httpsClient.setTimeout(10000);
-
-    std::string restUrl = getRestApiUrl(SUPABASE_PROJECT_REFERENCE, slug);
-    logger.info("Sending request to: " + restUrl);
-
-    if (!httpsClient.begin(wifiClient, restUrl.c_str())) {
-        logger.error("Unable to connect to request URL");
-        return std::nullopt;
-    }
-
-    httpsClient.addHeader("apiKey", SUPABASE_API_KEY);
-    int httpCode;
-    if (body.empty()) {
-        httpCode = httpsClient.GET();
-    } else {
-        httpsClient.addHeader("Content-Type", "application/json");
-        httpCode = httpsClient.POST(body.c_str());
-    }
-
-    if (httpCode <= 0) {
-        logger.error(("Request failed. Error: " + HTTPClient::errorToString(httpCode)).c_str());
-        httpsClient.end();
-        return std::nullopt;
-    }
-
-    std::string responseString = httpsClient.getString().c_str();
-    logger.debug("Response: " + responseString);
-
-    JsonDocument doc;
-    deserializeJson(doc, responseString);
-    httpsClient.end();
-    return doc;
-}
-
-
 static uint32_t lastHeartbeatMillis = 0;
-void SupabaseService::manageRealtimeHeartbeat() {
+void SupabaseRealtimeService::manageRealtimeHeartbeat() {
     if (!TimeUtils::isMillisElapsed(millis(), lastHeartbeatMillis, 30000)) {
         return;
     }

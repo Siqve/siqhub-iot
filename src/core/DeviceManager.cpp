@@ -1,7 +1,8 @@
 #include "DeviceManager.h"
 #include <string>
 #include <constants/CoreConstants.h>
-#include "services/supabase/SupabaseService.h"
+#include "services/supabase/SupabaseRealtimeService.h"
+#include "services/supabase/SupabaseQueryService.h"
 #include "services/supabase/utils/SupabaseUtils.h"
 #include "constants/SupabaseConstants.h"
 #include "core/types/LedStripDevice.h"
@@ -38,7 +39,7 @@ void DeviceManager::registerChangeListener() {
 
     const std::string deviceIdFilter = SupabaseUtils::Filters::equals(COLUMN_ID, DEVICE_UUID);
 
-    const bool listenerCreatedSuccessfully = SupabaseService::getInstance()
+    const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addRealtimeListener(TABLE_NAME, deviceIdFilter,
                                  "DeviceManager:device", [this](const JsonVariantConst& data) {
                         onConfigUpdate(data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY]);
@@ -102,7 +103,7 @@ std::shared_ptr<BaseDevice> DeviceManager::createDevice(CoreConstants::DeviceTyp
 JsonDocument DeviceManager::getDeviceConfig() {
     logger.info("Getting device config");
     std::optional<JsonDocument> deviceConfig =
-            SupabaseService::getInstance().select(TABLE_NAME, COLUMN_ID, DEVICE_UUID);
+            SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, DEVICE_UUID);
 
     if (!deviceConfig) {
         logger.error("Failed to get device config");

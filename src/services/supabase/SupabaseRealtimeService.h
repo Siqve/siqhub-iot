@@ -7,23 +7,22 @@
 #include <optional>
 #include <map>
 
-class SupabaseService {
+class SupabaseRealtimeService {
 public:
-    SupabaseService(const SupabaseService&) = delete;
-    SupabaseService& operator=(const SupabaseService&) = delete;
+    SupabaseRealtimeService(const SupabaseRealtimeService&) = delete;
+    SupabaseRealtimeService& operator=(const SupabaseRealtimeService&) = delete;
 
-    static SupabaseService& getInstance() {
-        static SupabaseService instance;
+    static SupabaseRealtimeService& getInstance() {
+        static SupabaseRealtimeService instance;
         return instance;
     }
 
     void loop();
 
     [[nodiscard]] bool addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonVariantConst&)>& callback);
-    std::optional<JsonDocument> select(const std::string& table, const std::string& column, const std::string& value);
 
 private:
-    SupabaseService() = default;
+    SupabaseRealtimeService() = default;
 
     // Realtime
     void connectRealtime();
@@ -31,14 +30,11 @@ private:
     void processRealtimeMessage(const std::string& message);
     void manageRealtimeHeartbeat();
 
-    // Rest
-    std::optional<JsonDocument> sendRestRequest(const std::string& slug, const std::string& body = "");
-
     WebSocketsClient realtimeWebSocket;
     std::map<std::string, std::function<void(const JsonVariantConst&)>> realtimeChannelCallbacks;
 
     bool realtimeConnecting = false;
-    Debug::Logger logger = Debug::Logger("SupabaseService");
+    Debug::Logger logger = Debug::Logger("SupabaseRealtimeService");
 
 };
 
