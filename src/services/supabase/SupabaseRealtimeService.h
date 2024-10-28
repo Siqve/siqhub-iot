@@ -19,7 +19,9 @@ public:
 
     void loop();
 
-    [[nodiscard]] bool addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic, const std::function<void(const JsonVariantConst&)>& callback);
+    [[nodiscard]] bool addUpdateListener(const std::string& topic, const std::string& table, const std::string& filter,
+                                         const std::function<void(const JsonVariantConst&)>& callback);
+    [[nodiscard]] bool addInsertListener(const std::string& topic, const std::string& table, const std::function<void(const JsonVariantConst&)>& callback);
 
 private:
     SupabaseRealtimeService() = default;

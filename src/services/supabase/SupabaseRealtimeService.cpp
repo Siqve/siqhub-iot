@@ -87,24 +87,38 @@ void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payl
 }
 
 
-/**
- * Create a realtime channel for the given table, filter, and topic.
- * The callback will be called when a message is received on the channel.
- * @return true if the channel was created successfully, false otherwise
- */
 bool
-SupabaseRealtimeService::addRealtimeListener(const std::string& table, const std::string& filter, const std::string& topic,
-                                             const std::function<void(const JsonVariantConst&)>& callback) {
+SupabaseRealtimeService::addUpdateListener(const std::string& topic, const std::string& table, const std::string& filter,
+                                           const std::function<void(const JsonVariantConst&)>& callback) {
     if (!realtimeWebSocket.isConnected()) {
         return false;
     }
-    logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
-    realtimeWebSocket.sendTXT(createJoinMessage(table, filter, topic).c_str());
-    realtimeChannelCallbacks[topic] = callback;
+    logger.info("Creating update listener for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
+    realtimeWebSocket.sendTXT(createUpdateConnectionString(topic, table, filter).c_str());
+    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
+        JsonVariantConst recordProperty = data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY];
+        callback(recordProperty);
+    };
     return true;
 }
 
+bool
+SupabaseRealtimeService::addInsertListener(const std::string& topic, const std::string& table, const std::function<void(const JsonVariantConst&)>& callback) {
+    if (!realtimeWebSocket.isConnected()) {
+        return false;
+    }
+    logger.info("Creating insert listener for table: " + table + ", with topic: " + topic);
+    realtimeWebSocket.sendTXT(createInsertConnectionString(topic, table).c_str());
+    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
+        JsonVariantConst recordProperty = data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY];
+        callback(recordProperty);
+    };
+    return true;
+}
+
+
 static uint32_t lastHeartbeatMillis = 0;
+
 void SupabaseRealtimeService::manageRealtimeHeartbeat() {
     if (!TimeUtils::isMillisElapsed(millis(), lastHeartbeatMillis, 30000)) {
         return;
@@ -113,3 +127,4 @@ void SupabaseRealtimeService::manageRealtimeHeartbeat() {
     logger.info("Sending Supabase Realtime heartbeat");
     realtimeWebSocket.sendTXT(createHeartbeat().c_str());
 }
+

@@ -40,9 +40,9 @@ void DeviceManager::registerChangeListener() {
     const std::string deviceIdFilter = SupabaseQueryUtils::Filters::equals(COLUMN_ID, DEVICE_UUID);
 
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
-            .addRealtimeListener(TABLE_NAME, deviceIdFilter,
-                                 "DeviceManager:device", [this](const JsonVariantConst& data) {
-                        onConfigUpdate(data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY]);
+            .addUpdateListener("DeviceManager:device", TABLE_NAME, deviceIdFilter,
+                               [this](const JsonVariantConst& data) {
+                        onConfigUpdate(data);
                     });
 
     listenerActive = listenerCreatedSuccessfully;

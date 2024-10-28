@@ -8,24 +8,31 @@ namespace SupabaseRealtimeUtils {
         return "/realtime/v1/websocket?apikey=" + apiKey + "&log_level=info&vsn=1.0.0";
     }
 
-    std::string createJoinMessage(const std::string& table, const std::string& filter,
-                                  const std::optional<std::string>& topic) {
+    std::string createJoinMessage(const std::string& eventType, const std::string& topic, const std::string& table,
+                                  const std::optional<std::string>& filter = std::nullopt) {
         JsonDocument json;
         json["event"] = "phx_join";
-        if (topic) {
-            json["topic"] = std::string("realtime:") + topic.value();
-        } else {
-            json["topic"] = std::string("realtime:") + PIOENV + ":" + table + ":" + filter;
-        }
-        json["payload"]["config"]["postgres_changes"][0]["event"] = "UPDATE";
-        json["payload"]["config"]["postgres_changes"][0]["schema"] = "public";
+        json["topic"] = std::string("realtime:") + topic;
+        json["payload"]["config"]["postgres_changes"][0]["event"] = eventType;
         json["payload"]["config"]["postgres_changes"][0]["table"] = table;
-        json["payload"]["config"]["postgres_changes"][0]["filter"] = filter;
-        json["ref"] = "Creating join message. Device: " + std::string(PIOENV) + ", table: " + table + ", filter: " +
-                      filter;
+        if (filter) {
+            json["payload"]["config"]["postgres_changes"][0]["filter"] = filter.value();
+        }
+        json["payload"]["config"]["postgres_changes"][0]["schema"] = "public";
+        json["ref"] =
+                "Creating join message. Device: " + std::string(PIOENV) + ", table: " + table + ", filter: " + (filter ? filter.value() : "") + ", event: " +
+                eventType;
         std::string message;
         serializeJson(json, message);
         return message;
+    }
+
+    std::string createUpdateConnectionString(const std::string& topic, const std::string& table, const std::string& filter) {
+        return createJoinMessage("UPDATE", topic, table, filter);
+    }
+
+    std::string createInsertConnectionString(const std::string& topic, const std::string& table, const std::string& filter) {
+        return createJoinMessage("INSERT", topic, table);
     }
 
     std::string createLeaveMessage(const std::string& topic) {
