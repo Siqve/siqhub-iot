@@ -6,7 +6,7 @@
 #include "constants/TableConstants.h"
 #include "core/types/LedStripDevice.h"
 #include "utils/TimeUtils.h"
-#include "services/supabase/utils/SupabaseQueryUtils.h"
+#include "services/supabase/utils/SupabaseFilterUtils.h"
 
 using namespace TableConstants::Device;
 
@@ -37,7 +37,7 @@ void DeviceManager::registerChangeListener() {
     lastListenerRegisterAttemptMillis = millis();
     logger.info("Attempting to register change listener for device config");
 
-    const std::string deviceIdFilter = SupabaseQueryUtils::Filters::equals(COLUMN_ID, DEVICE_UUID);
+    const std::string deviceIdFilter = SupabaseFilterUtils::equals(COLUMN_ID, DEVICE_UUID);
 
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addUpdateListener("DeviceManager:device", TABLE_NAME, deviceIdFilter,

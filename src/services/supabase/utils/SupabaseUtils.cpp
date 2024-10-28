@@ -12,4 +12,8 @@ namespace SupabaseUtils {
         return "https://" + getHostname(reference);
     }
 
+    std::string getRestApiUrl(const std::string& reference, const std::string& table, const std::string& selectQuery) {
+        return SupabaseUtils::getUrl(reference) + "/rest/v1/" + table;
+    }
+
 }
