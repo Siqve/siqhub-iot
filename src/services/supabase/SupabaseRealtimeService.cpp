@@ -3,7 +3,7 @@
 #include "services/supabase/utils/SupabaseRealtimeUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
-#include "constants/SupabaseConstants.h"
+#include "constants/SupabaseRealtimeConstants.h"
 #include "utils/TimeUtils.h"
 
 #ifdef ESP32
@@ -17,7 +17,7 @@
 #endif
 
 using namespace SupabaseRealtimeUtils;
-using namespace SupabaseConstants::Realtime;
+using namespace SupabaseRealtimeConstants::Response;
 
 void SupabaseRealtimeService::loop() {
     if (!realtimeWebSocket.isConnected() && !realtimeConnecting) {
@@ -50,7 +50,7 @@ void SupabaseRealtimeService::processRealtimeMessage(const std::string& message)
 
     const std::string& topic = doc[TOPIC_KEY].as<std::string>();
     const std::string topicFiltered = getTopicFiltered(topic);
-    logger.info("Received message on topic: " + topicFiltered + " (original: " + topic + ")");
+    logger.info("Received message on topic: " + topicFiltered);
     if (!realtimeChannelCallbacks.contains(topicFiltered)) {
         logger.error("No callback found.");
         return;
@@ -96,7 +96,7 @@ SupabaseRealtimeService::addUpdateListener(const std::string& topic, const std::
     logger.info("Creating update listener for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
     realtimeWebSocket.sendTXT(createUpdateConnectionString(topic, table, filter).c_str());
     realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
-        JsonVariantConst recordProperty = data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY];
+        JsonVariantConst recordProperty = data[UPDATE_RECORD_KEY];
         callback(recordProperty);
     };
     return true;
@@ -110,7 +110,7 @@ SupabaseRealtimeService::addInsertListener(const std::string& topic, const std::
     logger.info("Creating insert listener for table: " + table + ", with topic: " + topic);
     realtimeWebSocket.sendTXT(createInsertConnectionString(topic, table).c_str());
     realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
-        JsonVariantConst recordProperty = data[SupabaseConstants::Realtime::UPDATE_RECORD_KEY];
+        JsonVariantConst recordProperty = data[UPDATE_RECORD_KEY];
         callback(recordProperty);
     };
     return true;

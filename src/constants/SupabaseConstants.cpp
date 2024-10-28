@@ -2,13 +2,6 @@
 
 namespace SupabaseConstants {
 
-    namespace Realtime {
-        const std::string TOPIC_KEY = "topic";
-        const std::string PAYLOAD_KEY = "payload";
-        const std::string PAYLOAD_DATA_KEY = "data";
-        const std::string UPDATE_RECORD_KEY = "record";
-    }
-
     namespace Tables {
 
         namespace Device {

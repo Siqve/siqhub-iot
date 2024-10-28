@@ -1,8 +1,13 @@
 #include "SupabaseUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
+#include "../constants/SupabaseRealtimeConstants.h"
+
 
 namespace SupabaseRealtimeUtils {
+
+    using namespace SupabaseRealtimeConstants;
+    using namespace SupabaseRealtimeConstants::Request;
 
     std::string getSlug(const std::string& apiKey) {
         return "/realtime/v1/websocket?apikey=" + apiKey + "&log_level=info&vsn=1.0.0";
@@ -11,8 +16,8 @@ namespace SupabaseRealtimeUtils {
     std::string createJoinMessage(const std::string& eventType, const std::string& topic, const std::string& table,
                                   const std::optional<std::string>& filter = std::nullopt) {
         JsonDocument json;
-        json["event"] = "phx_join";
-        json["topic"] = std::string("realtime:") + topic;
+        json["event"] = PROTOCOL_JOIN;
+        json["topic"] = TOPIC_PREFIX + topic;
         json["payload"]["config"]["postgres_changes"][0]["event"] = eventType;
         json["payload"]["config"]["postgres_changes"][0]["table"] = table;
         if (filter) {
@@ -37,8 +42,8 @@ namespace SupabaseRealtimeUtils {
 
     std::string createLeaveMessage(const std::string& topic) {
         JsonDocument json;
-        json["event"] = "phx_leave";
-        json["topic"] = std::string("realtime:") + topic;
+        json["event"] = PROTOCOL_LEAVE;
+        json["topic"] = TOPIC_PREFIX + topic;
         json["payload"] = "{}";
         json["ref"] = "Leaving topic: " + topic;
         std::string message;
@@ -48,7 +53,7 @@ namespace SupabaseRealtimeUtils {
 
     std::string createHeartbeat() {
         JsonDocument json;
-        json["event"] = "heartbeat";
+        json["event"] = PROTOCOL_HEARTBEAT;
         json["topic"] = "phoenix";
         json["payload"] = "{}";
         json["ref"] = "heartbeat";
@@ -58,7 +63,7 @@ namespace SupabaseRealtimeUtils {
     }
 
     std::string getTopicFiltered(const std::string& topic) {
-        return TextUtils::replaceAll(topic, "realtime:", "");
+        return TextUtils::replaceAll(topic, TOPIC_PREFIX, "");
     }
 
 }
