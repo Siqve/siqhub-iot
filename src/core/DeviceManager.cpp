@@ -3,12 +3,12 @@
 #include <constants/CoreConstants.h>
 #include "services/supabase/SupabaseRealtimeService.h"
 #include "services/supabase/SupabaseQueryService.h"
-#include "constants/SupabaseConstants.h"
+#include "constants/TableConstants.h"
 #include "core/types/LedStripDevice.h"
 #include "utils/TimeUtils.h"
 #include "services/supabase/utils/SupabaseQueryUtils.h"
 
-using namespace SupabaseConstants::Tables::Device;
+using namespace TableConstants::Device;
 
 void DeviceManager::loop() {
     if (!isConfigured()) {
