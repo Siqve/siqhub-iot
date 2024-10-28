@@ -3,10 +3,10 @@
 #include <constants/CoreConstants.h>
 #include "services/supabase/SupabaseRealtimeService.h"
 #include "services/supabase/SupabaseQueryService.h"
-#include "services/supabase/utils/SupabaseUtils.h"
 #include "constants/SupabaseConstants.h"
 #include "core/types/LedStripDevice.h"
 #include "utils/TimeUtils.h"
+#include "services/supabase/utils/SupabaseQueryUtils.h"
 
 using namespace SupabaseConstants::Tables::Device;
 
@@ -37,7 +37,7 @@ void DeviceManager::registerChangeListener() {
     lastListenerRegisterAttemptMillis = millis();
     logger.info("Attempting to register change listener for device config");
 
-    const std::string deviceIdFilter = SupabaseUtils::Filters::equals(COLUMN_ID, DEVICE_UUID);
+    const std::string deviceIdFilter = SupabaseQueryUtils::Filters::equals(COLUMN_ID, DEVICE_UUID);
 
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addRealtimeListener(TABLE_NAME, deviceIdFilter,

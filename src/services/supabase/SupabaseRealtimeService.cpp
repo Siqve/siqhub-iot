@@ -1,5 +1,6 @@
 #include "SupabaseRealtimeService.h"
 #include "services/supabase/utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseRealtimeUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 #include "constants/SupabaseConstants.h"
@@ -15,7 +16,7 @@
 #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
-using namespace SupabaseUtils;
+using namespace SupabaseRealtimeUtils;
 using namespace SupabaseConstants::Realtime;
 
 void SupabaseRealtimeService::loop() {
@@ -31,8 +32,8 @@ void SupabaseRealtimeService::loop() {
 void SupabaseRealtimeService::connectRealtime() {
     logger.info("Connecting to Supabase realtime websocket");
 
-    const std::string hostname = getHostname(SUPABASE_PROJECT_REFERENCE);
-    const std::string realtimeSlug = Realtime::getSlug(SUPABASE_API_KEY);
+    const std::string hostname = SupabaseUtils::getHostname(SUPABASE_PROJECT_REFERENCE);
+    const std::string realtimeSlug = getSlug(SUPABASE_API_KEY);
     realtimeWebSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
 
     realtimeWebSocket.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
@@ -48,7 +49,7 @@ void SupabaseRealtimeService::processRealtimeMessage(const std::string& message)
     deserializeJson(doc, message);
 
     const std::string& topic = doc[TOPIC_KEY].as<std::string>();
-    const std::string topicFiltered = Realtime::getTopicFiltered(topic);
+    const std::string topicFiltered = getTopicFiltered(topic);
     logger.info("Received message on topic: " + topicFiltered + " (original: " + topic + ")");
     if (!realtimeChannelCallbacks.contains(topicFiltered)) {
         logger.error("No callback found.");
@@ -66,15 +67,15 @@ void SupabaseRealtimeService::processRealtimeMessage(const std::string& message)
 
 void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
     switch (type) {
+        case WStype_TEXT:
+            processRealtimeMessage(std::string((char*) payload, length));
+            break;
         case WStype_DISCONNECTED:
             logger.info("Realtime websocket disconnected");
             break;
         case WStype_CONNECTED:
             logger.info("Realtime websocket connected");
             realtimeConnecting = false;
-            break;
-        case WStype_TEXT:
-            processRealtimeMessage(std::string((char*) payload, length));
             break;
         case WStype_ERROR:
             logger.error("Realtime websocket error. Payload: " + std::string((char*) payload, length));
@@ -98,7 +99,7 @@ SupabaseRealtimeService::addRealtimeListener(const std::string& table, const std
         return false;
     }
     logger.info("Creating realtime channel for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
-    realtimeWebSocket.sendTXT(Realtime::createJoinMessage(table, filter, topic).c_str());
+    realtimeWebSocket.sendTXT(createJoinMessage(table, filter, topic).c_str());
     realtimeChannelCallbacks[topic] = callback;
     return true;
 }
@@ -110,5 +111,5 @@ void SupabaseRealtimeService::manageRealtimeHeartbeat() {
     }
     lastHeartbeatMillis = millis();
     logger.info("Sending Supabase Realtime heartbeat");
-    realtimeWebSocket.sendTXT(Realtime::createHeartbeat().c_str());
+    realtimeWebSocket.sendTXT(createHeartbeat().c_str());
 }

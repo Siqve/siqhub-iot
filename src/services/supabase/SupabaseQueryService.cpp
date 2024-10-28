@@ -1,5 +1,5 @@
 #include "SupabaseQueryService.h"
-#include "services/supabase/utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseQueryUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 
@@ -13,7 +13,7 @@
 #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
-using namespace SupabaseUtils;
+using namespace SupabaseQueryUtils;
 
 
 std::optional<JsonDocument> SupabaseQueryService::select(const std::string& table, const std::string& column, const std::string& value) {
