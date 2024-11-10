@@ -4,13 +4,15 @@
 
 
 namespace LedConstants {
-
     namespace Settings {
-
         const std::string MODE_KEY = "mode";
 
         namespace Static {
             const std::string ACTIVE_COLOR_ID_KEY = "activeColorId";
+
+            namespace Mode {
+                const std::string COLOR_KEY = "color";
+            }
         }
     }
 
@@ -27,6 +29,4 @@ namespace LedConstants {
         }
         return Value::UNKNOWN; // Fallback in case the string is invalid
     }
-
-
 }

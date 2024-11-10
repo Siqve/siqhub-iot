@@ -9,7 +9,7 @@
 #define DEFAULT_SPEED 25   /* Controls the HUE increments per cycle */
 #define DEFAULT_PIXEL_COLOR_HOP 4000 /* The amount of hue increase each LED has to the previous*/
 
-FadeLedMode::FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
+FadeLedMode::FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> &ledStrip,
                          std::function<void(int)> setFps) : LedMode(ledStrip, Debug::Logger("FadeLedMode"), std::move(setFps)),
                                                             ledFps(DEFAULT_BASE_FPS),
                                                             ledSpeed(DEFAULT_SPEED),
@@ -17,42 +17,45 @@ FadeLedMode::FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
                                                             ledBrightness(DEFAULT_BRIGHTNESS) {
 }
 
-void FadeLedMode::initialize(const JsonDocument& settings) {
-    setFps(DEFAULT_BASE_FPS);
-}
+// void FadeLedMode::initialize(const JsonDocument& settings) {
+//     setFps(DEFAULT_BASE_FPS);
+// }
 
 void FadeLedMode::loop() {
     cycleFade();
     ledStrip.Show();
 }
 
+void FadeLedMode::handleUpdate(const JsonDocument &settings) {
+}
+
 void FadeLedMode::updateFps() {
     setFps(ledFps);
 }
 
-void FadeLedMode::onUpdate(const RequestWrapper& request) {
-    if (request.hasParam("fps")) {
-        int val = request.getParam("fps")->value().toInt();
-        ledFps = val;
-        updateFps();
-    }
-    if (request.hasParam("ledSpeed")) {
-        int val = request.getParam("ledSpeed")->value().toInt();
-        ledSpeed = val;
-    }
-    if (request.hasParam("hop")) {
-        int val = request.getParam("hop")->value().toInt();
-        ledPixelHueStep = val;
-    }
-    if (request.hasParam("brightness")) {
-        int val = request.getParam("brightness")->value().toInt();
-        ledBrightness = val;
-    }
-    if (request.hasParam("reverse")) {
-        int val = request.getParam("reverse")->value().toInt();
-        reverse = val;
-    }
-}
+// void FadeLedMode::onUpdate(const RequestWrapper& request) {
+//     if (request.hasParam("fps")) {
+//         int val = request.getParam("fps")->value().toInt();
+//         ledFps = val;
+//         updateFps();
+//     }
+//     if (request.hasParam("ledSpeed")) {
+//         int val = request.getParam("ledSpeed")->value().toInt();
+//         ledSpeed = val;
+//     }
+//     if (request.hasParam("hop")) {
+//         int val = request.getParam("hop")->value().toInt();
+//         ledPixelHueStep = val;
+//     }
+//     if (request.hasParam("brightness")) {
+//         int val = request.getParam("brightness")->value().toInt();
+//         ledBrightness = val;
+//     }
+//     if (request.hasParam("reverse")) {
+//         int val = request.getParam("reverse")->value().toInt();
+//         reverse = val;
+//     }
+// }
 
 void FadeLedMode::cycleFade() {
     incrementHue();
@@ -67,21 +70,4 @@ void FadeLedMode::cycleFade() {
 void FadeLedMode::incrementHue() {
     //Decreasing hue will lead to effect coming from "source" outwards
     currentHue += reverse ? -ledSpeed : ledSpeed;
-}
-
-/**
- * Format: FPS, SPEED, PIXEL_HOP, REVERSE
- */
-String FadeLedMode::getSettings() {
-    return String(ledFps) + "," + String(ledSpeed) + "," + String(ledPixelHueStep) + "," + String(ledBrightness) + "," + reverse;
-}
-
-String FadeLedMode::getSettingsJSON() {
-    return String("{") +
-           "\"ledFps\": " + ledFps +
-           ", \"ledSpeed\": " + ledSpeed +
-           ", \"ledPixelHueStep\": " + ledPixelHueStep +
-           ", \"ledBrightness\": " + ledBrightness +
-           ", \"reverse\": " + reverse
-           + String("}");
 }

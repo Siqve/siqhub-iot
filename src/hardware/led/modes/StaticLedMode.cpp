@@ -1,41 +1,34 @@
+#include <constants/LedConstants.h>
+
 #include "StaticLedMode.h"
 
 #include "utils/ColorUtils.h"
 #include "hardware/led/utils/LedUtils.h"
 #include "utils/TextUtils.h"
 
-const char* REQUEST_PARAM_STATIC_COLOR = "static-color";
+constexpr int FIXED_FPS = 1;
 
-StaticLedMode::StaticLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip,
+using namespace ColorUtils;
+
+StaticLedMode::StaticLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> &ledStrip,
                              std::function<void(int)> setFps) : LedMode(ledStrip, Debug::Logger("StaticLedMode"), std::move(setFps)) {
 }
 
-void StaticLedMode::initialize(const JsonDocument& settings) {
-    setFps(0);
-    if (settings.containsKey("activeColorId")) {
-        staticColor = settings["activeColorId"];
-    }
-    LedUtils::setSolidColor(ledStrip, staticColor);
-    ledStrip.Show();
-}
 
+void StaticLedMode::handleUpdate(const JsonDocument &settings) {
+    setFps(FIXED_FPS);
+
+    const std::string colorString = settings[LedConstants::Settings::Static::Mode::COLOR_KEY];
+    staticColor = Gamma32(hexStringToColor(colorString));
+    loop();
+}
 
 void StaticLedMode::loop() {
     LedUtils::setSolidColor(ledStrip, staticColor);
     ledStrip.Show();
 }
 
-void StaticLedMode::onUpdate(const RequestWrapper& request) {
-    if (request.hasParam(REQUEST_PARAM_STATIC_COLOR)) {
-        String val = request.getParam(REQUEST_PARAM_STATIC_COLOR)->value();
-        uint32_t color = ColorUtils::hexStringToColor(val.c_str());
-        uint32_t gammaCorrected = ColorUtils::Gamma32(color);
-        staticColor = gammaCorrected;
-        loop();
-    }
-}
-
-void StaticLedMode::onDebugCommand(const std::string& command) {
+void StaticLedMode::onDebugCommand(const std::string &command) {
     logger.debug("Incoming debug command: " + command);
     std::istringstream commandParser(command);
     std::string firstArgument = TextUtils::parseNextWord(commandParser);
@@ -49,6 +42,5 @@ void StaticLedMode::onDebugCommand(const std::string& command) {
         LedUtils::setSolidColor(ledStrip, 0);
         ledStrip.SetPixelColor(pixelIndex, ColorUtils::colorToRgbColor(16711680));
         ledStrip.Show();
-        return;
     }
 }

@@ -7,11 +7,8 @@ class FadeLedMode : public LedMode {
   public:
     FadeLedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, std::function<void(int)> setFps);
     void loop() override;
-    void onUpdate(const RequestWrapper& request) override;
-    String getSettings() override;
-    String getSettingsJSON();
+    void handleUpdate(const JsonDocument& settings) override;
 private:
-    void initialize(const JsonDocument& settings) override;
     void cycleFade();
     void updateFps();
     void incrementHue();

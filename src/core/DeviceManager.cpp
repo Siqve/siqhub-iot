@@ -62,7 +62,7 @@ void DeviceManager::handleConfigUpdate(const JsonVariantConst& config) {
     logger.info("Handling device config update");
     JsonDocument settings;
     deserializeJson(settings, config[COLUMN_SETTINGS_JSON]);
-    const std::string& deviceTypeString = config[COLUMN_TYPE].as<std::string>();
+    const std::string& deviceTypeString = config[COLUMN_TYPE].as<std::string>(); //TODO: Prøv uten casting til string
 
     CoreConstants::DeviceType::Value deviceType = CoreConstants::DeviceType::from(deviceTypeString);
     if (deviceType == CoreConstants::DeviceType::Value::UNKNOWN) {
@@ -111,6 +111,7 @@ JsonDocument DeviceManager::getDeviceConfig() {
     }
 
     const JsonArray jsonArray = deviceConfig->as<JsonArray>();
+    //TODO: Maybe delete this check? It seems redundant
     if (jsonArray.size() != 1) {
         logger.error("Expected device config query to return exactly one element");
         throw std::runtime_error("Expected device config query to return exactly one element");

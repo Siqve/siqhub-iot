@@ -22,6 +22,7 @@ public:
     [[nodiscard]] bool addUpdateListener(const std::string& topic, const std::string& table, const std::string& filter,
                                          const std::function<void(const JsonVariantConst&)>& callback);
     [[nodiscard]] bool addInsertListener(const std::string& topic, const std::string& table, const std::function<void(const JsonVariantConst&)>& callback);
+    bool removeListener(const std::string& topic);
 
 private:
     SupabaseRealtimeService() = default;

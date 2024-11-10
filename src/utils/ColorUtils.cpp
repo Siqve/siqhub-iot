@@ -24,8 +24,7 @@ namespace ColorUtils {
     218, 220, 223, 225, 227, 230, 232, 235, 237, 240, 242, 245, 247, 250, 252,
     255};
 
-
-    uint32_t hexStringToColor(const char* hexString) {
+    uint32_t hexStringToColor(const std::string& hexString) {
         std::stringstream stringstream;
         stringstream << hexString;
         uint32_t value;

@@ -17,6 +17,10 @@ private:
     std::shared_ptr<LedMode> getMode();
     void initEffects();
 
+    void createStaticListener(const JsonDocument &settings);
+    JsonDocument getInitialStaticSettings(const JsonDocument &settings);
+    static [[nodiscard]] JsonDocument prepareStaticSettings(const JsonVariantConst& data);
+
     void setFps(int newFps);
     int activeFps = 1;
 

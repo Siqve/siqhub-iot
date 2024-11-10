@@ -4,15 +4,16 @@
 #include <string>
 
 namespace LedConstants {
-
     namespace Settings {
-
         extern const std::string MODE_KEY;
 
         namespace Static {
             extern const std::string ACTIVE_COLOR_ID_KEY;
-        }
 
+            namespace Mode {
+                extern const std::string COLOR_KEY;
+            }
+        }
     }
 
     class LedModeType {
@@ -23,8 +24,6 @@ namespace LedConstants {
             UNKNOWN
         };
 
-        static Value from(const std::string& value);
-
+        static Value from(const std::string &value);
     };
-
 }

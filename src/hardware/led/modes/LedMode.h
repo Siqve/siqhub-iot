@@ -11,14 +11,10 @@ public:
 
     virtual void loop() = 0;
 
-    virtual void initialize(const JsonDocument& settings) {};
+    virtual void handleUpdate(const JsonDocument& settings) = 0; // TODO: Implement this. Dont know if it takes in JsonDocument or JsonConstDocument or w.e., this will be called from LedStripDevice
 
-    virtual void onUpdate(const RequestWrapper& request) {};
     virtual void onDebugCommand(const std::string& command) {};
 
-    virtual String getSettings() {
-        return {};
-    };
 protected:
     explicit LedMode(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, Debug::Logger logger,
                      std::function<void(int)> setFps) : ledStrip(ledStrip), logger(std::move(logger)) {
