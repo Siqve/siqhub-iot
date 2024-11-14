@@ -28,11 +28,6 @@ void LedStripDevice::initialize(const JsonDocument &settings) {
     updateSettings(settings);
 }
 
-
-//TODO:
-// I hav etestet taht it works with static, now continue on gradient
-// Remember: connecting esp32 does not work with 330ohm resistor.
-
 static uint32_t lastLoopTimeMillis;
 
 void LedStripDevice::loop() {
@@ -61,9 +56,8 @@ void LedStripDevice::updateSettings(const JsonDocument &settings) {
     if (activeModeType == LedModeType::Value::STATIC) {
         createStaticListener(settings);
         initialSettings = getInitialStaticSettings(settings);
-        //TODO: Tror jeg er ferdig med denne delen nå. Commit dette. Bytt opp på den setFps logikk (ha fps i LedMode isteden).
-        // deretter tror jeg jeg burde teste at det fungerer. Så kan jeg se på FadeLedMode og se om jeg kan få til det samme der.
     } else {
+        //TODO Implement other modes
     }
 
     getMode()->handleUpdate(initialSettings);

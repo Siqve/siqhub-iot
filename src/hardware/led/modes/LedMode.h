@@ -11,7 +11,7 @@ public:
 
     virtual void loop() = 0;
 
-    virtual void handleUpdate(const JsonDocument& settings) = 0; // TODO: Implement this. Dont know if it takes in JsonDocument or JsonConstDocument or w.e., this will be called from LedStripDevice
+    virtual void handleUpdate(const JsonDocument& settings) = 0;
 
     virtual void onDebugCommand(const std::string& command) {};
 
