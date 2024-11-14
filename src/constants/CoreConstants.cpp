@@ -29,6 +29,4 @@ namespace CoreConstants {
         }
         return enumToString.at(Value::UNKNOWN);
     }
-
-
 }

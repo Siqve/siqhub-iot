@@ -22,7 +22,7 @@ LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
 }
 
 
-void LedStripDevice::initialize(const JsonDocument &settings) {
+void LedStripDevice::initialize(const JsonDocument& settings) {
     logger.info("Initializing LedStripDevice");
     // No specific initialization logic for this Device type
     updateSettings(settings);
@@ -39,9 +39,9 @@ void LedStripDevice::loop() {
     getMode()->loop();
 }
 
-void LedStripDevice::updateSettings(const JsonDocument &settings) {
+void LedStripDevice::updateSettings(const JsonDocument& settings) {
     logger.info("Updating settings for LedStripDevice");
-    const std::string &modeSetting = settings[Settings::MODE_KEY];
+    const std::string& modeSetting = settings[Settings::MODE_KEY];
     LedModeType::Value ledModeType = LedModeType::from(modeSetting);
 
     SupabaseRealtimeService::getInstance().removeListener(REALTIME_TOPIC);
@@ -50,7 +50,11 @@ void LedStripDevice::updateSettings(const JsonDocument &settings) {
         ledModeType = LedModeType::Value::STATIC;
         logger.error("Unknown LED mode set: " + modeSetting + ". Defaulting to STATIC.");
     }
-    activeModeType = ledModeType;
+
+    if (activeModeType != ledModeType) {
+        logger.info("Mode change detected. Old mode: " + LedModeType::toString(activeModeType) + ", new mode: " + LedModeType::toString(ledModeType));
+        activeModeType = ledModeType;
+    }
 
     JsonDocument initialSettings;
     if (activeModeType == LedModeType::Value::STATIC) {
@@ -73,7 +77,7 @@ std::shared_ptr<LedMode> LedStripDevice::getMode() {
     return ledModes[activeModeType];
 }
 
-JsonDocument LedStripDevice::prepareStaticSettings(const JsonVariantConst &data) {
+JsonDocument LedStripDevice::prepareStaticSettings(const JsonVariantConst& data) {
     JsonDocument settings;
     settings[Settings::Static::Mode::COLOR_KEY] = data[COLUMN_HEX];
     return settings;
@@ -83,17 +87,20 @@ void LedStripDevice::setFps(int newFps) {
     activeFps = newFps; //TODO: Move this to LedMode instead and use getMode()->getFps() instead
 }
 
-void LedStripDevice::createStaticListener(const JsonDocument &settings) {
+void LedStripDevice::createStaticListener(const JsonDocument& settings) {
     std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[Settings::Static::ACTIVE_COLOR_ID_KEY]);
-    bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance().addUpdateListener(REALTIME_TOPIC, TABLE_NAME, filter, [this](const JsonVariantConst &data) {
-        getMode()->handleUpdate(prepareStaticSettings(data));
-    });
+    bool listenerCreatedSuccessfully =
+            SupabaseRealtimeService::getInstance()
+                    .addUpdateListener(REALTIME_TOPIC, TABLE_NAME, filter,
+                                       [this](const JsonVariantConst& data) {
+                                           getMode()->handleUpdate(prepareStaticSettings(data));
+                                       });
     if (!listenerCreatedSuccessfully) {
         logger.error("Failed to create listener for LedStripDevice");
     }
 }
 
-JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument &settings) {
+JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument& settings) {
     std::string colorId = settings[Settings::Static::ACTIVE_COLOR_ID_KEY];
     std::optional<JsonDocument> colorRowData = SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, colorId);
 
