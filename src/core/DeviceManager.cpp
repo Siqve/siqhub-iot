@@ -62,7 +62,7 @@ void DeviceManager::handleConfigUpdate(const JsonVariantConst& config) {
     logger.info("Handling device config update");
     JsonDocument settings;
     deserializeJson(settings, config[COLUMN_SETTINGS_JSON]);
-    const std::string& deviceTypeString = config[COLUMN_TYPE].as<std::string>();
+    const std::string& deviceTypeString = config[COLUMN_TYPE];
 
     CoreConstants::DeviceType::Value deviceType = CoreConstants::DeviceType::from(deviceTypeString);
     if (deviceType == CoreConstants::DeviceType::Value::UNKNOWN) {
@@ -102,21 +102,16 @@ std::shared_ptr<BaseDevice> DeviceManager::createDevice(CoreConstants::DeviceTyp
 
 JsonDocument DeviceManager::getDeviceConfig() {
     logger.info("Getting device config");
-    std::optional<JsonDocument> deviceConfig =
+    std::optional<JsonDocument> deviceRows =
             SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, DEVICE_UUID);
 
-    if (!deviceConfig) {
+    if (!deviceRows) {
         logger.error("Failed to get device config");
         throw std::runtime_error("Failed to get device config");
     }
 
-    const JsonArray jsonArray = deviceConfig->as<JsonArray>();
-    if (jsonArray.size() != 1) {
-        logger.error("Expected device config query to return exactly one element");
-        throw std::runtime_error("Expected device config query to return exactly one element");
-    }
-
-    JsonDocument config(jsonArray[0]);
+    const JsonVariantConst deviceRow = deviceRows->as<JsonArray>()[0];
+    JsonDocument config(deviceRow);
     return config;
 }
 
