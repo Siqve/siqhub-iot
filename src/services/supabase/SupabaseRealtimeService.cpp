@@ -48,7 +48,7 @@ void SupabaseRealtimeService::processRealtimeMessage(const std::string& message)
     JsonDocument doc;
     deserializeJson(doc, message);
 
-    const std::string& topic = doc[TOPIC_KEY].as<std::string>();
+    const std::string& topic = doc[TOPIC_KEY];
     const std::string topicFiltered = getTopicFiltered(topic);
     logger.info("Received message on topic: " + topicFiltered);
     if (!realtimeChannelCallbacks.contains(topicFiltered)) {
@@ -114,6 +114,11 @@ SupabaseRealtimeService::addInsertListener(const std::string& topic, const std::
         callback(recordProperty);
     };
     return true;
+}
+
+bool SupabaseRealtimeService::removeListener(const std::string &topic) {
+    logger.info("Removing listener for topic: " + topic);
+    return realtimeChannelCallbacks.erase(topic) > 0;
 }
 
 
