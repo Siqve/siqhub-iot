@@ -1,9 +1,10 @@
 #pragma once
 
+#include <sstream>
 #include "NeoPixelBus.h"
 
 namespace ColorUtils {
-    extern uint32_t hexStringToColor(const char* hexString);
+    extern uint32_t hexStringToColor(const std::string& hexString);
     extern uint32_t HSVToColor(uint16_t hue, uint8_t sat, uint8_t val);
     extern RgbColor HSVToRgbColor(uint16_t hue, uint8_t sat, uint8_t val);
     extern uint32_t Gamma32(uint32_t x);
