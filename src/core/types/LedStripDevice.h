@@ -17,10 +17,14 @@ private:
     std::shared_ptr<LedMode> getMode();
     void initEffects();
 
+    void createStaticListener(const JsonDocument& settings);
+    JsonDocument getInitialStaticSettings(const JsonDocument& settings);
+    [[nodiscard]] static JsonDocument prepareStaticSettings(const JsonVariantConst& data);
+
     void setFps(int newFps);
     int activeFps = 1;
 
-    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 5);
+    NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 4);
 
     LedConstants::LedModeType::Value activeModeType = LedConstants::LedModeType::Value::UNKNOWN;
     std::unordered_map<LedConstants::LedModeType::Value, std::shared_ptr<LedMode>> ledModes;
