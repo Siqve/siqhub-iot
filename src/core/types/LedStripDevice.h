@@ -5,6 +5,9 @@
 
 #include "ArduinoJson.h"
 #include "BaseDevice.h"
+#include "NeoPixelBus.h"
+#include "debug/Logger.h"
+
 
 class LedStripDevice : public BaseDevice {
 public:
