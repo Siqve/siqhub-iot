@@ -8,9 +8,7 @@ class DeviceManager {
 public:
     void loop();
 private:
-
     void configure();
-    void first(); //TODO usikker på hva denne er
     void registerChangeListener();
 
     std::shared_ptr<BaseDevice> getDevice();
