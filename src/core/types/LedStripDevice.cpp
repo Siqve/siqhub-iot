@@ -7,20 +7,21 @@
 #include <services/supabase/utils/SupabaseFilterUtils.h>
 
 #include "utils/TimeUtils.h"
-#include "hardware/led/modes/StaticLedMode.h"
-#include "hardware/led/modes/FadeLedMode.h"
 #include "constants/LedConstants.h"
+#include "utils/TextUtils.h"
+#include "utils/ColorUtils.h"
+#include "hardware/led/utils/LedUtils.h"
 
 const std::string REALTIME_TOPIC = "LedStripDevice";
 
 using namespace LedConstants;
-using namespace TableConstants::Color;
+using namespace TableConstants::ColorProfile;
+using namespace ColorUtils;
+using namespace LedUtils;
 
 LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
-    initEffects();
     ledStrip.Begin();
 }
-
 
 void LedStripDevice::initialize(const JsonDocument& settings) {
     logger.info("Initializing LedStripDevice");
@@ -31,69 +32,46 @@ void LedStripDevice::initialize(const JsonDocument& settings) {
 static uint32_t lastLoopTimeMillis;
 
 void LedStripDevice::loop() {
+    //TODO: Move this to DeviceManager
     if (!TimeUtils::isMillisElapsed(millis(), lastLoopTimeMillis, 5000)) {
+        //TODO: Fps logic
         return;
     }
     lastLoopTimeMillis = millis();
     logger.info("LedStripDevice loop");
-    getMode()->loop();
+
+    if (isSingleColor) {
+        singleColorLoop();
+    } else {
+        gradientLoop();
+    }
+}
+
+void LedStripDevice::singleColorLoop() {
+    logger.info("Single color loop");
+    setSolidColor(ledStrip, colors[0]);
+    ledStrip.Show();
+}
+
+
+void LedStripDevice::gradientLoop() {
+//TODO
 }
 
 void LedStripDevice::updateSettings(const JsonDocument& settings) {
     logger.info("Updating settings for LedStripDevice");
-    const std::string& modeSetting = settings[Settings::MODE_KEY];
-    LedModeType::Value ledModeType = LedModeType::from(modeSetting);
-
     SupabaseRealtimeService::getInstance().removeListener(REALTIME_TOPIC);
-
-    if (ledModeType == LedModeType::Value::UNKNOWN) {
-        ledModeType = LedModeType::Value::STATIC;
-        logger.error("Unknown LED mode set: " + modeSetting + ". Defaulting to STATIC.");
-    }
-
-    if (activeModeType != ledModeType) {
-        logger.info("Mode change detected. Old mode: " + LedModeType::toString(activeModeType) + ", new mode: " + LedModeType::toString(ledModeType));
-        activeModeType = ledModeType;
-    }
-
-    JsonDocument initialSettings;
-    if (activeModeType == LedModeType::Value::STATIC) {
-        createStaticListener(settings);
-        initialSettings = getInitialStaticSettings(settings);
-    } else {
-        //TODO Implement other modes
-    }
-
-    getMode()->handleUpdate(initialSettings);
-}
-
-
-void LedStripDevice::initEffects() {
-    ledModes[LedModeType::Value::STATIC] = std::make_shared<StaticLedMode>(ledStrip, [this](int newFps) { setFps(newFps); });
-    ledModes[LedModeType::Value::FADE] = std::make_shared<FadeLedMode>(ledStrip, [this](int newFps) { setFps(newFps); });
-}
-
-std::shared_ptr<LedMode> LedStripDevice::getMode() {
-    return ledModes[activeModeType];
-}
-
-JsonDocument LedStripDevice::prepareStaticSettings(const JsonVariantConst& data) {
-    JsonDocument settings;
-    settings[Settings::Static::Mode::COLOR_KEY] = data[COLUMN_HEX];
-    return settings;
-}
-
-void LedStripDevice::setFps(int newFps) {
-    activeFps = newFps; //TODO: Move this to LedMode instead and use getMode()->getFps() instead
+    createStaticListener(settings);
+    handleColorProfileUpdate(getInitialStaticSettings(settings));
 }
 
 void LedStripDevice::createStaticListener(const JsonDocument& settings) {
-    std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[Settings::Static::ACTIVE_COLOR_ID_KEY]);
+    std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[Settings::COLOR_PROFILE_ID_KEY]);
     bool listenerCreatedSuccessfully =
             SupabaseRealtimeService::getInstance()
                     .addUpdateListener(REALTIME_TOPIC, TABLE_NAME, filter,
                                        [this](const JsonVariantConst& data) {
-                                           getMode()->handleUpdate(prepareStaticSettings(data));
+                                           handleColorProfileUpdate(data);
                                        });
     if (!listenerCreatedSuccessfully) {
         logger.error("Failed to create listener for LedStripDevice");
@@ -101,13 +79,39 @@ void LedStripDevice::createStaticListener(const JsonDocument& settings) {
 }
 
 JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument& settings) {
-    std::string colorId = settings[Settings::Static::ACTIVE_COLOR_ID_KEY];
+    std::string colorId = settings[Settings::COLOR_PROFILE_ID_KEY];
     std::optional<JsonDocument> colorRowData = SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, colorId);
 
     if (!colorRowData) {
         logger.error("Failed to get color data for color with id: " + colorId);
         return JsonDocument();
     }
-
-    return prepareStaticSettings(colorRowData->as<JsonArray>()[0]);
+    JsonDocument colorData(colorRowData->as<JsonArray>()[0]);
+    return colorData;
 }
+
+void LedStripDevice::handleColorProfileUpdate(const JsonVariantConst& colorRow) {
+    logger.info("Updating color profile for LedStripDevice");
+    const std::string hexesString = colorRow[COLUMN_HEXES];
+    std::vector hexes = TextUtils::split(hexesString, ',');
+    colors.clear();
+    for (const std::string& hex : hexes) {
+        colors.push_back(Gamma32(hexStringToColor(hex)));
+    }
+    if (colors.size() == 1) {
+        isSingleColor = true;
+    } else {
+        isSingleColor = false;
+    }
+    loop();
+}
+
+int LedStripDevice::getFps() {
+    // If single color, we don't really need to update the color that often
+    if (isSingleColor) {
+        return 1;
+    }
+    return fps;
+}
+
+

@@ -11,10 +11,10 @@ namespace TableConstants {
         extern const std::string COLUMN_SETTINGS_JSON;
     }
 
-    namespace Color {
+    namespace ColorProfile {
         extern const std::string TABLE_NAME;
         extern const std::string COLUMN_ID;
-        extern const std::string COLUMN_HEX;
+        extern const std::string COLUMN_HEXES;
     }
 
 }
