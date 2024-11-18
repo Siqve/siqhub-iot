@@ -29,15 +29,8 @@ void LedStripDevice::initialize(const JsonDocument& settings) {
     updateSettings(settings);
 }
 
-static uint32_t lastLoopTimeMillis;
 
 void LedStripDevice::loop() {
-    //TODO: Move this to DeviceManager
-    if (!TimeUtils::isMillisElapsed(millis(), lastLoopTimeMillis, 5000)) {
-        //TODO: Fps logic
-        return;
-    }
-    lastLoopTimeMillis = millis();
     logger.info("LedStripDevice loop");
 
     if (isSingleColor) {
@@ -94,10 +87,12 @@ void LedStripDevice::handleColorProfileUpdate(const JsonVariantConst& colorRow) 
     logger.info("Updating color profile for LedStripDevice");
     const std::string hexesString = colorRow[COLUMN_HEXES];
     std::vector hexes = TextUtils::split(hexesString, ',');
+
     colors.clear();
     for (const std::string& hex: hexes) {
         colors.push_back(Gamma32(hexStringToColor(hex)));
     }
+
     if (colors.size() == 1) {
         isSingleColor = true;
     } else {

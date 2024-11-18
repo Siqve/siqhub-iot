@@ -10,6 +10,8 @@
 
 using namespace TableConstants::Device;
 
+static uint32_t lastLoopTimeMillis;
+
 void DeviceManager::loop() {
     if (!isConfigured()) {
         configure();
@@ -18,6 +20,11 @@ void DeviceManager::loop() {
     if (!listenerActive) {
         registerChangeListener();
     }
+
+    if (!TimeUtils::isFrameRipe(millis(), lastLoopTimeMillis, getDevice()->getFps())) {
+        return;
+    }
+    lastLoopTimeMillis = millis();
     getDevice()->loop();
 }
 
@@ -42,8 +49,8 @@ void DeviceManager::registerChangeListener() {
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addUpdateListener("DeviceManager:device", TABLE_NAME, deviceIdFilter,
                                [this](const JsonVariantConst& data) {
-                        onConfigUpdate(data);
-                    });
+                                   onConfigUpdate(data);
+                               });
 
     listenerActive = listenerCreatedSuccessfully;
 }
