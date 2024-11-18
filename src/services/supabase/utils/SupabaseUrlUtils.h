@@ -3,7 +3,7 @@
 #include <string>
 #include <optional>
 
-namespace SupabaseUtils {
+namespace SupabaseUrlUtils {
 
     std::string getHostname(const std::string& reference);
     std::string getUrl(const std::string& reference);

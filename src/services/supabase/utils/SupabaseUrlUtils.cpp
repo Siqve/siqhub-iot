@@ -1,8 +1,8 @@
-#include "SupabaseUtils.h"
+#include "SupabaseUrlUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 
-namespace SupabaseUtils {
+namespace SupabaseUrlUtils {
 
     std::string getHostname(const std::string& reference) {
         return reference + ".supabase.co";
@@ -13,7 +13,7 @@ namespace SupabaseUtils {
     }
 
     std::string getRestApiUrl(const std::string& reference, const std::string& table, const std::string& selectQuery) {
-        return SupabaseUtils::getUrl(reference) + "/rest/v1/" + table;
+        return SupabaseUrlUtils::getUrl(reference) + "/rest/v1/" + table;
     }
 
 }

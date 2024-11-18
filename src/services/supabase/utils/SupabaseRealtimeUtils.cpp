@@ -1,4 +1,4 @@
-#include "SupabaseUtils.h"
+#include "SupabaseUrlUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 #include "../constants/SupabaseRealtimeConstants.h"

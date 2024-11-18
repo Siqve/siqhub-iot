@@ -1,5 +1,5 @@
 #include "SupabaseRealtimeService.h"
-#include "services/supabase/utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseUrlUtils.h"
 #include "services/supabase/utils/SupabaseRealtimeUtils.h"
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
@@ -32,7 +32,7 @@ void SupabaseRealtimeService::loop() {
 void SupabaseRealtimeService::connectRealtime() {
     logger.info("Connecting to Supabase realtime websocket");
 
-    const std::string hostname = SupabaseUtils::getHostname(SUPABASE_PROJECT_REFERENCE);
+    const std::string hostname = SupabaseUrlUtils::getHostname(SUPABASE_PROJECT_REFERENCE);
     const std::string realtimeSlug = getSlug(SUPABASE_API_KEY);
     realtimeWebSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
 
