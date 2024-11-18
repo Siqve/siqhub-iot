@@ -1,20 +1,20 @@
 #include "LedStripDevice.h"
 
 #include <set>
-#include <constants/TableConstants.h>
-#include <services/supabase/SupabaseQueryService.h>
-#include <services/supabase/SupabaseRealtimeService.h>
-#include <services/supabase/utils/SupabaseFilterUtils.h>
+#include "constants/TableConstants.h"
+#include "services/supabase/SupabaseQueryService.h"
+#include "services/supabase/SupabaseRealtimeService.h"
+#include "services/supabase/utils/SupabaseFilterUtils.h"
 
 #include "utils/TimeUtils.h"
-#include "constants/LedConstants.h"
 #include "utils/TextUtils.h"
 #include "utils/ColorUtils.h"
 #include "hardware/led/utils/LedUtils.h"
+#include "constants/LedSettingsConstants.h"
 
 const std::string REALTIME_TOPIC = "LedStripDevice";
 
-using namespace LedConstants;
+using namespace LedSettingsConstants;
 using namespace TableConstants::ColorProfile;
 using namespace ColorUtils;
 using namespace LedUtils;
@@ -66,7 +66,7 @@ void LedStripDevice::updateSettings(const JsonDocument& settings) {
 }
 
 void LedStripDevice::createStaticListener(const JsonDocument& settings) {
-    std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[Settings::COLOR_PROFILE_ID_KEY]);
+    std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[COLOR_PROFILE_ID_KEY]);
     bool listenerCreatedSuccessfully =
             SupabaseRealtimeService::getInstance()
                     .addUpdateListener(REALTIME_TOPIC, TABLE_NAME, filter,
@@ -79,7 +79,7 @@ void LedStripDevice::createStaticListener(const JsonDocument& settings) {
 }
 
 JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument& settings) {
-    std::string colorId = settings[Settings::COLOR_PROFILE_ID_KEY];
+    std::string colorId = settings[COLOR_PROFILE_ID_KEY];
     std::optional<JsonDocument> colorRowData = SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, colorId);
 
     if (!colorRowData) {
@@ -95,7 +95,7 @@ void LedStripDevice::handleColorProfileUpdate(const JsonVariantConst& colorRow) 
     const std::string hexesString = colorRow[COLUMN_HEXES];
     std::vector hexes = TextUtils::split(hexesString, ',');
     colors.clear();
-    for (const std::string& hex : hexes) {
+    for (const std::string& hex: hexes) {
         colors.push_back(Gamma32(hexStringToColor(hex)));
     }
     if (colors.size() == 1) {

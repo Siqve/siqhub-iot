@@ -1,10 +1,10 @@
 #pragma once
 
 #include <memory>
-#include <constants/LedConstants.h>
+#include "hardware/led/constants/LedSettingsConstants.h"
 
 #include "ArduinoJson.h"
-#include "BaseDevice.h"
+#include "core/BaseDevice.h"
 #include "NeoPixelBus.h"
 #include "debug/Logger.h"
 

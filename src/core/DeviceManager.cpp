@@ -4,7 +4,7 @@
 #include "services/supabase/SupabaseRealtimeService.h"
 #include "services/supabase/SupabaseQueryService.h"
 #include "constants/TableConstants.h"
-#include "core/types/LedStripDevice.h"
+#include "hardware/led/LedStripDevice.h"
 #include "utils/TimeUtils.h"
 #include "services/supabase/utils/SupabaseFilterUtils.h"
 
