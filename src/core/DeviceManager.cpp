@@ -4,11 +4,13 @@
 #include "services/supabase/SupabaseRealtimeService.h"
 #include "services/supabase/SupabaseQueryService.h"
 #include "constants/TableConstants.h"
-#include "core/types/LedStripDevice.h"
+#include "hardware/led/LedStripDevice.h"
 #include "utils/TimeUtils.h"
 #include "services/supabase/utils/SupabaseFilterUtils.h"
 
 using namespace TableConstants::Device;
+
+static uint32_t lastLoopInMicros;
 
 void DeviceManager::loop() {
     if (!isConfigured()) {
@@ -18,6 +20,11 @@ void DeviceManager::loop() {
     if (!listenerActive) {
         registerChangeListener();
     }
+
+    if (!TimeUtils::isFrameRipe(micros(), lastLoopInMicros, getDevice()->getFps())) {
+        return;
+    }
+    lastLoopInMicros = micros();
     getDevice()->loop();
 }
 
@@ -42,8 +49,8 @@ void DeviceManager::registerChangeListener() {
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addUpdateListener("DeviceManager:device", TABLE_NAME, deviceIdFilter,
                                [this](const JsonVariantConst& data) {
-                        onConfigUpdate(data);
-                    });
+                                   onConfigUpdate(data);
+                               });
 
     listenerActive = listenerCreatedSuccessfully;
 }

@@ -1,6 +1,6 @@
 #include <memory>
 #include "debug/Logger.h"
-#include "core/types/BaseDevice.h"
+#include "BaseDevice.h"
 #include "ArduinoJson.h"
 #include "constants/CoreConstants.h"
 
@@ -8,9 +8,7 @@ class DeviceManager {
 public:
     void loop();
 private:
-
     void configure();
-    void first(); //TODO usikker på hva denne er
     void registerChangeListener();
 
     std::shared_ptr<BaseDevice> getDevice();

@@ -2,7 +2,7 @@
 #include "ArduinoJson.h"
 #include "utils/TextUtils.h"
 #include "services/supabase/utils/SupabaseFilterUtils.h"
-#include "services/supabase/utils/SupabaseUtils.h"
+#include "services/supabase/utils/SupabaseUrlUtils.h"
 
 #ifdef ESP32
 
@@ -14,7 +14,7 @@
 #error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
-using namespace SupabaseUtils;
+using namespace SupabaseUrlUtils;
 
 std::optional<JsonDocument> SupabaseQueryService::select(const std::string& table, const std::string& column, const std::string& value) {
     return sendRestRequest(table + "?" + SupabaseFilterUtils::equals(column, value));
