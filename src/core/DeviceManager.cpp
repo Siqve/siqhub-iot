@@ -10,7 +10,7 @@
 
 using namespace TableConstants::Device;
 
-static uint32_t lastLoopTimeMillis;
+static uint32_t lastLoopInMicros;
 
 void DeviceManager::loop() {
     if (!isConfigured()) {
@@ -21,10 +21,10 @@ void DeviceManager::loop() {
         registerChangeListener();
     }
 
-    if (!TimeUtils::isFrameRipe(millis(), lastLoopTimeMillis, getDevice()->getFps())) {
+    if (!TimeUtils::isFrameRipe(micros(), lastLoopInMicros, getDevice()->getFps())) {
         return;
     }
-    lastLoopTimeMillis = millis();
+    lastLoopInMicros = micros();
     getDevice()->loop();
 }
 

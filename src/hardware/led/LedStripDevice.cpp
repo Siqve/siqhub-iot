@@ -31,8 +31,6 @@ void LedStripDevice::initialize(const JsonDocument& settings) {
 
 
 void LedStripDevice::loop() {
-    logger.info("LedStripDevice loop");
-
     if (isSingleColor) {
         singleColorLoop();
     } else {
