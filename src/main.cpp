@@ -1,5 +1,6 @@
 #include <HardwareSerial.h>
 #include <ArduinoOTA.h>
+#include <LittleFS.h>
 #include "networking/WiFiManager.h"
 #include "networking/web/WebServer.h"
 #include "services/supabase/SupabaseRealtimeService.h"
@@ -11,6 +12,7 @@ DeviceManager deviceManager;
 
 void systemSetup() {
     Serial.begin(115200);
+    LittleFS.begin();
 }
 
 void networkingSetup() {
