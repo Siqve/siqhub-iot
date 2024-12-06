@@ -25,5 +25,6 @@ private:
     Debug::Logger logger = Debug::Logger("WebServerManager");
 
     void onLandingPage();
+    void onDebugPage();
     void onLogger();
 };
