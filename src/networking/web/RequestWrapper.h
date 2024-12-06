@@ -14,13 +14,14 @@ public:
     [[nodiscard]] AsyncWebParameter* getParam(const std::string& paramName) const;
 
     // Responses
-    [[nodiscard]] AsyncWebServerResponse* okJson(const std::string& responseJson = "") const;
-    [[nodiscard]] AsyncWebServerResponse* ok(const std::string& responsePlain = "") const;
-    [[nodiscard]] AsyncWebServerResponse* notFound(const std::string& responseJson = "") const;
+    [[nodiscard]] AsyncWebServerResponse* okJson(const std::string& response = "") const;
+    [[nodiscard]] AsyncWebServerResponse* ok(const std::string& response = "") const;
+    [[nodiscard]] AsyncWebServerResponse* notFound(const std::string& response = "") const;
 
 
 private:
     AsyncWebServerRequest* request;
 
-    [[nodiscard]] AsyncWebServerResponse* createResponse(int status, const std::string& responseContent) const;
+    [[nodiscard]] AsyncWebServerResponse* createResponsePlain(int status, const std::string& responseContent) const;
+    [[nodiscard]] AsyncWebServerResponse* createResponseJson(int status, const std::string& responseContent) const;
 };
