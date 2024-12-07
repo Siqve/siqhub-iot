@@ -3,6 +3,8 @@
 #include "utils/TextUtils.h"
 
 static const char* RESPONSE_TYPE_HTML = "text/html; charset=utf-8";
+static const char* RESPONSE_TYPE_CSS = "text/css; charset=utf-8";
+static const char* RESPONSE_TYPE_JS = "text/javascript; charset=utf-8";
 
 void WebServer::start() {
     server.begin();
@@ -24,6 +26,12 @@ void WebServer::onLandingPage() {
 void WebServer::onDebugPage() {
     server.on("/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
         request->send(LittleFS, "/debug.html", RESPONSE_TYPE_HTML);
+    });
+    server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest* request) {
+        request->send(LittleFS, "/style.css", RESPONSE_TYPE_CSS);
+    });
+    server.on("/main.js", HTTP_GET, [](AsyncWebServerRequest* request) {
+        request->send(LittleFS, "/main.js", RESPONSE_TYPE_JS);
     });
 }
 
