@@ -2,6 +2,7 @@ const consoleStatusTextEl = document.getElementById("console-status-text");
 const consoleStatusIconEl = document.getElementById("console-status-icon");
 const consoleEl = document.getElementById("console");
 const commandStatusTextEl = document.getElementById("command-status-text");
+const lockBottomCheckboxEl = document.getElementById("checkbox-lock-bottom");
 
 const consoleUtils = {
     lastUpdateId: -1,
@@ -20,6 +21,8 @@ const consoleUtils = {
     },
     setConsoleContent(text) {
         consoleEl.value = text;
+        if (lockBottomCheckboxEl.checked)
+            consoleEl.scrollTop = consoleEl.scrollHeight;
     },
     setConnected() {
         this.setConnectedIcon(true);
