@@ -63,6 +63,11 @@ input, button, textarea, select {
     margin-top: 2px;
 }
 
+.console-checkboxes {
+    display: flex;
+    gap: 10px;
+}
+
 .console-status-container {
     display: flex;
     align-items: center;

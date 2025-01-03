@@ -3,6 +3,7 @@ const consoleStatusIconEl = document.getElementById("console-status-icon");
 const consoleEl = document.getElementById("console");
 const commandStatusTextEl = document.getElementById("command-status-text");
 const lockBottomCheckboxEl = document.getElementById("checkbox-lock-bottom");
+const pauseCheckboxEl = document.getElementById("checkbox-pause");
 
 const consoleUtils = {
     lastUpdateId: -1,
@@ -96,7 +97,7 @@ const requestFunctions = {
             });
     },
     sendCommand(commandString) {
-        return fetch(`/debug?cmd=${commandString}`)
+        return fetch(`/debug-functions?cmd=${commandString}`)
             .then(response => {
                 return {success: response.ok, status: response.status};
             })
@@ -105,12 +106,18 @@ const requestFunctions = {
 
 async function listenForConsoleUpdates() {
     while (true) {
+        if (pauseCheckboxEl.checked) {
+            consoleUtils.setStatusText("Paused");
+            await new Promise(r => setTimeout(r, 1000));
+            continue;
+        }
+
         try {
             const updateId = await requestFunctions.getConsoleUpdateId();
             consoleUtils.setConnected();
-            if (!consoleUtils.isNewUpdate(updateId))
-                return;
-            handleConsoleUpdate();
+            if (consoleUtils.isNewUpdate(updateId)) {
+                handleConsoleUpdate();
+            }
         } catch (errorMessage) {
             consoleUtils.setError(errorMessage);
         }
