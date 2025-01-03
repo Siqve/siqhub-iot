@@ -3,36 +3,36 @@
 
 
 #ifdef ESP8266
-  #define LOG_BUFFER_SIZE 2048
+#define LOG_BUFFER_SIZE 2048
 #else
-  #define LOG_BUFFER_SIZE 4096
+#define LOG_BUFFER_SIZE 4096
 #endif
 
 namespace Debug {
 
     std::ostringstream Logger::logBuffer;
     int Logger::logUpdateId = 0;
-    int Logger::maxLogBufferSize = LOG_BUFFER_SIZE ;
+    int Logger::maxLogBufferSize = LOG_BUFFER_SIZE;
 
 
-    void Logger::info(const std::string& line) {
+    void Logger::info(const std::string &line) {
         log(line, "INFO", className);
     }
 
-    void Logger::warn(const std::string& line) {
+    void Logger::warn(const std::string &line) {
         log(line, "WARN", className);
     }
 
-    void Logger::error(const std::string& line) {
+    void Logger::error(const std::string &line) {
         log(line, "ERROR", className);
     }
 
-    void Logger::debug(const std::string& line) {
+    void Logger::debug(const std::string &line) {
         log(line, "DEBUG", className);
     }
 
 
-    void Logger::soloDebugLog(const std::string& line) {
+    void Logger::soloDebugLog(const std::string &line) {
         log(line, "DEBUG");
     }
 
@@ -50,7 +50,7 @@ namespace Debug {
         return logUpdateId;
     }
 
-    void Logger::log(const std::string& line, const std::string& logLevel, const std::string& callerName) {
+    void Logger::log(const std::string &line, const std::string &logLevel, const std::string &callerName) {
         checkAndTrimLogger(line);
         bool prefixAdded = false;
         if (!logLevel.empty()) {
@@ -86,7 +86,7 @@ namespace Debug {
     /**
      * Check if new entry fits the buffer, if not trim the buffer
      */
-    void Logger::checkAndTrimLogger(const std::string& line) {
+    void Logger::checkAndTrimLogger(const std::string &line) {
         std::streamoff potentialNewSize =
                 static_cast<std::streamoff>(logBuffer.tellp()) + static_cast<std::streamoff>(line.length());
 

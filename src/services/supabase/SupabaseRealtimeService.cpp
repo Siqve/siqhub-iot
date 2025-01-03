@@ -36,19 +36,19 @@ void SupabaseRealtimeService::connectRealtime() {
     const std::string realtimeSlug = getSlug(SUPABASE_API_KEY);
     realtimeWebSocket.beginSSL(hostname.c_str(), 443, realtimeSlug.c_str());
 
-    realtimeWebSocket.onEvent([this](WStype_t type, uint8_t* payload, size_t length) {
+    realtimeWebSocket.onEvent([this](WStype_t type, uint8_t *payload, size_t length) {
         this->onRealtimeEvent(type, payload, length);
     });
     realtimeConnecting = true;
 }
 
 
-void SupabaseRealtimeService::processRealtimeMessage(const std::string& message) {
+void SupabaseRealtimeService::processRealtimeMessage(const std::string &message) {
     logger.debug("Processing realtime message: " + message);
     JsonDocument doc;
     deserializeJson(doc, message);
 
-    const std::string& topic = doc[TOPIC_KEY];
+    const std::string &topic = doc[TOPIC_KEY];
     const std::string topicFiltered = getTopicFiltered(topic);
     logger.info("Received message on topic: " + topicFiltered);
     if (!realtimeChannelCallbacks.contains(topicFiltered)) {
@@ -65,10 +65,10 @@ void SupabaseRealtimeService::processRealtimeMessage(const std::string& message)
     realtimeChannelCallbacks[topicFiltered](payloadData);
 }
 
-void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payload, const size_t length) {
+void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t *payload, const size_t length) {
     switch (type) {
         case WStype_TEXT:
-            processRealtimeMessage(std::string((char*) payload, length));
+            processRealtimeMessage(std::string((char *) payload, length));
             break;
         case WStype_DISCONNECTED:
             logger.info("Realtime websocket disconnected");
@@ -78,7 +78,7 @@ void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payl
             realtimeConnecting = false;
             break;
         case WStype_ERROR:
-            logger.error("Realtime websocket error. Payload: " + std::string((char*) payload, length));
+            logger.error("Realtime websocket error. Payload: " + std::string((char *) payload, length));
             break;
         default:
             logger.info("Received unsupported realtime websocket event: " + std::to_string(type));
@@ -88,14 +88,14 @@ void SupabaseRealtimeService::onRealtimeEvent(const WStype_t type, uint8_t* payl
 
 
 bool
-SupabaseRealtimeService::addUpdateListener(const std::string& topic, const std::string& table, const std::string& filter,
-                                           const std::function<void(const JsonVariantConst&)>& callback) {
+SupabaseRealtimeService::addUpdateListener(const std::string &topic, const std::string &table, const std::string &filter,
+                                           const std::function<void(const JsonVariantConst &)> &callback) {
     if (!realtimeWebSocket.isConnected()) {
         return false;
     }
     logger.info("Creating update listener for table: " + table + ", with filter: " + filter + ", and topic: " + topic);
     realtimeWebSocket.sendTXT(createUpdateConnectionString(topic, table, filter).c_str());
-    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
+    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst &data) {
         JsonVariantConst recordProperty = data[UPDATE_RECORD_KEY];
         callback(recordProperty);
     };
@@ -103,13 +103,13 @@ SupabaseRealtimeService::addUpdateListener(const std::string& topic, const std::
 }
 
 bool
-SupabaseRealtimeService::addInsertListener(const std::string& topic, const std::string& table, const std::function<void(const JsonVariantConst&)>& callback) {
+SupabaseRealtimeService::addInsertListener(const std::string &topic, const std::string &table, const std::function<void(const JsonVariantConst &)> &callback) {
     if (!realtimeWebSocket.isConnected()) {
         return false;
     }
     logger.info("Creating insert listener for table: " + table + ", with topic: " + topic);
     realtimeWebSocket.sendTXT(createInsertConnectionString(topic, table).c_str());
-    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst& data) {
+    realtimeChannelCallbacks[topic] = [callback](const JsonVariantConst &data) {
         JsonVariantConst recordProperty = data[UPDATE_RECORD_KEY];
         callback(recordProperty);
     };

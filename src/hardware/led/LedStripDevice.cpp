@@ -23,7 +23,7 @@ LedStripDevice::LedStripDevice() : BaseDevice("LED_STRIP") {
     ledStrip.Begin();
 }
 
-void LedStripDevice::initialize(const JsonDocument& settings) {
+void LedStripDevice::initialize(const JsonDocument &settings) {
     logger.info("Initializing LedStripDevice");
     // No specific initialization logic for this Device type
     updateSettings(settings);
@@ -49,19 +49,19 @@ void LedStripDevice::gradientLoop() {
 //TODO
 }
 
-void LedStripDevice::updateSettings(const JsonDocument& settings) {
+void LedStripDevice::updateSettings(const JsonDocument &settings) {
     logger.info("Updating settings for LedStripDevice");
     SupabaseRealtimeService::getInstance().removeListener(REALTIME_TOPIC);
     createStaticListener(settings);
     handleColorProfileUpdate(getInitialStaticSettings(settings));
 }
 
-void LedStripDevice::createStaticListener(const JsonDocument& settings) {
+void LedStripDevice::createStaticListener(const JsonDocument &settings) {
     std::string filter = SupabaseFilterUtils::equals(COLUMN_ID, settings[COLOR_PROFILE_ID_KEY]);
     bool listenerCreatedSuccessfully =
             SupabaseRealtimeService::getInstance()
                     .addUpdateListener(REALTIME_TOPIC, TABLE_NAME, filter,
-                                       [this](const JsonVariantConst& data) {
+                                       [this](const JsonVariantConst &data) {
                                            handleColorProfileUpdate(data);
                                        });
     if (!listenerCreatedSuccessfully) {
@@ -69,7 +69,7 @@ void LedStripDevice::createStaticListener(const JsonDocument& settings) {
     }
 }
 
-JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument& settings) {
+JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument &settings) {
     std::string colorId = settings[COLOR_PROFILE_ID_KEY];
     std::optional<JsonDocument> colorRowData = SupabaseQueryService::getInstance().select(TABLE_NAME, COLUMN_ID, colorId);
 
@@ -81,13 +81,13 @@ JsonDocument LedStripDevice::getInitialStaticSettings(const JsonDocument& settin
     return colorData;
 }
 
-void LedStripDevice::handleColorProfileUpdate(const JsonVariantConst& colorRow) {
+void LedStripDevice::handleColorProfileUpdate(const JsonVariantConst &colorRow) {
     logger.info("Updating color profile for LedStripDevice");
     const std::string hexesString = colorRow[COLUMN_HEXES];
     std::vector hexes = TextUtils::split(hexesString, ',');
 
     colors.clear();
-    for (const std::string& hex: hexes) {
+    for (const std::string &hex: hexes) {
         colors.push_back(Gamma32(hexStringToColor(hex)));
     }
 

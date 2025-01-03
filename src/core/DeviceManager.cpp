@@ -48,14 +48,14 @@ void DeviceManager::registerChangeListener() {
 
     const bool listenerCreatedSuccessfully = SupabaseRealtimeService::getInstance()
             .addUpdateListener("DeviceManager:device", TABLE_NAME, deviceIdFilter,
-                               [this](const JsonVariantConst& data) {
+                               [this](const JsonVariantConst &data) {
                                    onConfigUpdate(data);
                                });
 
     listenerActive = listenerCreatedSuccessfully;
 }
 
-void DeviceManager::onConfigUpdate(const JsonVariantConst& config) {
+void DeviceManager::onConfigUpdate(const JsonVariantConst &config) {
     logger.info("Received device config update.");
     if (!isConfigured()) {
         logger.warn("Device not initialization. Ignoring");
@@ -65,11 +65,11 @@ void DeviceManager::onConfigUpdate(const JsonVariantConst& config) {
     handleConfigUpdate(config);
 }
 
-void DeviceManager::handleConfigUpdate(const JsonVariantConst& config) {
+void DeviceManager::handleConfigUpdate(const JsonVariantConst &config) {
     logger.info("Handling device config update");
     JsonDocument settings;
     deserializeJson(settings, config[COLUMN_SETTINGS_JSON]);
-    const std::string& deviceTypeString = config[COLUMN_TYPE];
+    const std::string &deviceTypeString = config[COLUMN_TYPE];
 
     CoreConstants::DeviceType::Value deviceType = CoreConstants::DeviceType::from(deviceTypeString);
     if (deviceType == CoreConstants::DeviceType::Value::UNKNOWN) {

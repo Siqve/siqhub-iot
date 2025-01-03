@@ -2,7 +2,7 @@
 #include "utils/ColorUtils.h"
 
 namespace LedUtils {
-    void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>& ledStrip, uint32_t color) {
+    void setSolidColor(NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> &ledStrip, uint32_t color) {
         RgbColor rgbColor = ColorUtils::colorToRgbColor(color);
         ledStrip.ClearTo(rgbColor);
     }

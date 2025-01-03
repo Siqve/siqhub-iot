@@ -16,11 +16,11 @@
 
 using namespace SupabaseUrlUtils;
 
-std::optional<JsonDocument> SupabaseQueryService::select(const std::string& table, const std::string& column, const std::string& value) {
+std::optional<JsonDocument> SupabaseQueryService::select(const std::string &table, const std::string &column, const std::string &value) {
     return sendRestRequest(table + "?" + SupabaseFilterUtils::equals(column, value));
 }
 
-std::optional<JsonDocument> SupabaseQueryService::sendRestRequest(const std::string& slug, const std::string& body) {
+std::optional<JsonDocument> SupabaseQueryService::sendRestRequest(const std::string &slug, const std::string &body) {
     WiFiClientSecure wifiClient;
     wifiClient.setInsecure();
     HTTPClient httpsClient;

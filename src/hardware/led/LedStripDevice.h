@@ -13,15 +13,15 @@ class LedStripDevice : public BaseDevice {
 public:
     explicit LedStripDevice();
     void loop() override;
-    void updateSettings(const JsonDocument& settings) override;
-    void initialize(const JsonDocument& settings) override;
+    void updateSettings(const JsonDocument &settings) override;
+    void initialize(const JsonDocument &settings) override;
     int getFps() override;
 private:
     void singleColorLoop();
     void gradientLoop();
-    void createStaticListener(const JsonDocument& settings);
-    JsonDocument getInitialStaticSettings(const JsonDocument& settings);
-    void handleColorProfileUpdate(const JsonVariantConst& colorRow);
+    void createStaticListener(const JsonDocument &settings);
+    JsonDocument getInitialStaticSettings(const JsonDocument &settings);
+    void handleColorProfileUpdate(const JsonVariantConst &colorRow);
 
     bool isSingleColor = false;
 

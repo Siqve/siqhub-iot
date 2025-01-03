@@ -16,13 +16,12 @@ private:
 
     void handleConfigUpdate(const JsonVariantConst &config);
     void changeDevice(CoreConstants::DeviceType::Value deviceType);
-    void onConfigUpdate(const JsonVariantConst& config);
+    void onConfigUpdate(const JsonVariantConst &config);
     [[nodiscard]] JsonDocument getDeviceConfig();
     [[nodiscard]] bool isConfigured() const;
 
     CoreConstants::DeviceType::Value activeDeviceType = CoreConstants::DeviceType::Value::UNKNOWN;
     std::unordered_map<CoreConstants::DeviceType::Value, std::shared_ptr<BaseDevice>> deviceTypes;
-
 
 
     std::unique_ptr<BaseDevice> device;

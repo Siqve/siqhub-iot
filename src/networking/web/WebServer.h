@@ -6,17 +6,17 @@
 
 class WebServer {
 public:
-    WebServer(const WebServer&) = delete;
-    WebServer& operator=(const WebServer&) = delete;
+    WebServer(const WebServer &) = delete;
+    WebServer &operator=(const WebServer &) = delete;
 
-    static WebServer& getInstance() {
+    static WebServer &getInstance() {
         static WebServer instance;  // Guaranteed to be lazy initialized and destroyed correctly
         return instance;
     }
 
     void start();
-    void registerPageCallback(const std::string& path,
-                              const std::function<AsyncWebServerResponse*(const RequestWrapper&)>& callback);
+    void registerPageCallback(const std::string &path,
+                              const std::function<AsyncWebServerResponse *(const RequestWrapper &)> &callback);
 
 //    TODO: Fix gradient for led strip
 

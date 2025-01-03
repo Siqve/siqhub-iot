@@ -2,11 +2,13 @@
 #include "utils/TimeUtils.h"
 
 #ifdef ESP32
-  #include <WiFi.h>  // Include the WiFi library for ESP32
+
+#include <WiFi.h>  // Include the WiFi library for ESP32
+
 #elif defined(ESP8266)
-  #include <ESP8266WiFi.h>  // Include the WiFi library for ESP8266
+#include <ESP8266WiFi.h>  // Include the WiFi library for ESP8266
 #else
-  #error "Unsupported board! Please select an ESP32 or ESP8266 board."
+#error "Unsupported board! Please select an ESP32 or ESP8266 board."
 #endif
 
 void WiFiManager::connect() {
@@ -18,6 +20,7 @@ void WiFiManager::connect() {
 }
 
 bool lastWifiCheck_connected = false;
+
 bool WiFiManager::assureConnection() {
     if (WiFi.status() == WL_CONNECTED) {
         if (!lastWifiCheck_connected) {
@@ -35,6 +38,7 @@ bool WiFiManager::assureConnection() {
 }
 
 static uint32_t lastPrintTimeMillis;
+
 void WiFiManager::printConnectingInfo() {
     if (!TimeUtils::isMillisElapsed(millis(), lastPrintTimeMillis, 3000)) {
         return;

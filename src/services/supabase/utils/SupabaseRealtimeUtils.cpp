@@ -9,12 +9,12 @@ namespace SupabaseRealtimeUtils {
     using namespace SupabaseRealtimeConstants;
     using namespace SupabaseRealtimeConstants::Request;
 
-    std::string getSlug(const std::string& apiKey) {
+    std::string getSlug(const std::string &apiKey) {
         return "/realtime/v1/websocket?apikey=" + apiKey + "&log_level=info&vsn=1.0.0";
     }
 
-    std::string createJoinMessage(const std::string& eventType, const std::string& topic, const std::string& table,
-                                  const std::optional<std::string>& filter = std::nullopt) {
+    std::string createJoinMessage(const std::string &eventType, const std::string &topic, const std::string &table,
+                                  const std::optional<std::string> &filter = std::nullopt) {
         JsonDocument json;
         json["event"] = PROTOCOL_JOIN;
         json["topic"] = TOPIC_PREFIX + topic;
@@ -32,15 +32,15 @@ namespace SupabaseRealtimeUtils {
         return message;
     }
 
-    std::string createUpdateConnectionString(const std::string& topic, const std::string& table, const std::string& filter) {
+    std::string createUpdateConnectionString(const std::string &topic, const std::string &table, const std::string &filter) {
         return createJoinMessage("UPDATE", topic, table, filter);
     }
 
-    std::string createInsertConnectionString(const std::string& topic, const std::string& table, const std::string& filter) {
+    std::string createInsertConnectionString(const std::string &topic, const std::string &table, const std::string &filter) {
         return createJoinMessage("INSERT", topic, table);
     }
 
-    std::string createLeaveMessage(const std::string& topic) {
+    std::string createLeaveMessage(const std::string &topic) {
         JsonDocument json;
         json["event"] = PROTOCOL_LEAVE;
         json["topic"] = TOPIC_PREFIX + topic;
@@ -62,7 +62,7 @@ namespace SupabaseRealtimeUtils {
         return message;
     }
 
-    std::string getTopicFiltered(const std::string& topic) {
+    std::string getTopicFiltered(const std::string &topic) {
         return TextUtils::replaceAll(topic, TOPIC_PREFIX, "");
     }
 

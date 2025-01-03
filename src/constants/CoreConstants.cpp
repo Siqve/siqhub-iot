@@ -6,11 +6,11 @@
 namespace CoreConstants {
 
     const std::unordered_map<std::string, DeviceType::Value> DeviceType::stringToEnum = {
-        {"LED_STRIP", DeviceType::Value::LED_STRIP},
+            {"LED_STRIP", DeviceType::Value::LED_STRIP},
     };
     const std::unordered_map<DeviceType::Value, std::string> DeviceType::enumToString = {
-        {DeviceType::Value::LED_STRIP, "LED_STRIP"},
-        {DeviceType::Value::UNKNOWN, "UNKNOWN"},
+            {DeviceType::Value::LED_STRIP, "LED_STRIP"},
+            {DeviceType::Value::UNKNOWN,   "UNKNOWN"},
     };
 
     // Static function to convert string to enum
