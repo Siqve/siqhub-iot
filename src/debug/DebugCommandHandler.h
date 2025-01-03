@@ -16,12 +16,14 @@ namespace Debug {
             return instance;
         }
 
+        void initialize();
+
         bool execute(const std::string &command);
         void registerListener(const std::string &cmd, std::function<void(std::string &)> callback);
         void removeListener(const std::string &cmd);
 
     private:
-        DebugCommandHandler();
+        DebugCommandHandler() = default;
 
         std::map<std::string, std::function<void(std::string &)>> commandListeners;
         Debug::Logger logger = Debug::Logger("DebugCommandHandler");

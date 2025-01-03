@@ -5,6 +5,7 @@
 #include "networking/web/WebServer.h"
 #include "services/supabase/SupabaseRealtimeService.h"
 #include "core/DeviceManager.h"
+#include "debug/DebugCommandHandler.h"
 
 WiFiManager wifiManager;
 DeviceManager deviceManager;
@@ -13,6 +14,7 @@ DeviceManager deviceManager;
 void systemSetup() {
     Serial.begin(115200);
     LittleFS.begin();
+    Debug::DebugCommandHandler::getInstance().initialize();
 }
 
 void networkingSetup() {

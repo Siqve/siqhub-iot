@@ -6,12 +6,23 @@
 
 namespace Debug {
 
-    DebugCommandHandler::DebugCommandHandler() {
-        WebServer::getInstance().registerPageCallback("/debug", [](const RequestWrapper &request) {
+    void DebugCommandHandler::initialize() {
+        WebServer::getInstance().registerPageCallback("/debug-functions", [this](const RequestWrapper &request) {
             String cmd = request.getParam("cmd")->value();
-            if (!Debug::DebugCommandHandler::getInstance().execute(cmd.c_str())) {
+            if (strcmp(cmd.c_str(), "ping") == 0) {
+                logger.info("pong");
+                return request.ok("pong");
+            }
+            if (strcmp(cmd.c_str(), "restart") == 0) {
+                logger.info("Restarting device");
+                ESP.restart();
+                return request.ok("Restarting device");
+            }
+
+            if (!execute(cmd.c_str())) {
                 return request.notFound();
             }
+
             return request.ok();
         });
     }
@@ -44,4 +55,6 @@ namespace Debug {
     void DebugCommandHandler::removeListener(const std::string &cmd) {
         commandListeners.erase(cmd);
     }
+
+
 }
