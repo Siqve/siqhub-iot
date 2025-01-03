@@ -17,7 +17,7 @@ void DeviceManager::loop() {
         configure();
         return;
     }
-    if (!listenerActive) {
+    if (!listenerConnected) {
         registerChangeListener();
     }
 
@@ -52,7 +52,7 @@ void DeviceManager::registerChangeListener() {
                                    onConfigUpdate(data);
                                });
 
-    listenerActive = listenerCreatedSuccessfully;
+    listenerConnected = listenerCreatedSuccessfully;
 }
 
 void DeviceManager::onConfigUpdate(const JsonVariantConst &config) {

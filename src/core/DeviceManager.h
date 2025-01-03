@@ -27,6 +27,6 @@ private:
     std::unique_ptr<BaseDevice> device;
 
     Debug::Logger logger = Debug::Logger("DeviceManager");
-    boolean listenerActive = false;
+    boolean listenerConnected = false;
 };
 
