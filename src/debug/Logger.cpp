@@ -5,7 +5,7 @@
 #ifdef ESP8266
 #define LOG_BUFFER_SIZE 2048
 #else
-#define LOG_BUFFER_SIZE 4096
+#define LOG_BUFFER_SIZE 8192
 #endif
 
 namespace Debug {
