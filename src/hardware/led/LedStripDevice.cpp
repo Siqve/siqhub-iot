@@ -12,6 +12,7 @@
 #include "hardware/led/utils/LedUtils.h"
 #include "constants/LedSettingsConstants.h"
 #include "constants/CoreConstants.h"
+#include "debug/DebugCommandHandler.h"
 
 const std::string REALTIME_TOPIC = "LedStripDevice";
 
@@ -26,8 +27,8 @@ LedStripDevice::LedStripDevice() : BaseDevice(CoreConstants::DeviceType::toStrin
 
 void LedStripDevice::initialize(const JsonDocument &settings) {
     logger.info("Initializing LedStripDevice");
-    // No specific initialization logic for this Device type
-    updateSettings(settings);
+    handleSettingsUpdate(settings);
+    enableDebugCommands();
 }
 
 
@@ -48,15 +49,45 @@ void LedStripDevice::singleColorLoop() {
     ledStrip.Show();
 }
 
+static float t = 0.0f;
+static float period = 10.0f; // This will later be decided by pixel count * frequency i think
+static uint16_t halfPixelCount = LED_PIXEL_COUNT / 2; // Divide by 2 because the led strip is folded
+static float pixelIncrement = period / (float) (halfPixelCount);
 
 void LedStripDevice::gradientLoop() {
-//TODO
+    int colorsCount = (int) colors.size();
+    RgbColor color1 = colorToRgbColor(colors[currentBaseColorIndex]);
+    RgbColor color2 = colorToRgbColor(colors[(currentBaseColorIndex + 1) % colorsCount]);
+    float color_period = period / (float) colorsCount;
+    for (int i = 0; i < halfPixelCount; i++) {
+        if (t >= color_period) {
+            t = fmod(t, color_period);
+            currentBaseColorIndex = (currentBaseColorIndex + 1) % colorsCount;
+            color1 = colorToRgbColor(colors[currentBaseColorIndex]);
+            color2 = colorToRgbColor(colors[(currentBaseColorIndex + 1) % colorsCount]);
+        }
+        float offset = t / color_period;
+        RgbColor color = RgbColor::LinearBlend(color1, color2, offset);
+        ledStrip.SetPixelColor(i, color);
+        ledStrip.SetPixelColor(LED_PIXEL_COUNT - 1 - i, color);
+        t += pixelIncrement;
+    }
+    t += 0.05f;
+    ledStrip.Show();
 }
 
-void LedStripDevice::updateSettings(const JsonDocument &settings) {
+void LedStripDevice::handleSettingsUpdate(const JsonDocument &settings) {
     logger.info("Updating settings for LedStripDevice");
-    colorProfileId = settings[COLOR_PROFILE_ID_KEY].as<std::string>();
-    reload();
+    bool dirty = false;
+    std::string newColorProfileId = settings[COLOR_PROFILE_ID_KEY];
+    if (colorProfileId != newColorProfileId) {
+        colorProfileId = newColorProfileId;
+        dirty = true;
+    }
+    fps = settings[FPS_KEY].as<int>();
+    if (dirty) {
+        reload();
+    }
 }
 
 JsonDocument LedStripDevice::getInitialColorProfile() {
@@ -123,8 +154,24 @@ void LedStripDevice::removeListener() {
 }
 
 void LedStripDevice::reload() {
+    currentBaseColorIndex = 0;
     removeListener();
     handleColorProfileUpdate(getInitialColorProfile());
+}
+
+void LedStripDevice::enableDebugCommands() {
+    Debug::DebugCommandHandler::getInstance().registerListener("led-color", [this](std::string &args) {
+        std::istringstream iss(args);
+        std::string s;
+        getline(iss, s, ' ');
+        if (s.empty()) {
+            return;
+        }
+        int number = strtol(s.c_str(), nullptr, 10);
+
+        ledStrip.SetPixelColor(number, RgbColor(0, 0, 255));
+        ledStrip.Show();
+    });
 }
 
 

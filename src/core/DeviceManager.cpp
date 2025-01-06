@@ -79,7 +79,7 @@ void DeviceManager::handleConfigUpdate(const JsonVariantConst &config) {
 
     if (activeDeviceType == deviceType) {
         logger.info("Updating settings for active device type: " + CoreConstants::DeviceType::toString(deviceType));
-        getDevice()->updateSettings(settings);
+        getDevice()->handleSettingsUpdate(settings);
         return;
     }
     changeDevice(deviceType);

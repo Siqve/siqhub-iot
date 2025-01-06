@@ -8,7 +8,7 @@ class BaseDevice {
 public:
     virtual ~BaseDevice() = default;
     virtual void loop() = 0;
-    virtual void updateSettings(const JsonDocument &settings) = 0;
+    virtual void handleSettingsUpdate(const JsonDocument &settings) = 0;
     virtual void initialize(const JsonDocument &settings) = 0;
     virtual int getFps() = 0;
 

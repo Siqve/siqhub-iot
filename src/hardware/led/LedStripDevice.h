@@ -13,7 +13,7 @@ class LedStripDevice : public BaseDevice {
 public:
     explicit LedStripDevice();
     void loop() override;
-    void updateSettings(const JsonDocument &settings) override;
+    void handleSettingsUpdate(const JsonDocument &settings) override;
     void initialize(const JsonDocument &settings) override;
     int getFps() override;
 private:
@@ -26,18 +26,21 @@ private:
     void createColorProfileListener();
     void removeListener();
 
+    void enableDebugCommands();
+
     JsonDocument getInitialColorProfile();
 
-    std::vector<uint32_t> colors;
     bool isSingleColor = false;
+    std::vector<uint32_t> colors;
+    int currentBaseColorIndex = 0;
 
+    // Settings
     std::string colorProfileId = "";
     int fps = 1;
 
     boolean listenerConnected = false;
 
     NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod> ledStrip = NeoPixelBus<NeoBrgFeature, Neo800KbpsMethod>(LED_PIXEL_COUNT, 4);
-
     Debug::Logger logger = Debug::Logger("LedStripDevice");
 
 };
