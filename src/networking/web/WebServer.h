@@ -18,8 +18,6 @@ public:
     void registerPageCallback(const std::string &path,
                               const std::function<AsyncWebServerResponse *(const RequestWrapper &)> &callback);
 
-//    TODO: Fix gradient for led strip
-
 private:
     WebServer() = default;
 
