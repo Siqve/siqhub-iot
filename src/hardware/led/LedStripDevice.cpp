@@ -49,30 +49,46 @@ void LedStripDevice::singleColorLoop() {
     ledStrip.Show();
 }
 
-static float t = 0.0f;
-static float period = 10.0f; // This will later be decided by pixel count * frequency i think
+static float period = 100.0f;
+static float progress = 0.0f;
 static uint16_t halfPixelCount = LED_PIXEL_COUNT / 2; // Divide by 2 because the led strip is folded
-static float pixelIncrement = period / (float) (halfPixelCount);
 
 void LedStripDevice::gradientLoop() {
     int colorsCount = (int) colors.size();
+    float pixelIncrement = (period / (float) (halfPixelCount)) * frequency;
+    float color_period = period / (float) colorsCount;
+
+    // Progress color index if progress surpasses color_period or below 0 (for reverse)
+    if (progress >= color_period) {
+        progress -= color_period;
+        currentBaseColorIndex = (currentBaseColorIndex + 1) % colorsCount;
+    } else if (progress < 0) {
+        progress += color_period;
+        currentBaseColorIndex = (currentBaseColorIndex - 1) % colorsCount;
+        if (currentBaseColorIndex < 0) {
+            currentBaseColorIndex = colorsCount - 1;
+        }
+    }
     RgbColor color1 = colorToRgbColor(colors[currentBaseColorIndex]);
     RgbColor color2 = colorToRgbColor(colors[(currentBaseColorIndex + 1) % colorsCount]);
-    float color_period = period / (float) colorsCount;
+
+    // Each "run" creates a new progress, to separate the main fade-progression from the "gradient"
+    float gradientProgress = progress;
+    int tempBaseColorIndex = currentBaseColorIndex;
     for (int i = 0; i < halfPixelCount; i++) {
-        if (t >= color_period) {
-            t = fmod(t, color_period);
-            currentBaseColorIndex = (currentBaseColorIndex + 1) % colorsCount;
-            color1 = colorToRgbColor(colors[currentBaseColorIndex]);
-            color2 = colorToRgbColor(colors[(currentBaseColorIndex + 1) % colorsCount]);
+        if (gradientProgress >= color_period) {
+            gradientProgress = fmod(gradientProgress, color_period);
+            tempBaseColorIndex = (tempBaseColorIndex + 1) % colorsCount;
+            color1 = colorToRgbColor(colors[tempBaseColorIndex]);
+            color2 = colorToRgbColor(colors[(tempBaseColorIndex + 1) % colorsCount]);
         }
-        float offset = t / color_period;
+        float offset = abs(gradientProgress) / color_period;
         RgbColor color = RgbColor::LinearBlend(color1, color2, offset);
         ledStrip.SetPixelColor(i, color);
         ledStrip.SetPixelColor(LED_PIXEL_COUNT - 1 - i, color);
-        t += pixelIncrement;
+        gradientProgress += pixelIncrement;
     }
-    t += 0.05f;
+    progress += reverse ? -0.5f : 0.5f;
     ledStrip.Show();
 }
 
@@ -85,6 +101,8 @@ void LedStripDevice::handleSettingsUpdate(const JsonDocument &settings) {
         dirty = true;
     }
     fps = settings[FPS_KEY].as<int>();
+    frequency = settings[FREQUENCY_KEY].as<float>();
+    reverse = settings[REVERSE_KEY].as<bool>();
     if (dirty) {
         reload();
     }

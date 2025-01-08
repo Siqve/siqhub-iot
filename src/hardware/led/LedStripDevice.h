@@ -35,8 +35,10 @@ private:
     int currentBaseColorIndex = 0;
 
     // Settings
-    std::string colorProfileId = "";
+    std::string colorProfileId;
     int fps = 1;
+    float frequency = 1;
+    bool reverse = false;
 
     boolean listenerConnected = false;
 
