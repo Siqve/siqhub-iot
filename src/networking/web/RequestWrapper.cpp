@@ -8,7 +8,7 @@ bool RequestWrapper::hasParam(const std::string &paramName) const {
     return request->hasParam(paramName.c_str());
 }
 
-AsyncWebParameter *RequestWrapper::getParam(const std::string &paramName) const {
+const AsyncWebParameter *RequestWrapper::getParam(const std::string &paramName) const {
     return request->getParam(paramName.c_str());
 }
 

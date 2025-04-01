@@ -11,7 +11,7 @@ public:
 
     // Params
     [[nodiscard]] bool hasParam(const std::string &paramName) const;
-    [[nodiscard]] AsyncWebParameter *getParam(const std::string &paramName) const;
+    [[nodiscard]] const AsyncWebParameter *getParam(const std::string &paramName) const;
 
     // Responses
     [[nodiscard]] AsyncWebServerResponse *okJson(const std::string &response = "") const;
